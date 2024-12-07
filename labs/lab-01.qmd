@@ -1,0 +1,582 @@
+---
+title:  "Lab 1: Getting started with R"
+subtitle: "Not graded, just practice"
+date: 2024-08-29
+# format: live-html
+---
+
+To learn to program in R (or any language), you can read about how to do it, and watch someone else do it; but the only way to really learn is to do it yourself. Create some data structures, try some stuff, and see what happens! Here are some practice quiz questions to guide your learning. We will go over the solutions to these in lab.
+
+# Materials from lab
+
+- [Brittany's lab slides](/assests/pdfs/lab-01-brittany.pdf)
+- [Wesley's lab slides](/assests/pdfs/lab-01-wesley.pdf)
+
+<!-- ```{r}
+#| echo: false
+
+library(webexercises)
+``` -->
+
+# Google Colab
+
+ 1. True or false? We can start a new R notebook in Google Colab with `File > New notebook`
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c("True", answer ="True, but we need to change the Runtime environment too", "False")
+
+    cat(longmcq(choices))
+    ```
+
+1. For problem sets, how will you submit your colab notebook for grading? 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        answer ="`File > Download > Download .ipynb`, then upload to Gradescope",
+        "`File > Download > Download .ipynb`, then upload to Canvas",
+        "`File > Download > Download .py`, then upload to Gradescope",
+        "`File > Download > Download .py`, then upload to Canvas"
+    )
+
+    cat(longmcq(choices))
+
+    ```
+
+3. What version of R is Google Colab running? Hint: use `sessionInfo()`.
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    cat(fitb(c("4.4.1"), ignore_ws = TRUE, width = "20"))
+
+    ```
+
+4. What is the relationship between R and Google Colab?
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        "R is a programming language. Google Colab is a smaller, specific version of R.",
+        answer="R is a programming language. Google Colab is a development environment where you can run R",
+        "R and Google Colab are both programming languages.",
+        "R is a paid (proprietary) programming language. Google Colab is a free service to run R."
+    )
+
+    cat(longmcq(choices))
+
+    ```
+
+1. What happens to files you upload to google colab when the Runtime environment is restarted? 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        "They are saved in your google drive.",
+        "They are saved in Google Colab's cloud for future use", 
+        answer="They are deleted",
+        "They are stored for 7 business days, then deleted."
+    )
+
+    cat(longmcq(choices))
+
+    ```
+
+# R Basics
+
+
+1. Which of the following are expressions? 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        answer ="10",
+        answer = "5 + 10",
+        answer ="x <- 5 + 10",
+        answer = "x <- y + 10",
+        answer = "mean(x)"
+    )
+
+    cat(longmcq(choices))
+
+    ```
+
+2. Which of the following are valid variable names in R? 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        answer ="childAge",
+        answer = "response_time",
+        "1stPlaceWinner",
+        "2fast2furious",
+        "pi"
+    )
+
+    cat(longmcq(choices))
+
+    ```
+
+
+3. Suppose we open a new colab notebook and run the following code block. What will be returned?
+
+    ```r
+    x <- 1 + 2
+    y <- 0 + 3
+    ls()
+    ```
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        "3",
+        "x=3 • y=3",
+        answer ="'x' • 'y' ",
+        "mean(c(1,3,5)) • median(c(1,3,5))"
+    )
+
+    cat(longmcq(choices))
+
+    ```
+
+1. Which of the following will load the `emo` package into the current environment? 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        "install.packages('emo')",
+        answer ="library(emo)",
+        "data(emo)",
+        "attributes(emo)"
+    )
+
+    cat(longmcq(choices))
+
+    ```
+
+1. Which of the following occur in the code block below? 
+
+    ```r
+    # compute the mean of x and y
+    mean(c(x,y))
+    ```
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        "a message",
+        answer ="a function",
+        answer ="a comment",
+        answer = "an expression"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+# Vectors
+
+1. Which of the following returns the vector `20 22 24 26` 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        "`20:26`",
+        answer ="`seq(from=20, to=26, by =2)`",
+        "`rep(c(20, 22, 24, 26), times = 4)`",
+        answer ="`c(20, 22, 24, 26)`"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+
+1. Suppose we construct a vector with `c(1, "two", 3, 4, 5, 6)` and assign it to `x`. What will the following code block return? 
+
+    ```r
+    typeof(x)
+    ```
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    cat(fitb(c("character"), ignore_ws = TRUE, width = "20"))
+
+    ```
+
+    What is the previous question an example of? 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        "attribute addition",
+        "explicit coercion",
+        answer = "implicit coercion",
+        "none of the above"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+1. What will the following code block return? 
+
+    ```r
+    x <- 1:4
+    y <- matrix(x, ncol=2, nrow=2)
+    typeof(y)
+
+    ```
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    cat(fitb(c("integer"), ignore_ws = TRUE, width = "20"))
+
+    ```
+
+
+1. What will the following code block return? 
+
+    ```r
+    x <- c()
+    length(x)
+    ```
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    cat(fitb(c(0), ignore_ws = TRUE, width = "20"))
+
+    ```
+
+
+1. Given the following output from `str(x)`, what will `as.logical(x)` return? 
+
+    ```{r}
+    #| echo: false
+    x <- c(1, 0, 1, 0)
+    str(x)
+    ```
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        "an error",
+        answer="TRUE • FALSE • TRUE • FALSE",
+        'FALSE',
+        "FALSE • TRUE • FALSE • TRUE"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+1. Given the following vector, what will `as.double(x)` return? 
+
+    ```r
+    x <- c("one", "two", "three")
+    ```
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        answer="an error",
+        "1 • 2 • 3",
+        '2 • 4 • 6',
+        "'one' • 'two' • 'three'"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+
+
+1. What happens if you add a vector of numbers to a single number in the following expression?
+
+    ```r
+    c(1, 3, 5) + 1
+    ```
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        "2 • 3 • 5",
+        "Error: length mismatch",
+        "1 • 3 • 5 • 1",
+        answer = "2 • 4 • 6"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+1. What happens if you multiply a vector times another vector? 
+
+    ```r
+    c(1, 3, 5) * c(10, 100, 1000)
+    ```
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        answer="10 • 300 • 5000",
+        "Error: length mismatch",
+        "10 • 30 • 50 • 100 • 300 • 500 • 1000 • 3000 • 5000",
+        "a 2 x 3 matrix",
+        "Error: cannot multiply vectors"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+1. Suppose we run the following code.  What will `any(x)` return? 
+
+    ```r
+    x <- c(1, 5, 11) > 10
+
+    ```
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        answer ="TRUE",
+        "FALSE",
+        "Error: vector is double but requires logical"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+# Subsetting
+
+1. Which of the following code subsets the vector `x <- c("blue", "pink", "red")` to return just the first element?
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        answer="x[1]",
+        answer = "x[[1]]",
+        "x[0]",
+        answer = "x[-c(2, 3)]",
+        'x["blue"]'
+    )
+
+    cat(longmcq(choices))
+    ```
+
+1. Suppose we run the following code. What will `x[[2]]` return?
+
+    ```r
+    x <- seq(from = 2, to =8, by=2)
+    ```
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    cat(fitb(c(4), ignore_ws = TRUE, width = "20"))
+
+    ```
+
+
+1. Suppose we run the following code. What will `m[1, 2]` return?
+
+    ```r
+    m <- matrix(c(10,20,30,40), nrow=2, ncol=2)
+    ```
+
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    cat(fitb(c(30), ignore_ws = TRUE, width = "20"))
+
+    ```
+
+1. Suppose we run the following code. What will `df$y[4]` return?
+
+    ```r
+    df <- data.frame(
+        x = c(2, 4, 6, 8), 
+        y = c("l", "m", "n", "o")
+    )
+
+    ```
+
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    cat(fitb(c("o"), ignore_ws = TRUE, width = "20"))
+
+    ```
+
+# Missing Values 
+
+1. Suppose we run the following code. What will `is.na(y)` return?
+
+    ```r
+
+    y <- c(25, 25, NA, 36)
+
+    ```
+
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        "3",
+        "Error: Non-atomic vector is invalid type",
+        "TRUE",
+        answer = "FALSE FALSE TRUE FALSE"
+    )
+
+    cat(longmcq(choices))
+
+    ```
+
+1. Suppose we run the following code. What will `is.null(y)` return?
+
+    ```r
+    y <- c()
+
+    ```
+
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    cat(fitb(c("TRUE"), ignore_ws = TRUE, width = "20"))
+
+    ```
+
+1. Suppose we run the following code. What will `mean(y)` return?
+
+    ```r
+    y <- c()
+
+    ```
+
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    cat(fitb(c("NA"), ignore_ws = TRUE, width = "20"))
+
+    ```
+    <!---
+    
+
+    THERE ARE FROM BEFORE webexerciser
+
+    Suppose we run the following code block. What will `typeof(x)` return? What about `length(x)`? Explain why.
+
+        ```r
+        x <- data.frame(x=c(1,2,3), y=c("a","b","c"))
+        length(x)
+        ```
+
+    1. Suppose we run the following code. What will `y` return? What about `typeof(y)`?
+
+        ```r
+        x <- c(2,4,6)
+        y <- x * 2   
+        ```
+
+    ## Coercion
+
+    What will the following code block return? 
+
+    ```r
+    x <- c(1, 'two', 3, 4, 5, 6)
+    typeof(x)
+    ```
+
+
+    ## Subsetting
+
+
+    1. Suppose `m` is a matrix created with `matrix(c(1,2,3,4), nrow=2, ncol=2)`. What will each of the following operations return?
+        - `m[c(1), ]`
+        - `m[c(2), c(1, 2)]`
+        - `m[]`
+        - `m[[2]]`
+
+    1. Suppose `df` is a data frame created with `data.frame(x=c(1,2,3), y=c("a","b","c"))`. What will each of the following operations return?
+        - `df[c(1,2)]`
+        - `df[c(1,2), c(2)]`
+        - `df[['x']]`
+        - `df[x]`
+        - `df[[2]]`
+
+    1. Suppose `df` is a dataframe with column names `ageChild`, `ageParent`, and `dateAdded`. What will `df$age` return?  Explain why.
+
+    Suppose we create a vector including every letter in the alphabet and assign it to `x`. What will the following code return? 
+
+    ```r
+    y <- as.logical(x)
+    y[[1]]
+    ```
+    NA or <NA> 
+
+    ## Programming in R
+    1. Explain in one sentence the difference between a `for` loop and a `while` loop?  
+    --->

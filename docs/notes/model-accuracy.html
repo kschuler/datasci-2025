@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.56">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Katie Schuler">
+<meta name="dcterms.date" content="2023-10-29">
+
+<title>Model accuracy – DataSci for Lang &amp; Mind</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../include/webex.css">
+</head>
+
+<body class="nav-sidebar docked">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">
+      DataSci for Lang &amp; Mind
+      </li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">DataSci for Lang &amp; Mind</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Syllabus</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#resources" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Resources</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../index.html#materials" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Materials</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#study-guides" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Study guides</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#problem-sets" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Problem sets</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#exams" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exams</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#lab-exercises" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab exercises</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#schedule" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Schedule</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#model-accuracy-basics" id="toc-model-accuracy-basics" class="nav-link active" data-scroll-target="#model-accuracy-basics"><span class="header-section-number">1</span> Model accuracy basics</a></li>
+  <li><a href="#coefficient-of-determination-r2" id="toc-coefficient-of-determination-r2" class="nav-link" data-scroll-target="#coefficient-of-determination-r2"><span class="header-section-number">2</span> Coefficient of determination, <span class="math inline">\(R^2\)</span></a></li>
+  <li><a href="#r2-overestimates-model-accuracy" id="toc-r2-overestimates-model-accuracy" class="nav-link" data-scroll-target="#r2-overestimates-model-accuracy"><span class="header-section-number">3</span> <span class="math inline">\(R^2\)</span> overestimates model accuracy</a></li>
+  <li><a href="#overfitting" id="toc-overfitting" class="nav-link" data-scroll-target="#overfitting"><span class="header-section-number">4</span> Overfitting</a></li>
+  <li><a href="#model-complexity" id="toc-model-complexity" class="nav-link" data-scroll-target="#model-complexity"><span class="header-section-number">5</span> Model complexity</a></li>
+  <li><a href="#cross-validation" id="toc-cross-validation" class="nav-link" data-scroll-target="#cross-validation"><span class="header-section-number">6</span> Cross-validation</a></li>
+  <li><a href="#other-methods" id="toc-other-methods" class="nav-link" data-scroll-target="#other-methods"><span class="header-section-number">7</span> Other methods</a></li>
+  <li><a href="#f-test-via-anova" id="toc-f-test-via-anova" class="nav-link" data-scroll-target="#f-test-via-anova"><span class="header-section-number">8</span> F-test (via <code>anova()</code>)</a></li>
+  <li><a href="#back-to-model-selection" id="toc-back-to-model-selection" class="nav-link" data-scroll-target="#back-to-model-selection"><span class="header-section-number">9</span> Back to model selection</a></li>
+  <li><a href="#further-reading" id="toc-further-reading" class="nav-link" data-scroll-target="#further-reading"><span class="header-section-number">10</span> Further reading</a></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="model-accuracy.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Model accuracy</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Katie Schuler </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">October 29, 2023</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="model-accuracy-basics" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="model-accuracy-basics"><span class="header-section-number">1</span> Model accuracy basics</h2>
+<p>We’ve selected a model (model selection) and fit a model to a set of data (model fitting). One question we might want to ask next is how well does this model describe the data (<strong>model accuracy</strong>)?</p>
+<ul>
+<li>We can visualize our data and the model fit to get a sense of how accurate the model is. But we also want a way to quantify model accuracy – some metric by which to determine whether a model is useful, or how it compares to other models.</li>
+<li>Last week we learned about one metric of model “goodness”, <strong>Sum of Squared Error (SSE)</strong>. We could certainly quantify our model accuracy with SSE, but it would be difficult to interpret since it depends on the units of the data.</li>
+<li>Today we’ll learn about another metric, <span class="math inline">\(R^2\)</span> which is easier to interpret and independent of units. <span class="math inline">\(R^2\)</span> quantifies the percentage of variance in our response variable that is explained by our model.</li>
+</ul>
+</section>
+<section id="coefficient-of-determination-r2" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="coefficient-of-determination-r2"><span class="header-section-number">2</span> Coefficient of determination, <span class="math inline">\(R^2\)</span></h2>
+<p>The coefficient of determination, <span class="math inline">\(R^2\)</span>, quantifies the proportion of <strong>variance</strong> in the response variable, <span class="math inline">\(y\)</span>, that is explained by the model. Since you’ve already learned about <strong>Sum of Squared Error (SSE)</strong> as a way to quantify how well a model fits the data, you already have the tools to understand <span class="math inline">\(R^2\)</span>.</p>
+<p>To obain <span class="math inline">\(R^2\)</span> for a model, we compare the SSE of our model with the SEE of the simplest possible model: <code>y ~ 1</code> (the mean of the observed <span class="math inline">\(y\)</span> values). We call this simple model the <strong>reference model</strong> in the <span class="math inline">\(R^2\)</span> equation.</p>
+<p>The equation for <span class="math inline">\(R^2\)</span> is:</p>
+<ul>
+<li><span class="math inline">\(R^2=100\times(1-\frac{\sum_{i=1}^n (y_i - m_i)^2}{\sum_{i=1}^n (y_i - \overline{y})^2})\)</span></li>
+</ul>
+<p>Which is the same as saying:</p>
+<ul>
+<li><span class="math inline">\(R^2=100\times(1-\frac{SSE_{model}}{SSE_{reference}})\)</span></li>
+</ul>
+<p>Sometimes you will also see it expressed like this:</p>
+<ul>
+<li><span class="math inline">\(R^2=100\times(1-\frac{unexplained \; variance}{total \; variance})\)</span></li>
+</ul>
+<p>Which helps us appreciate what the equation is doing in terms of SSE:</p>
+<ul>
+<li>The <span class="math inline">\(total \; variance\)</span> (denominator) is quantified as the sum of squared error in which we substract the mean from the data (the simplest model’s prediction): <span class="math inline">\(\sum_{i=1}^n (y_i - \overline{y})^2\)</span>. In words, take each y value and subtract it from the mean y value, square it, then add them all up.</li>
+<li>The <span class="math inline">\(unexplained \; variance\)</span> (numerator) is quantified as the sum of squared error in which we subtract the model value from the data (residuals): <span class="math inline">\(\sum_{i=1}^n (y_i - m_i)^2\)</span>. In words, take each y value and subtract it from the model value (the model’s prediction) for that data point, square it, then add them all up.</li>
+</ul>
+<p>We then subtract the proportion <span class="math inline">\(\frac{unexplained \; variance}{total \; variance}\)</span> from 1 to get the proportion of variance that <em>is</em> explained, and then we multiply by 100 to turn it into the percent of variance explained.</p>
+<ul>
+<li><strong>There is an upper bound of 100%</strong>: the situation where the model explains all the variance (it matches the data exactly)</li>
+<li><strong>There is technically no lower bound</strong>, since models can be arbitrarily bad. <strong>0%</strong> indicates the model explains none of the variance (it predicts the mean of the data but nothing else)</li>
+</ul>
+</section>
+<section id="r2-overestimates-model-accuracy" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="r2-overestimates-model-accuracy"><span class="header-section-number">3</span> <span class="math inline">\(R^2\)</span> overestimates model accuracy</h2>
+<p>One thing we can ask is how well the model describes our specific sample of data. But the question we actually want to answer is <em>how well does the model we fit describe the population we are interested in</em>.</p>
+<ul>
+<li>The problem is that we usually only have access to the sample we’ve collected and <span class="math inline">\(R^2\)</span> tends to <strong>overestimate</strong> the accuracy of the model on the population. In other words, the <span class="math inline">\(R^2\)</span> of the model we fit on our sample will be larger than the <span class="math inline">\(R^2\)</span> of the model fit to the population.</li>
+<li>Further, the population is (usually) unknown to us. To quantify the <strong>true accuracy</strong> of a fitted model – that is, how well the model describes the population, not the sample we collected – we can use a technique called <strong>cross-validation</strong>.</li>
+</ul>
+<p>Before we learn about cross-validation, let’s first try to gain further conceptual understanding of <em>why</em> <span class="math inline">\(R^2\)</span> tends to overestimate model accuracy.</p>
+</section>
+<section id="overfitting" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="overfitting"><span class="header-section-number">4</span> Overfitting</h2>
+<p>When you fit a model to some sample of data, there is always a risk of <strong>overfitting</strong>. As the modeler, you have the freedom to fit your sample data better and better (you can add more and more terms, increasing the <span class="math inline">\(R^2\)</span> value). But you need to be careful not to fit the sample data <em>too</em> well.</p>
+<ul>
+<li>This is because any given set of data contains not only the true, underlying patterns we are interested in (the <strong>true model</strong> or <strong>signal</strong>), but also random variation (<strong>noise</strong>). Fitting the sample data too well means we fit not only the signal but also the noise in the data.</li>
+<li>An overfit model will perform really well on the data it has been trained on (the sample) — we can even fit the sample perfectly if we add enough terms! - but an overfit model will be bad at predicting new, unseen values. Image we collect an additional data point drawn from the population. An overfit model would predict this point poorly!</li>
+<li>Our goal is to find the <strong>optimal</strong> fitted model – the one that gets as close to the true model as possible without overfitting. But we have no way of knowing which part of the data we sampled is signal and which part is noise. So, we use cross-validation to help identify overfitting.</li>
+</ul>
+</section>
+<section id="model-complexity" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="model-complexity"><span class="header-section-number">5</span> Model complexity</h2>
+<p>In the lecture on model specification, we briefly mentioned that we would also want to take into consideration the <strong>complexity</strong> of the model. Simple models are easier to interpret but may not capture all complexities in the data, while complex models can suffer from overfitting the data or be difficult to interpret. Let’s expand on this in the context of model accuracy.</p>
+<ul>
+<li><strong>Complex models</strong> have the potential to describe many kinds of functions, and the <em>true model</em> — the model that most accurately describes the population we sampled our data from — could be among them. However, complex models have a lot free parameters to estimate (by definition, that’s what makes them complex!), which makes it more difficult to obtain stable parameter estimates with small samples sizes or noisy data.</li>
+<li><strong>Simple models</strong> are limited in the types of functions they can describe, so they may not approximate the true model very accurately. However, they have fewer free parameters, which makes it easier to obtain stable parameter estimates with small sample sizes or noisy data.</li>
+<li>We have no way of knowing <em>a priori</em> whether a simple or complex model will be more accurate for a given dataset. It depends on many things, including the data we have, the underlying relationships, and our research questions. Luckily, we can use cross-validation to find out, trying different models and quantify each model’s accuracy.</li>
+</ul>
+</section>
+<section id="cross-validation" class="level2" data-number="6">
+<h2 data-number="6" class="anchored" data-anchor-id="cross-validation"><span class="header-section-number">6</span> Cross-validation</h2>
+<p>Remember from above, the question we actually want to answer with <span class="math inline">\(R^2\)</span> is not how well does the model we fit describe the sample we collected, but <em>how well does the model we fit describe the population we are interested in</em>. But <span class="math inline">\(R^2\)</span> on the sample will tend to overestimate the model’s accuracy on the population. To estimate the accuracy of the model on the population, we need to use a simple but powerful technique called <strong>cross-validation</strong>. Given a sample of data, there are 3 simple steps to any cross-validation technique:</p>
+<ol type="1">
+<li>Leave some data out</li>
+<li>Fit a model (to the data kept in)</li>
+<li>Evaluate the model on the left out data (e.g.&nbsp;<span class="math inline">\(R^2\)</span>)</li>
+</ol>
+<p>There are many ways to do cross-validation — reflecting that there are many ways we can leave some data out — but they all follow this general 3-step process. We’ll focus on two common approaches in this class:</p>
+<ul>
+<li>In <strong>leave-one-out</strong> cross-validation, we leave out a single data point and use the fitted model to predict that single point. We repeat this process for every data point, then evaluate each model’s prediction on the left out points (we can use <span class="math inline">\(R^2\)</span>!).</li>
+<li>In <strong><span class="math inline">\(k\)</span>-fold</strong> cross-validation, instead of leaving out a single data point, we randomly divide the dataset into <span class="math inline">\(k\)</span> parts and use the fitted model to predict that <em>part</em>. We repeat this process for every part, then evaluate each model’s prediction on the left out parts (again, we can use <span class="math inline">\(R^2\)</span>!).</li>
+</ul>
+<p>How do we decide which cross-validation approach to use? There are two trade-offs to consider:</p>
+<ol type="1">
+<li><strong>How many iterations</strong> do we want to do? The more iterations, the more reliable our accuracy estimate will be. But the more iterations, the more computational resources are required.</li>
+<li><strong>How much data</strong> do we want to use for each part? The more data we use to fit the model, the more accurate the model will be and the more stable the parameter estimates will be. But the more data we use in to estimate reliability, the more reliable our accuracy estimate will be.<br>
+</li>
+</ol>
+<ul>
+<li>For example, in leave-one-out cross-validation we use a lot of iterations (one for each data point), so we need a lot of computational resources, but we get to use almost all the data to fit our model (all but one point!) and all the data to calculate <span class="math inline">\(R^2\)</span>.</li>
+<li>Keep in mind that the parameter estimates we obtain on each iteration will be different, because they depend on both the model selected (stays the same each iteration) and the data we fit with (changes each iteration). So the <span class="math inline">\(R^2\)</span> we compute via cross-validation really reflects an estimate of our model’s accuracy when fitted to a particular amount of data.</li>
+</ul>
+</section>
+<section id="other-methods" class="level2" data-number="7">
+<h2 data-number="7" class="anchored" data-anchor-id="other-methods"><span class="header-section-number">7</span> Other methods</h2>
+<p>There are other ways to evaluate models beyond cross-validaiton.</p>
+<p>One common way is using an <strong>F-test</strong> to determine whether a more complex model produces a significantly better fit than a simpler one. This approach only applies for <em>nested models</em>, which just means that one model is a simpler version of another more complex one.</p>
+<p>You may also encounter <strong>AIC (Akaike Information Criterion)</strong> and <strong>BIC (Bayesian Information Criterion)</strong>, for example, which are parametric approaches that attempt to compare different models and find the optimal fit (helping you avoid overfitting and excessively complex models).</p>
+<ul>
+<li>In general AIC considers how well the model fits the data, the number of parameters, and the sample size (there is a penalty for more complex models); BIC is similar but has a stronger penalty for complex models (so will inherently favor simpler models).</li>
+<li><strong>We’ll focus on cross-validation</strong> in this class, because it makes fewer assumptions than metrics like AIC/BIC and is simpler to understand conceptually. But we’ll also show you the <strong>F-test</strong> approach, since it’s widely used in the sciences.</li>
+</ul>
+</section>
+<section id="f-test-via-anova" class="level2" data-number="8">
+<h2 data-number="8" class="anchored" data-anchor-id="f-test-via-anova"><span class="header-section-number">8</span> F-test (via <code>anova()</code>)</h2>
+<p>The F-test is closely related to <span class="math inline">\(R^2\)</span>. When comparing a simpler model to a more complex one, the <strong>change in <span class="math inline">\(R^2\)</span></strong> can be evalutated using an F-test to see if adding predictors significantly improves model fit. (often expresse as <span class="math inline">\(\Delta R^2\)</span>) Recall that, for <span class="math inline">\(R^2\)</span>, when we compared <span class="math inline">\(SSE_{model}\)</span> (the sum of squared error of our model) to <span class="math inline">\(SSE_{reference}\)</span> (the sum of squared error of the intercept-only model), we noted that <span class="math inline">\(SSE_{reference}\)</span> is always going to be greater than <span class="math inline">\(SSE_{model}\)</span>. But what we actually want to know is whether it is <em>significantly</em> greater. Said another way, we want to know whether adding terms to the model significantly improve the model’s ability to explain the response variable.</p>
+<p>Let <span class="math inline">\(R^2_{simple}\)</span> be the <span class="math inline">\(R^2\)</span> of the simpler model and <span class="math inline">\(R^2_{complex}\)</span> be the <span class="math inline">\(R^2\)</span> of the more complex model. The change in <span class="math inline">\(R^2\)</span> (also called <span class="math inline">\(\Delta R^2\)</span>) is:</p>
+<ul>
+<li><span class="math inline">\(\Delta R^2 = R^2_{complex} - R^2_{simple}\)</span></li>
+</ul>
+<p>We can then compute the F-statistic to determine if <span class="math inline">\(\Delta R^2\)</span> is significant.</p>
+<ul>
+<li><span class="math inline">\(F = \frac{\Delta R^2 / p }{(1-R^2_{complex}/(n-k-1))}\)</span></li>
+</ul>
+<p>Where:</p>
+<ul>
+<li><span class="math inline">\(p\)</span> is the number of additional predictors in the complex model</li>
+<li><span class="math inline">\(n\)</span> is the total sample size</li>
+<li><span class="math inline">\(k\)</span> is the number of predictors in the complex model</li>
+</ul>
+<p>We can understand the numerator and denominator of this equation in the following way:</p>
+<ul>
+<li>The numerator represents the increase in <em>explained variance</em> per additional predictor.</li>
+<li>The denominator represents the remaining <em>unexplained variance</em>, adjusted for sample size and the complexity of the model.</li>
+</ul>
+<p>In R, we can perform this model comparison via and F-test via a call to <code>anova()</code>:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>model_int <span class="ot">&lt;-</span> <span class="fu">lm</span>(RTlexdec <span class="sc">~</span> <span class="dv">1</span>, english)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>model_freq <span class="ot">&lt;-</span> <span class="fu">lm</span>(RTlexdec <span class="sc">~</span> WrittenFrequency, english)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>model_freqage <span class="ot">&lt;-</span> <span class="fu">lm</span>(RTlexdec <span class="sc">~</span> WrittenFrequency <span class="sc">+</span> AgeSubject, english)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>model_freqagelength <span class="ot">&lt;-</span> <span class="fu">lm</span>(RTlexdec <span class="sc">~</span> WrittenFrequency <span class="sc">+</span> AgeSubject <span class="sc">+</span> LengthInLetters, english)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(model_int, model_freq, model_freqage, model_freqagelength)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Analysis of Variance Table
+
+Model 1: RTlexdec ~ 1
+Model 2: RTlexdec ~ WrittenFrequency
+Model 3: RTlexdec ~ WrittenFrequency + AgeSubject
+Model 4: RTlexdec ~ WrittenFrequency + AgeSubject + LengthInLetters
+  Res.Df     RSS Df Sum of Sq         F  Pr(&gt;F)    
+1   4567 112.456                                   
+2   4566  91.194  1    21.261 2772.1326 &lt; 2e-16 ***
+3   4565  35.053  1    56.141 7319.9087 &lt; 2e-16 ***
+4   4564  35.004  1     0.049    6.3563 0.01173 *  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+<p>If the F-statistic is large, it suggests that the additional predictors in the complex model significantly improve model fit. To help you decide, <code>anova()</code> returns a p-value. You can understand this p-value as asking: how likely it is to observe this value of F if we randomly added this many predictors to our model?</p>
+</section>
+<section id="back-to-model-selection" class="level2" data-number="9">
+<h2 data-number="9" class="anchored" data-anchor-id="back-to-model-selection"><span class="header-section-number">9</span> Back to model selection</h2>
+<p>Building models is itself an iterative process: we can use model accuracy obtained via cross-validation to determine which model to select (as a way to find the elusive optimal model fit).</p>
+<p>Cross-validation seems preferable, as it makes fewer assumptions than these approaches and is conceptually simpler. However, a drawback of cross-validation is that it is computationally intensive.</p>
+<p>Beyond model accuracy, there are other practical things one might want to consider when selecting a model, such as ease of interpretation and availability of resources (the data you can collect, the computing power you have, etc.)</p>
+</section>
+<section id="further-reading" class="level2" data-number="10">
+<h2 data-number="10" class="anchored" data-anchor-id="further-reading"><span class="header-section-number">10</span> Further reading</h2>
+
+
+</section>
+
+</main> <!-- /main -->
+<script>
+
+/* update total correct if #webex-total_correct exists */
+update_total_correct = function() {
+  console.log("webex: update total_correct");
+
+  var t = document.getElementsByClassName("webex-total_correct");
+  for (var i = 0; i < t.length; i++) {
+    p = t[i].parentElement;
+    var correct = p.getElementsByClassName("webex-correct").length;
+    var solvemes = p.getElementsByClassName("webex-solveme").length;
+    var radiogroups = p.getElementsByClassName("webex-radiogroup").length;
+    var selects = p.getElementsByClassName("webex-select").length;
+
+    t[i].innerHTML = correct + " of " + (solvemes + radiogroups + selects) + " correct";
+  }
+}
+
+/* webex-solution button toggling function */
+b_func = function() {
+  console.log("webex: toggle hide");
+
+  var cl = this.parentElement.classList;
+  if (cl.contains('open')) {
+    cl.remove("open");
+  } else {
+    cl.add("open");
+  }
+}
+
+/* check answers */
+check_func = function() {
+  console.log("webex: check answers");
+
+  var cl = this.parentElement.classList;
+  if (cl.contains('unchecked')) {
+    cl.remove("unchecked");
+    this.innerHTML = "Hide Answers";
+  } else {
+    cl.add("unchecked");
+    this.innerHTML = "Show Answers";
+  }
+}
+
+/* function for checking solveme answers */
+solveme_func = function(e) {
+  console.log("webex: check solveme");
+
+  var real_answers = JSON.parse(this.dataset.answer);
+  var my_answer = this.value;
+  var cl = this.classList;
+  if (cl.contains("ignorecase")) {
+    my_answer = my_answer.toLowerCase();
+  }
+  if (cl.contains("nospaces")) {
+    my_answer = my_answer.replace(/ /g, "")
+  }
+
+  if (my_answer == "") {
+    cl.remove("webex-correct");
+    cl.remove("webex-incorrect");
+  } else if (real_answers.includes(my_answer)) {
+    cl.add("webex-correct");
+    cl.remove("webex-incorrect");
+  } else {
+    cl.add("webex-incorrect");
+    cl.remove("webex-correct");
+  }
+
+  // match numeric answers within a specified tolerance
+  if(this.dataset.tol > 0){
+    var tol = JSON.parse(this.dataset.tol);
+    var matches = real_answers.map(x => Math.abs(x - my_answer) < tol)
+    if (matches.reduce((a, b) => a + b, 0) > 0) {
+      cl.add("webex-correct");
+    } else {
+      cl.remove("webex-correct");
+    }
+  }
+
+  // added regex bit
+  if (cl.contains("regex")){
+    answer_regex = RegExp(real_answers.join("|"))
+    if (answer_regex.test(my_answer)) {
+      cl.add("webex-correct");
+    }
+  }
+
+  update_total_correct();
+}
+
+/* function for checking select answers */
+select_func = function(e) {
+  console.log("webex: check select");
+
+  var cl = this.classList
+
+  /* add style */
+  cl.remove("webex-incorrect");
+  cl.remove("webex-correct");
+  if (this.value == "answer") {
+    cl.add("webex-correct");
+  } else if (this.value != "blank") {
+    cl.add("webex-incorrect");
+  }
+
+  update_total_correct();
+}
+
+/* function for checking radiogroups answers */
+radiogroups_func = function(e) {
+  console.log("webex: check radiogroups");
+
+  var checked_button = document.querySelector('input[name=' + this.id + ']:checked');
+  var cl = checked_button.parentElement.classList;
+  var labels = checked_button.parentElement.parentElement.children;
+
+  /* get rid of styles */
+  for (i = 0; i < labels.length; i++) {
+    labels[i].classList.remove("webex-incorrect");
+    labels[i].classList.remove("webex-correct");
+  }
+
+  /* add style */
+  if (checked_button.value == "answer") {
+    cl.add("webex-correct");
+  } else {
+    cl.add("webex-incorrect");
+  }
+
+  update_total_correct();
+}
+
+window.onload = function() {
+  console.log("webex onload");
+  /* set up solution buttons */
+  var buttons = document.getElementsByTagName("button");
+
+  for (var i = 0; i < buttons.length; i++) {
+    if (buttons[i].parentElement.classList.contains('webex-solution')) {
+      buttons[i].onclick = b_func;
+    }
+  }
+
+  var check_sections = document.getElementsByClassName("webex-check");
+  console.log("check:", check_sections.length);
+  for (var i = 0; i < check_sections.length; i++) {
+    check_sections[i].classList.add("unchecked");
+
+    let btn = document.createElement("button");
+    btn.innerHTML = "Show Answers";
+    btn.classList.add("webex-check-button");
+    btn.onclick = check_func;
+    check_sections[i].appendChild(btn);
+
+    let spn = document.createElement("span");
+    spn.classList.add("webex-total_correct");
+    check_sections[i].appendChild(spn);
+  }
+
+  /* set up webex-solveme inputs */
+  var solveme = document.getElementsByClassName("webex-solveme");
+
+  for (var i = 0; i < solveme.length; i++) {
+    /* make sure input boxes don't auto-anything */
+    solveme[i].setAttribute("autocomplete","off");
+    solveme[i].setAttribute("autocorrect", "off");
+    solveme[i].setAttribute("autocapitalize", "off");
+    solveme[i].setAttribute("spellcheck", "false");
+    solveme[i].value = "";
+
+    /* adjust answer for ignorecase or nospaces */
+    var cl = solveme[i].classList;
+    var real_answer = solveme[i].dataset.answer;
+    if (cl.contains("ignorecase")) {
+      real_answer = real_answer.toLowerCase();
+    }
+    if (cl.contains("nospaces")) {
+      real_answer = real_answer.replace(/ /g, "");
+    }
+    solveme[i].dataset.answer = real_answer;
+
+    /* attach checking function */
+    solveme[i].onkeyup = solveme_func;
+    solveme[i].onchange = solveme_func;
+
+    solveme[i].insertAdjacentHTML("afterend", " <span class='webex-icon'></span>")
+  }
+
+  /* set up radiogroups */
+  var radiogroups = document.getElementsByClassName("webex-radiogroup");
+  for (var i = 0; i < radiogroups.length; i++) {
+    radiogroups[i].onchange = radiogroups_func;
+  }
+
+  /* set up selects */
+  var selects = document.getElementsByClassName("webex-select");
+  for (var i = 0; i < selects.length; i++) {
+    selects[i].onchange = select_func;
+    selects[i].insertAdjacentHTML("afterend", " <span class='webex-icon'></span>")
+  }
+
+  update_total_correct();
+}
+
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

@@ -1,0 +1,201 @@
+---
+title:  "Lab 8: Model fitting"
+subtitle: "Not graded, just practice"
+date:   2024-10-24
+author: Katie Schuler
+number-sections: true
+---
+
+```{r}
+#| echo: false
+#| message: false
+
+library(webexercises)
+library(tidyverse)
+library(optimg)
+library(tidymodels)
+theme_set(theme_gray(base_size = 16))
+set.seed(60)
+
+data <- tibble(
+    y = rnorm(1000, 5, 1), 
+    noise = rnorm(1000, 10, 4), 
+    x = y + 10 + noise
+)
+```
+
+## Model fitting 
+
+1. True or false, gradient descent and orinary least squares are both iterative optimization algorithms.
+
+```{r}
+#| echo: false
+#| results: asis
+
+# Define the answer choices
+choices <- c("True", answer="False")
+
+cat(longmcq(choices))
+
+```
+
+
+2. What cost function have we been using to perform our gradient descent? 
+
+```{r}
+#| echo: false
+#| results: asis
+
+# Define the answer choices
+choices <- c(
+    "standard deviation",
+    "bootstrapping",
+    answer="sum of squared error",
+    "absolute error"
+)
+
+cat(longmcq(choices))
+```
+
+3. True or false, when performing gradient descent on the model given by the equation $y = w_0 + w_1x_1 + w_2x_2$, we might arrive at a local minimum and miss the global one.
+
+
+```{r}
+#| echo: false
+#| results: asis
+
+# Define the answer choices
+choices <- c("True", answer="False")
+
+cat(longmcq(choices))
+
+```
+
+4. Which of the following would work to estimate the free parameters of a **nonlinear** model? 
+
+
+```{r}
+#| echo: false
+#| results: asis
+
+# Define the answer choices
+choices <- c(
+    answer="gradient descent",
+    "ordinary least squares solution",
+    "both work"
+)
+
+cat(longmcq(choices))
+```
+
+5. True or false, in gradient descent, we search through all possible parameters in the parameter space. 
+
+```{r}
+#| echo: false
+#| results: asis
+
+# Define the answer choices
+choices <- c("True", answer="False")
+
+cat(longmcq(choices))
+
+```
+
+
+## Model fitting in R 
+
+Questions 6-9 refer to the code and output below, performing gradient descent with `optimg`: 
+
+```{r}
+#| echo: false 
+
+SSE <- function(data, par) {
+  data %>%
+    mutate(prediction = par[1] + par[2]* x) %>%
+    mutate(error = prediction - y) %>%
+    mutate(squared_error = error^2) %>%
+    with(sum(squared_error))
+}
+
+```
+
+```{r}
+optimg(data = data, par = c(0,0), fn=SSE, method = "STGD")
+```
+
+6. How many steps did the gradient descent algorithm take? `r fitb(6, width =10)`
+
+7. What was the sum of squared error of the optimal paramters?  `r fitb(959.4293, width =10)`
+
+8. What coefficients does the algorithm converge on? 
+
+```{r}
+#| echo: false
+#| results: asis
+
+# Define the answer choices
+choices <- c(
+    answer = "3.37930046, 0.06683237",
+    "0, 0",
+    "959.4293", 
+    "6, 0", 
+    "all of the above"
+)
+
+cat(longmcq(choices))
+```
+
+9. What parameters were used to initialized the algorithm? 
+
+```{r}
+#| echo: false
+#| results: asis
+
+# Define the answer choices
+choices <- c(
+    "3.37930046, 0.06683237",
+    answer ="0, 0",
+    "959.4293", 
+    "6, 0"
+)
+
+cat(longmcq(choices))
+```
+
+Questions 10-12 refer to the output below from `lm()`: 
+
+```{r}
+#| echo: false
+lm(y ~ x, data = data)
+
+```
+
+
+10. Use R notation to write the model specification. 
+
+```{r}
+#| code-fold: true
+#| code-summary: "answer"
+#| eval: false
+y ~ x  # this works (implicit intercept)
+
+y ~ 1 + x # this also works (explicit intercept)
+
+```
+
+
+11. Given the model is specified by the equation $y = w_0+w_1x_1$, what is the parameter estimate for $w_0$ = `r fitb(3.37822, width = 10)` and $w_1$ = `r fitb(0.06688, width = 10)`. 
+
+
+12. True or false, for this model, `optimg()` with gradient descent would converge on the same parameter estimates? 
+
+```{r}
+#| echo: false
+#| results: asis
+
+# Define the answer choices
+choices <- c(answer="True", "False")
+
+cat(longmcq(choices))
+
+```

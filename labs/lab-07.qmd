@@ -1,0 +1,855 @@
+---
+title:  "Lab 7: Applied model specification"
+subtitle: "Not graded, just practice"
+date:   2024-10-17
+author: Katie Schuler
+---
+
+Practice your new *modeling* skills with these practice exam questions! Best to open a fresh Google Colab notebook and test things out! Refer to the study guide to find answers as well. 
+
+
+
+```{r}
+#| echo: false
+#| message: false
+
+library(webexercises)
+library(tidyverse)
+theme_set(theme_bw(base_size = 15))
+```
+
+
+## Primate brains
+
+Primates have brains of varying sizes, and one possible explanation for this variation is differences in body size. Larger-bodied primates may tend to have heavier brains, but this relationship is not always straightforward. To investigate whether body size can reliably explain differences in brain weight across primate species, let's fit a model that predicts brain weight based on body size. 
+
+The data, in case you want to work with it yourself: [primate brains](/assests/csv/primate_brains.csv)
+
+```{r}
+#| code-fold: true
+#| message: false
+
+data <- read_csv("https://kathrynschuler.com/datasci/assests/csv/primate_brains.csv")
+glimpse(data)
+ggplot(data, aes( x = body_weight_g, y = brain_weight_g)) +
+    geom_point()
+```
+
+### Type of model 
+
+(a) Is this a supervised or unsupervised learning problem? 
+
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <-c(
+    answer ="Supervised",
+    "Unsupervised"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+(b) Is this regression or classification? 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <-c(
+    answer = "Regression", 
+    "Classification"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+(c) Is the relationship between `brain_weight_g` and `body_weight_g` linear or nonlinear? 
+
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <-  c(
+    "Linear",
+    answer ="Nonlinear"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+(d) Is the nonlinear relationship linearizable or non-linearizable? 
+
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+   choices <- c(
+    answer = "Linearizable nonlinear",
+    "Non-linearizable nonlinear",
+    "Neither, the relationship is linear"
+)
+
+    cat(longmcq(choices))
+    ```
+
+(e) What function could we choose to linearize this relationships? 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+   choices <- c(
+    "Quadratic polynomial",
+    "Cubic polynomial",
+    answer = "Log transformation",
+    "None, the relationship is already linear",
+    "None, the relationship is non-linearizable"
+)
+
+    cat(longmcq(choices))
+    ```
+
+
+### Model specification 
+
+Suppose we specify the following model for the primate brains data: $\log(brain\_weight\_g) = w_1  1 + w_2  \log(body\_weight\_g)$
+
+(a) What is the response variable? 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <-  c(
+  "brain_weight_g", 
+  "body_weight_g", 
+  answer = "log(brain_weight_g)",
+  "log(body_weight_g)"
+)
+
+    cat(longmcq(choices))
+    ```
+
+(b) What is the explanatory variable?
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        "brain_weight_g", 
+        "body_weight_g", 
+        "log(brain_weight_g)",
+        answer = "log(body_weight_g)"
+    )
+
+
+    cat(longmcq(choices))
+    ``` 
+
+(c) True or false, the functional form of this model can be expressed as a weighted sum of inputs? $y=\sum_{i=1}^{n}w_ix_i$
+
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+       answer = "True", 
+        "False"
+    )
+
+
+    cat(longmcq(choices))
+    ``` 
+
+(d) Which of the following model terms are included in the model specification above? Choose all that apply.
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+       answer = "Intercept",
+       answer = "Main",
+       "Interaction",
+       answer = "Transformation"
+    )
+
+
+    cat(longmcq(choices))
+    ``` 
+
+
+
+
+(e) Specify the model equation in R notation. 
+
+```{r}
+#| code-fold: true
+#| code-summary: Answer
+#| eval: false
+
+# like this (explicit intercept)
+log(brain_weight_g) ~ 1 + log_(body_weight_g)
+
+# or like this (implicit intercept)
+log(brain_weight_g) ~ log(body_weight_g)
+
+```
+
+### Fitted model 
+
+Suppose you fit the model with `lm()` and return the following: 
+
+```{r}
+#| echo: false
+
+model <- lm(log(brain_weight_g) ~ 1 + log(body_weight_g), data = data)
+model
+```
+
+(a) Which of the following is $w_1$ in the model specification $\log(brain\_weight\_g) = w_1 1 + w_2 \log(body\_weight\_g)$
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+   choices <- c(
+  "1",
+  answer = "-2.4649",
+  "0.7752",
+  "Not enough information to determine this"
+)
+
+    cat(longmcq(choices))
+    ```
+
+(b) Which of the following is $w_2$ in the model specification $\log(brain\_weight\_g) = w_1 1 + w_2 \log(body\_weight\_g)$
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+   choices <- c(
+  "1",
+  "-2.4649",
+  answer = "0.7752",
+  "Not enough information to determine this"
+)
+
+    cat(longmcq(choices))
+    ```
+
+(c) Suppose a primate has a $\log(body\_weight\_g)$ equal to 10. Which of the following would the model predict to be the primate's $\log(brain\_weight\_g)$? 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+   choices <- c(
+  "25.21",
+  answer = "5.29", 
+  "-10.7752",
+  "Not enough information to determine this"
+)
+
+    cat(longmcq(choices))
+    ```
+
+(d) Which of the following figures could show the fitted model? 
+
+```{r}
+#| echo: false
+
+primate_brains <- data %>%
+    mutate(y_hat = predict(model, data)) %>%
+    mutate(y_foil = 5 + -0.5 * log(body_weight_g))
+ggplot(primate_brains, aes(
+    x = log(body_weight_g), 
+    y = log(brain_weight_g))
+) + 
+geom_line(aes(y = y_hat))  +
+geom_line(aes(y = y_foil), color = "red") +
+geom_line(aes(y = 6), color = "blue") 
+
+```
+
+```{r}
+#| echo: false
+#| results: asis
+
+# Define the answer choices
+choices <- c(
+"the blue line", 
+"the red line", 
+answer = "the black line",
+"Not enough information to determine this"
+)
+
+cat(longmcq(choices))
+```
+
+
+
+## Social brain hypothesis 
+
+The **Social Brain Hypothesis** argues that the pressures of navigating increasingly complex social environments were a significant driver in the evolution of brain size and intelligence in humans and other primates.
+
+Let's specify and fit this model in R. 
+
+
+```{r}
+model <- lm(log(brain_weight_g) ~ 1 + log(group_size), 
+    data = primate_brains)
+
+```
+
+```{r}
+#| code-fold: true
+#| warning: false
+
+primate_brains <- primate_brains %>%
+    mutate(y_body_group = predict(model, primate_brains))
+
+ggplot(primate_brains, aes(, 
+    y = log(brain_weight_g),
+    x = log(group_size))
+) +
+geom_point(size = 2) +
+geom_line(color = "blue", aes(y = y_body_group)) 
+```
+
+
+(a) Fill in the blank: how many inputs does this model have? `r fitb(2)`
+
+
+::: {.panel-tabset}
+## b. Question
+
+Specify the model as an equation 
+
+
+## Answer
+
+$\log(brain\_weight\_g) = w_1  1 + w_2  \log(group\_size)$
+
+or, if you created new columns in your data with the the log transformed data, for example:
+
+```r
+data <- data %>%
+    mutate(log_brain_weight = log(brain_weight_g)) %>%
+    mutate(log_group_size = log(group_size))
+```
+
+then you could have written:
+
+$\log(brain\_weight\_g) = w_1  1 + w_2  \log(group\_size)$
+
+:::
+
+(c) Given the figure above, which of the following could be the free paramter estimate for $w_1$?
+
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+    1, 
+    0.66, 
+    answer = 2.25,
+    5,
+    "Not enough information to determine this"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+(d) Given the figure above, which of the following could be the free paramter estimate for $w_2$?
+
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+    1, 
+    answer = 0.66, 
+    2.25,
+    5,
+    "Not enough information to determine this"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+(e) Suppose we encounter a primate in a (log) group size of 4. What could be the model prediction for their (log) brain weight? 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+    3.5, 
+    4.1, 
+    answer = 4.9,
+    6.2,
+    "Not enough information to determine this"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+::: {.panel-tabset}
+## f. Question
+
+Suppose we wanted to include $\log(body\_size\_g)$ back into the model as an additional predictor of  $\log(brain\_size\_g)$. Specify the model in R. 
+
+## Answer
+
+
+```r
+log(brain_size_g) ~ 1 + log(group_size) + log(body_size_g)
+```
+
+:::
+
+## Fruit v Leaf eaters 
+
+Diet may influence the relationship between brain and body size in primates because the type of food a species consumes can impact its ability to meet the energy demands of a larger brain. Fruit-eating primates have access to energy-rich, easily digestible food, which could support the metabolic costs of both a large body and a larger, more complex brain.
+
+Let's begin by adding `diet_category` to our plot mapped to the color aesthetic. 
+
+```{r}
+#| code-fold: true
+
+primate_brains %>%
+    ggplot(aes(
+        y = log(brain_weight_g), 
+        x = log(body_weight_g),
+        color = diet_category
+    )) +
+    geom_point(size = 2) 
+```
+
+Frugivorous ("Frug") primates primarily eat fruit, while folivorous ("Fol") primates primarily consume leaves. The "Frug/Fol" category refers to primates that combine both fruit and leaf consumption in their diet. "Om" stands for omnivores, which we might suspect is similar to "Frug/Fol" with more variation in diet. To simplify things, let's focus our analysis on just the Fol and Frug categories. 
+
+```{r}
+#| code-fold: true
+
+fruit_v_leaves <- primate_brains %>%
+    filter(diet_category %in% c("Fol", "Frug")) 
+
+fruit_v_leaves %>%
+    ggplot(aes(
+        x = log(body_weight_g), 
+        y = log(brain_weight_g), 
+        color = diet_category
+    )) +
+    geom_point() 
+```
+
+Suppose we specify a model that predicts brain weight by body size and diet category. 
+
+```{r}
+#| code-fold: true
+model <- lm(log(brain_weight_g) ~ log(body_weight_g) + diet_category, data = fruit_v_leaves) 
+
+model
+```
+
+
+::: {.panel-tabset}
+## a. Question
+
+Specify the model with a mathematical expression. 
+
+
+## Answer
+
+
+
+$\log(brain\_size\_g) = w_11 + w_2\log(body\_size\_g) + w_3diet\_category$
+
+
+:::
+
+::: {.panel-tabset}
+## b. Question
+
+Notice we did not include an interaction term between body weight and diet category. Why might a modeler make this decision? 
+
+## Answer
+
+
+A modeler might choose not to include an interaction term based on exploratory visualization. The scatter plot shows roughly parallel lines for frugivorous and folivorous primates, which could indicate that body size influences brain weight similarly, regardless of diet.
+
+You could have also said something relevant to model complexity: the modeler may have noticed in exploratory data analysis that body size seems to influence brain weight similarly, and decided to keep the model simpler and easier to interpret by leaving out the interaction. 
+
+
+:::
+
+
+
+
+(c) True or false: the `diet_category` variable is categorical, so this is a classification problem.
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <-  c("True", answer ="False")
+
+    cat(longmcq(choices))
+    ```
+
+::: {.panel-tabset}
+## c. Question
+
+Write the *fitted model* as a mathematical expression. 
+
+## Answer
+
+$\log(brain\_size\_g) = -2.8047\times{1} + 0.7778\times{\log(body\_size\_g)} + 0.4576\times{diet\_category}$
+
+
+
+:::
+
+(d) Based on the fitted model returned by `lm()` above, which level of `diet_category` is the reference level? 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <-  c(answer = "Fol", "Frug", "Not enough information to determine this")
+
+    cat(longmcq(choices))
+    ```
+
+
+
+
+
+::: {.panel-tabset}
+## e. Question
+
+What is the model's prediction for a primate with a (log) body weight of 7 who eats leaves? Write your answer as a mathematical expression without simplifying it. 
+
+## Answer
+
+$\log(brain\_size\_g) = -2.8047\times{1} + 0.7778\times{\mathbf{7}} + 0.4576\times{\mathbf{0}}$
+
+
+
+:::
+
+(f) Fill in the blank. Of the figures below, figure `r fitb("D", width = 4)` could be the plot of the model we specified.
+
+```{r}
+#| echo: false
+#| layout-ncol: 2
+#| layout-nrow: 2
+
+model1 <- lm(log(brain_weight_g) ~ log(body_weight_g) + diet_category, data = fruit_v_leaves)
+model2 <- lm(log(brain_weight_g) ~ log(body_weight_g) * diet_category + I(log(body_weight_g)^2), data = fruit_v_leaves)
+
+fruit_v_leaves <- fruit_v_leaves %>%
+    mutate(y_predict = predict(model1, fruit_v_leaves)) %>%
+    mutate(y_predict_foil = predict(model2, fruit_v_leaves))
+
+ggplot(fruit_v_leaves, aes(
+    x = log(body_weight_g), 
+    y = log(brain_weight_g), 
+    color = diet_category
+)
+) +
+geom_point() +
+labs(tag = "A") +
+geom_smooth(method = "lm", se = FALSE, formula = y ~ 1, color = "blue")
+
+ggplot(fruit_v_leaves, aes(
+    x = log(body_weight_g), 
+    y = log(brain_weight_g), 
+    color = diet_category
+)
+) +
+geom_point()+
+labs(tag = "B") +
+geom_smooth(method = "lm", se = FALSE, formula = y ~ x, color = "blue")
+
+
+ggplot(fruit_v_leaves, aes(
+    x = log(body_weight_g), 
+    y = log(brain_weight_g), 
+    color = diet_category
+)
+) +
+geom_point()+
+labs(tag = "C") + 
+geom_line(aes(y = y_predict_foil))
+
+ggplot(fruit_v_leaves, aes(
+    x = log(body_weight_g), 
+    y = log(brain_weight_g), 
+    color = diet_category
+)
+) +
+geom_point()+
+labs(tag = "D") + 
+geom_line(aes(y = y_predict))
+
+```
+
+
+
+
+## Matching plots to equations
+
+Match the following plots to the equations below. Each plot can be mapped to a unique expression of the linear model equation. 
+
+```{r}
+#| echo: false
+#| message: false
+#| layout-ncol: 2
+#| layout-nrow: 2
+library(mosaic)
+mod_Galton <- Galton %>% 
+    mutate(y = height, x = mother, z = sex) 
+
+
+model1 <- lm(y ~ 1, data = mod_Galton)
+model2 <- lm(y ~ 1 + x , data = mod_Galton)
+model3 <- lm(y ~ 1 + z , data = mod_Galton)
+model4 <- lm(y ~ 1 + x + z , data = mod_Galton)
+model5 <- lm(y ~ 1 + x * z + I(x^2), data = mod_Galton)
+model6 <- lm(y ~ 1 + x + I(x^2), data = mod_Galton)
+
+mod_Galton <- mod_Galton%>%
+    mutate(model1 = predict(model1, mod_Galton)) %>%
+    mutate(model2 = predict(model2, mod_Galton)) %>%
+    mutate(model3 = predict(model3, mod_Galton)) %>%
+    mutate(model4 = predict(model4, mod_Galton)) %>%
+    mutate(model5 = predict(model5, mod_Galton)) %>%
+    mutate(model6 = predict(model6, mod_Galton)) 
+
+
+ggplot(mod_Galton, aes(
+    x = x, y = y, shape = z
+)
+) +
+geom_point() +
+labs(tag = "A") +
+geom_line(aes(y = model6), color = "blue")
+
+ggplot(mod_Galton, aes(
+    x = x, y = y, shape = z
+)
+) +
+geom_point() +
+labs(tag = "B") +
+geom_line(aes(y = model1), color = "blue")
+
+
+
+ggplot(mod_Galton, aes(
+    x = x, y = y, shape = z
+)
+) +
+geom_point() +
+labs(tag = "C") +
+geom_line(aes(y = model2), color = "blue")
+
+
+
+ggplot(mod_Galton, aes(
+    x = x, y = y, shape = z
+)
+) +
+geom_point() +
+labs(tag = "D") +
+geom_line(aes(y = model3), color = "blue")
+
+
+ggplot(mod_Galton, aes(
+    x = x, y = y, shape = z
+)
+) +
+geom_point() +
+labs(tag = "E") +
+geom_line(aes(y = model5), color = "blue")
+
+
+ggplot(mod_Galton, aes(
+    x = x, y = y, shape = z
+)
+) +
+geom_point() +
+labs(tag = "F") +
+geom_line(aes(y = model4), color = "blue")
+
+
+
+```
+
+(a) $y = w_11$ `r fitb("B", 4)`
+
+(b) $y = w_11 + w_2x$ `r fitb("C", 4)`
+
+(c) $y = w_11 + w_2z$ `r fitb("D", 4)`
+
+(d) $y = w_11 + w_2x + w_3z$ `r fitb("F", 4)`
+
+(e) $y = w_11 + w_2x + w_3z + w_4x\times{z} + w_5x^2$ `r fitb("E", 4)`
+
+(f) $y = w_11 + w_2x + w_3x^2$ `r fitb("A", 4)`
+
+(g) Which of the equations above has the most inputs (enter a lowercase letter a-f)?
+
+    `r fitb("e", 4)`
+
+(h) Which of the equations above is the most complex model? (enter a lowercase letter a-f)?
+
+    `r fitb("e", 4)`
+
+## Polynomials 
+
+
+
+1. What is the purpose of including polynomial terms in a linear model?
+
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <-  c("To improve model interpretability", 
+                    answer = "To model nonlinear relationships", 
+                    "To reduce overfitting in the model", 
+                    "To ensure that residuals are normally distributed")
+
+    cat(longmcq(choices))
+    ```
+
+
+2. Which of the following is an example of a quadratic polynomial term in a linear model?
+
+    a. $x$ 
+    b. $x^2$
+    c. $\sqrt{x}$
+    d. $\log{x}$
+
+    `r fitb("b", 4)`
+
+3. Why might higher-degree polynomial terms lead to overfitting in a linear model?
+
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c("Higher-degree terms make the model too simple", 
+    answer = "Higher-degree terms force the model to fit the noise in the data", 
+    "Polynomial terms always reduce the model's flexibility", 
+    "Polynomial terms make the model biased")
+
+    cat(longmcq(choices))
+    ```
+
+4. Which of the following models includes both linear and quadratic terms
+
+    a. $y = \beta_0 + \beta_1x$
+    b. $y = \beta_0 + \beta_1x^2$
+    c. $y = \beta_0 + \beta_1x + \beta_2x^2$
+    d. $y = \beta_0 + \beta_1x + \beta_2x^3$
+
+    `r fitb("c", 4)`
+
+<!-- 
+### Applied questions 
+
+The following plot shows cooling water. The temperature of water at time after starting to cool from boiling. 
+
+
+```{r}
+CoolingWater %>%
+    ggplot(aes(
+        x = time, 
+        y = temp
+    )) + 
+    geom_point()
+```
+
+a. True or false, these data can be model with linear regression. 
+
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(answer = "True", "false")
+
+    cat(longmcq(choices))
+    ```
+
+
+::: {.panel-tabset}
+## b. Question
+
+Specify the model that predicts temp as a weighted sum of time. 
+
+## Answer
+
+
+$temp= w_11 + w_2time + w_3time^2$
+
+:::
+
+c. If we want to perform linear regression, how should we handle the nonlinearity in the data? 
+
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c("Transform the time variable", 
+            answer = "Expand the input space with a polynomial",
+            "We need to fit a model other than linear regression here"
+        )
+
+    cat(longmcq(choices))
+    ```
+
+
+
+
+
+
+ -->

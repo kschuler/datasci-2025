@@ -1,0 +1,1239 @@
+---
+title: "Week 08: Applied Model Specification"
+subtitle: "Data Science for Studying Language and the Mind"
+author: Katie Schuler
+date: 2024-10-08
+echo: true
+format: 
+    revealjs:
+        chalkboard: true
+        slide-number: true
+        incremental: true 
+        footer: "[https://kathrynschuler.com/datasci](https://kathrynschuler.com/datasci/)"
+---
+
+```{r}
+#| echo: false
+library(tidyverse)
+library(infer)
+library(mosaic)
+theme_set(theme_classic(base_size = 20))
+set.seed(123)
+
+```
+
+# Tuesday
+
+## Announcements 
+
+- Problem set 3 is extended to Monday Oct 21 at noon
+- Katie's office hours cancelled this week
+
+## You are (still) `here` {.smaller} 
+
+:::: {.columns}
+
+::: {.column width="33%"}
+
+##### Data science with R 
+::: {.nonincremental}
+- R basics
+- Data visualization
+- Data wrangling
+:::
+:::
+
+::: {.column width="33%"}
+
+##### Stats & Model building
+::: {.nonincremental}
+- Sampling distribution
+- Hypothesis testing
+- `Model specification`
+- Model fitting 
+- Model accuracy
+- Model reliability
+:::
+:::
+
+::: {.column width="33%"}
+
+##### More advanced 
+::: {.nonincremental}
+
+- Classification
+- Inference for regression
+- Mixed-effect models
+::: 
+:::
+
+::::
+
+
+# Review 
+
+
+## Model building overview 
+
+- `Model specification` (this week): specify the functional form of the model.
+- `Model fitting`: you have the form, how do you estimate the free parameters? 
+- `Model accuracy`: you've estimated the parameters, how well does that model describe your data? 
+- `Model reliability`: when you estimate the parameters, you want to quantify your uncertainty on your estimates 
+
+## Types of models 
+
+```{dot}
+//| echo: false
+
+digraph G {
+    
+  "models" -> "supervised learning";
+  "models" -> "unsupervised learning";
+  "supervised learning" -> "regression";
+  "supervised learning" -> "classification";
+  "regression" -> "linear models";
+  "regression" -> "nonlinear models";
+  "nonlinear models" -> "linearizable"; 
+  "nonlinear models" -> "non-linearizable"
+  
+  "supervised learning" [style = filled]
+  "regression" [style = filled]
+  "linear models" [style = filled]
+  "linearizable" [style = filled]
+
+}
+```
+
+## Regression v classification {.smaller}
+
+```{dot}
+//|echo: false
+
+digraph G {
+
+rankdir=LR;  // Left to Right layout
+
+  // Column 1: x values
+  x1 [label="x1"];
+  x2 [label="x2"];
+  x3 [label="x3"];
+
+  // Column 2: model
+  model [label="Model", shape=box, width=1.5, height=1, style = filled];
+
+  // Column 3: y value
+  y [label="y"];
+
+  // Column 4: regression v classify 
+  r [label = "Regression (y is continuous) \n 1 3 4 2 3 4", shape = box style = filled];
+  c [label = "Classification (y is discrete) \n yes/no, male/female/nonbinary", shape = box]; 
+
+  // Keep x values in the same rank
+  { rank=same; x1; x2; x3; }
+
+  // Keep alignment using invisible edges
+  x1 -> model;
+  x2 -> model;
+  x3 -> model;
+  x4 -> model;
+  x5 -> model;
+
+  model -> y;  // Connect the model to y
+  y -> r; 
+  y -> c; 
+
+}
+
+```
+
+## Linear v Nonlinear models {.smaller}
+
+- **Linear models** output ($y$) is a weighted sum of inputs ($x_i$): $y=\sum_{i=1}^{n}w_ix_i$ 
+- **Nonlinear models** cannot be expressed as a weighted sum of inputs 
+  - but usually we can linearize them!
+
+```{r}
+#| echo: false 
+#| layout-ncol: 2
+#| fig-height: 8
+
+# Set seed for reproducibility
+set.seed(42)
+
+# Generate 500 random values for x
+x <- rnorm(500, mean = 0, sd = 1)  # You can adjust the mean and sd as needed
+
+# Calculate y based on the equation y = 2x + 3, and add noise
+noise <- rnorm(500, mean = 0, sd = 1)  # You can adjust the sd of the noise
+y <- 2 * x + 3 + noise
+
+# Combine x and y into a data frame
+data <- data.frame(x = x, y = y)
+
+ggplot(data, aes(x = x, y = y)) +
+    geom_point(alpha = 0.5, size = 4) +
+    geom_smooth(method = "lm", se = FALSE, linewidth = 3) +
+    labs(title = "Linear model") +
+    theme_classic(base_size = 36) 
+
+# Generate x values (input variable) from 0 to 6 with 500 data points
+x <- rnorm(500, mean = 0, sd = 1)
+
+# Define the quadratic model y = ax^2 + bx + c with random noise
+a <- 1.2   # Coefficient for x^2
+b <- -0.5  # Coefficient for x
+c <- 3.0   # Constant term
+noise <- rnorm(length(x), mean = 0, sd = 1)  # Random noise
+
+# Calculate y values (response variable)
+y <- a * x^2 + b * x + c + noise
+
+# Create a data frame with x, "Model", and y
+data_nonlinear <- data.frame(x = x, Model = "Model", y = round(y, 2))
+
+ggplot(data_nonlinear, aes(x = x, y = y)) +
+    geom_point(alpha = 0.5, size = 4) +
+    geom_smooth(method = "lm", se = FALSE, formula = "y ~ poly(x, 2)", linewidth = 3) +
+    labs(title = "Nonlinear model") +
+    theme_classic(base_size = 36)
+
+```
+
+
+
+## Model specification {.smaller}
+
+First aspect of the model building process in which we select the form of the model (the type of model)
+
+1. **Response variable ($y$):** Specify the variable you want to predict/explain (output). 
+2. **Explanatory variables($x_i$):** Specify the variables that may explain the variation in the response (inputs). 
+3. **Functional form:** Specify the relationship between the response and explanatory variables: $y=\sum_{i=1}^{n}w_ix_i$ 
+4. **Model terms:** Specify *how* to include your explanatory variables in the model (since they can be included in more than one way).
+
+# "Toy" data
+```r
+toy_data <- tibble(
+  x = c(1, 2, 3, 4, 5), 
+  y = c(2, 6, 7, 12, 13)
+)
+```
+
+## Explore the data {.smaller}
+
+::: {.panel-tabset}
+
+### Plot
+
+
+
+```{r}
+#| echo: false
+#| fig-height: 3
+#| fig-width: 3
+
+toy_data <- tibble(
+  x = c(1, 2, 3, 4, 5), 
+  y = c(2, 6, 7, 12, 13)
+)
+
+toy_data %>%
+  ggplot(aes(x = x, y = y
+  )) +
+  geom_point() +
+  theme_bw(base_size = 14) 
+
+```
+
+
+### Data
+
+```{r}
+#| echo: false
+#| layout-ncol: 2
+
+library(knitr)
+kable(toy_data)
+```
+
+
+### Code
+
+```r
+toy_data <- tibble(
+  x = c(1, 2, 3, 4, 5), 
+  y = c(2, 6, 7, 12, 13)
+)
+
+toy_data %>%
+  ggplot(aes(x = x, y = y)) +
+  geom_point() +
+  theme_bw(base_size = 14) 
+
+```
+:::
+
+##  💪In-class exercise 8.1
+
+Specify a model for the toy data. Then use `lm()` to fit the model. 
+
+## Specify, fit, plot model {.smaller}
+
+::: {.panel-tabset}
+
+## Plot
+
+:::: {.columns}
+::: {.column width="50%"}
+
+
+```{r}
+#| echo: false
+#| fig-height: 3
+#| fig-width: 3
+
+model <- lm(y ~ 1 + x, data = toy_data)
+
+toy_data <- toy_data %>%
+  mutate(with_formula = -0.4*1 + 2.8*x) %>%
+  mutate(with_predict= predict(model, toy_data))
+
+toy_data %>%
+  ggplot(aes(x = x, y = y)) +
+  geom_point() +
+  geom_line(aes(y = with_predict), color = "blue") +
+  theme_bw(base_size = 14) 
+
+```
+
+:::
+::: {.column width="50%"}
+
+Model specification: <br>
+$y = w_1\cdot\mathbf{1} + w_2\cdot\mathbf{x}$
+
+```{r}
+#| echo: false
+
+model
+```
+
+Fitted model: <br>
+$y = -0.4\cdot1 + 2.8\cdot x$
+
+:::
+::::
+
+
+## Data
+
+```{r}
+#| echo: false
+#| layout-ncol: 2
+
+
+kable(toy_data)
+```
+
+
+## Code
+
+```r
+model <- lm(y ~ 1 + x, data = toy_data)
+
+toy_data <- toy_data %>%
+  mutate(with_formula = -0.4*1 + 2.8*x) %>%
+  mutate(with_predict= predict(model, toy_data))
+
+toy_data %>%
+  ggplot(aes(x = x, y = y)) +
+  geom_point() +
+  geom_line(aes(y = with_predict), color = "blue") +
+  theme_bw(base_size = 14) 
+
+```
+:::
+
+# Swim records 
+
+```{r}
+library(mosaic)
+```
+
+## One input {.smaller}
+
+::: {.panel-tabset}
+
+## Plot
+
+:::: {.columns}
+::: {.column width="50%"}
+
+
+```{r}
+#| echo: false
+#| fig-height: 3
+#| fig-width: 3
+
+model <- lm(time ~ 1, data = SwimRecords)
+
+SwimRecords_predict <- SwimRecords %>%
+  mutate(with_formula = 59.92*1) %>%
+  mutate(with_predict= predict(model, SwimRecords))
+
+SwimRecords_predict %>%
+  ggplot(aes(x = year, y = time)) +
+  geom_point() +
+  geom_line(aes(y = with_predict), color = "blue") +
+  theme_bw(base_size = 14) 
+
+```
+
+:::
+::: {.column width="50%"}
+
+Model specification: <br>
+$y = w_1\cdot\mathbf{1}$
+
+```{r}
+#| echo: false
+
+model
+```
+
+Fitted model: <br>
+$y = 59.92 \cdot 1$
+
+:::
+::::
+
+
+## Data
+
+```{r}
+#| echo: false
+#| layout-ncol: 2
+
+
+library(knitr)
+kable(SwimRecords_predict)
+```
+
+
+## Code
+
+```r
+model <- lm(time ~ 1, data = SwimRecords)
+
+SwimRecords_predict <- SwimRecords %>%
+  mutate(with_formula = 59.92*1) %>% 
+  mutate(with_predict= predict(model, SwimRecords))
+
+SwimRecords_predict %>%
+  ggplot(aes(x = year, y = time)) +
+  geom_point() +
+  geom_line(aes(y = with_predict), color = "blue") +
+  theme_bw(base_size = 14) 
+
+```
+:::
+
+##  💪In-class exercise 8.2
+
+Specify a model for the SwimRecords data that includes the intercept and the year. Use `lm()` to fit the model. Then use `predict()` to get the models prediction. 
+
+If you have time, plot the data and model predictions with `ggplot()`.
+
+## Two inputs {.smaller} 
+
+::: {.panel-tabset}
+
+## Plot
+
+:::: {.columns}
+::: {.column width="50%"}
+
+
+```{r}
+#| echo: false
+#| fig-height: 3
+#| fig-width: 3
+
+model <- lm(time ~ 1 + year, data = SwimRecords)
+
+SwimRecords_predict <- SwimRecords %>%
+  mutate(with_formula = 567.2420*1 + -0.2599*year) %>%
+  mutate(with_predict= predict(model, SwimRecords))
+
+SwimRecords_predict %>%
+  ggplot(aes(x = year, y = time)) +
+  geom_point() +
+  geom_line(aes(y = with_predict), color = "blue") +
+  theme_bw(base_size = 14) 
+
+```
+
+:::
+::: {.column width="50%"}
+
+Model specification: <br>
+$y = w_1\cdot\mathbf{1} + w_2\cdot\mathbf{year}$
+
+```{r}
+#| echo: false
+
+model
+```
+
+Fitted model: <br>
+$y = 567.2420  \cdot \mathbf{1} + -0.2599 \cdot \mathbf{year}$
+
+:::
+::::
+
+
+## Data
+
+```{r}
+#| echo: false
+#| layout-ncol: 2
+
+
+library(knitr)
+kable(SwimRecords_predict)
+```
+
+
+## Code
+
+```r
+model <- lm(time ~ 1 + year, data = SwimRecords)
+
+SwimRecords_predict <- SwimRecords %>%
+  mutate(with_formula = 567.2420*1 + -0.2599*year) %>%
+  mutate(with_predict= predict(model, SwimRecords))
+
+SwimRecords_predict %>%
+  ggplot(aes(x = year, y = time)) +
+  geom_point() +
+  geom_line(aes(y = with_predict), color = "blue") +
+  theme_bw(base_size = 14) 
+
+```
+:::
+
+
+## Three inputs {.smaller}
+
+
+::: {.panel-tabset}
+
+## Plot
+
+:::: {.columns}
+::: {.column width="40%"}
+
+
+```{r}
+#| echo: false
+#| fig-height: 3
+#| fig-width: 3
+
+model <- lm(time ~ 1 + year + sex, data = SwimRecords)
+
+SwimRecords_predict <- SwimRecords %>%
+  mutate(sex_numeric = case_when(
+    sex == 'M' ~ 1,
+    sex == 'F' ~ 0
+  )) %>%
+  mutate(with_formula = 555.7168*1 + -0.2515*year + -9.7980 *sex_numeric) %>%
+  mutate(with_predict= predict(model, SwimRecords))
+
+SwimRecords_predict %>%
+  ggplot(aes(x = year, y = time, shape = sex)) +
+  geom_point() +
+  geom_line(aes(y = with_predict), color = "blue") +
+  theme_bw(base_size = 14) 
+
+```
+
+:::
+::: {.column width="60%"}
+
+Model specification: <br>
+$y = w_1\cdot\mathbf{1} + w_2\cdot\mathbf{year} + w_3\cdot\mathbf{sex}$
+
+```{r}
+#| echo: false
+
+model
+```
+
+Fitted model: <br>
+$y = 555.7168 \cdot \mathbf{1} + -0.2515 \cdot \mathbf{year} + -9.7980 \cdot \mathbf{sex}$
+
+:::
+::::
+
+
+## Data
+
+```{r}
+#| echo: false
+#| layout-ncol: 2
+
+
+library(knitr)
+kable(SwimRecords_predict)
+```
+
+
+## Code
+
+```r
+model <- lm(time ~ 1 + year + sex, data = SwimRecords)
+
+SwimRecords_predict <- SwimRecords %>%
+  mutate(sex_numeric = case_when(
+    sex == 'M' ~ 1,
+    sex == 'F' ~ 0
+  )) %>%
+  mutate(with_formula = 555.7168*1 + -0.2515*year + -9.7980 *sex_numeric) %>%
+  mutate(with_predict= predict(model, SwimRecords))
+
+SwimRecords_predict %>%
+  ggplot(aes(x = year, y = time, shape = sex)) +
+  geom_point() +
+  geom_line(aes(y = with_predict), color = "blue") +
+  theme_bw(base_size = 14) 
+
+```
+:::
+
+##  💪In-class exercise 8.3
+
+We specified the model including intercept, year, and sex as follows: <br>
+$y = w_1\cdot\mathbf{1} + w_2\cdot\mathbf{year} + w_3\cdot\mathbf{sex}$
+
+Fit the model with `infer` this time. What are the following weights: 
+
+- $w_1 = $
+- $w_2 = $
+- $w_3 = $
+
+
+
+
+## Interaction {.smaller}
+
+::: {.panel-tabset}
+
+## Plot
+
+:::: {.columns}
+::: {.column width="40%"}
+
+
+```{r}
+#| echo: false
+#| fig-height: 3
+#| fig-width: 3
+
+model <- lm(time ~ 1 + year * sex, data = SwimRecords)
+
+SwimRecords_predict <- SwimRecords %>%
+  mutate(with_predict= predict(model, SwimRecords))
+
+SwimRecords_predict %>%
+  ggplot(aes(x = year, y = time, shape = sex)) +
+  geom_point() +
+  geom_line(aes(y = with_predict), color = "blue") +
+  theme_bw(base_size = 14) 
+
+```
+
+:::
+::: {.column width="60%"}
+
+Model specification: <br>
+$y = w_1\cdot\mathbf{1} + w_2\cdot\mathbf{year} + w_3\cdot\mathbf{sex} + w_4\cdot\mathbf{year\times{sex}}$
+
+```{r}
+#| echo: false
+
+model
+```
+
+Fitted model: <br>
+\begin{align}
+y = &697.3012 \cdot \mathbf{1} + -0.3240 \cdot \mathbf{year} + -302.4638 \cdot \mathbf{sex}\\
+&+ 0.1499 \cdot \mathbf{year\times{sex}}
+\end{align}
+
+:::
+::::
+
+
+## Data
+
+```{r}
+#| echo: false
+#| layout-ncol: 2
+
+
+library(knitr)
+kable(SwimRecords_predict)
+```
+
+
+## Code
+
+```r
+model <- lm(time ~ 1 + year * sex, data = SwimRecords)
+
+SwimRecords_predict <- SwimRecords %>%
+  mutate(with_predict= predict(model, SwimRecords))
+
+SwimRecords_predict %>%
+  ggplot(aes(x = year, y = time, shape = sex)) +
+  geom_point() +
+  geom_line(aes(y = with_predict), color = "blue") +
+  theme_bw(base_size = 14) 
+
+```
+:::
+
+
+## Transformation {.smaller}
+
+::: {.panel-tabset}
+
+## Plot
+
+:::: {.columns}
+::: {.column width="40%"}
+
+
+```{r}
+#| echo: false
+#| fig-height: 3
+#| fig-width: 3
+
+model <- lm(time ~ 1 + year * sex + I(year^2), data = SwimRecords)
+
+SwimRecords_predict <- SwimRecords %>%
+  mutate(with_predict= predict(model, SwimRecords))
+
+SwimRecords_predict %>%
+  ggplot(aes(x = year, y = time, shape = sex)) +
+  geom_point() +
+  geom_line(aes(y = with_predict), color = "blue") +
+  theme_bw(base_size = 14) 
+
+```
+
+:::
+::: {.column width="60%"}
+
+Model specification: <br>
+\begin{align}
+y = &w_1\cdot\mathbf{1} + w_2\cdot\mathbf{year} + w_3\cdot\mathbf{sex} \\
+&+ w_4\cdot\mathbf{year\times{sex}} +w_5\cdot\mathbf{year}^2
+\end{align}
+
+```{r}
+#| echo: false
+
+model
+```
+
+Fitted model: <br>
+\begin{align}
+y = &11100 \cdot \mathbf{1} + -10.98 \cdot \mathbf{year} + -317.1 \cdot \mathbf{sex}\\
+&+ 0.1575 \cdot \mathbf{year\times{sex}} + 0.002729 \cdot \mathbf{year}^2
+\end{align}
+
+:::
+::::
+
+
+## Data
+
+```{r}
+#| echo: false
+#| layout-ncol: 2
+
+
+library(knitr)
+kable(SwimRecords_predict)
+```
+
+
+## Code
+
+```r
+model <- lm(time ~ 1 + year * sex + I(year^2), data = SwimRecords)
+
+SwimRecords_predict <- SwimRecords %>%
+  mutate(with_predict= predict(model, SwimRecords))
+
+SwimRecords_predict %>%
+  ggplot(aes(x = year, y = time, shape = sex)) +
+  geom_point() +
+  geom_line(aes(y = with_predict), color = "blue") +
+  theme_bw(base_size = 14) 
+
+```
+:::
+
+## Linearizing nonlinear models {.smaller}
+
+Two common ways:
+
+1. **Expanding the input space** with polynomials. Polynomials can capture "bumps" or curves in the data. In this approach, we **add terms** to the model, like squares or cubes of the original variable. 
+    - $y = w_1 + w_2x + w_3x^2$
+
+2. **Transforming the data** involves applying mathematical functions to existing inputs to alter their scale or distributions. Taking the logarithm of a variable compresses its range and reduces skewness in the data (as in the brain size and body weight data). 
+    - both output and input: $log(y) = w_1 + w_2 log(x)$ 
+    - just input: $y = w_1 + w_2 log(x)$
+
+# Plant heights (polynomials)
+
+```r
+poly_plants <- read_csv('https://kathrynschuler.com/datasci/assests/csv/polynomial_plants.csv')
+```
+
+## Polynomials {.smaller}
+
+Polynomials capture "bumps" or curves in the data, and the number of these bumps depends on the **degree** of the polynomial. The higher the degree, the more complex the shape the polynomial can represent. 
+
+![](/assests/images/polynomials.png)
+
+
+## Degree 1 (Linear) {.smaller}
+
+::: {.panel-tabset}
+
+## Plot
+
+:::: {.columns}
+::: {.column width="50%"}
+
+
+```{r}
+#| echo: false
+#| message: false
+#| fig-height: 3
+#| fig-width: 3
+
+poly_plants <- read_csv('https://kathrynschuler.com/datasci/assests/csv/polynomial_plants.csv')
+
+model <- lm(plant_height ~ 1 + light_exposure, data = poly_plants)
+
+poly_plants <- poly_plants %>%
+  mutate(with_formula = 31.346*1 + 3.619*light_exposure) %>%
+  mutate(with_predict= predict(model, poly_plants))
+
+poly_plants %>%
+  ggplot(aes(x = light_exposure, y = plant_height)) +
+  geom_point() +
+  geom_line(aes(y = with_predict), color = "blue") +
+  theme_bw(base_size = 14) 
+
+```
+
+:::
+::: {.column width="50%"}
+
+Model specification: <br>
+$y = w_1\cdot\mathbf{1} + w_2 \cdot \mathbf{x}$
+
+```{r}
+#| echo: false
+
+model
+```
+
+Fitted model: <br>
+$y = 31.346 \cdot 1 + 3.619 \cdot x$
+
+:::
+::::
+
+
+## Data
+
+```{r}
+#| echo: false
+#| layout-ncol: 2
+
+
+kable(poly_plants)
+```
+
+
+## Code
+
+```r
+poly_plants <- read_csv('https://kathrynschuler.com/datasci/assests/csv/polynomial_plants.csv')
+
+model <- lm(plant_height ~ 1 + light_exposure, data = poly_plants)
+
+poly_plants <- poly_plants %>%
+  mutate(with_formula = 31.346*1 + 3.619*light_exposure) %>%
+  mutate(with_predict= predict(model, poly_plants))
+
+poly_plants %>%
+  ggplot(aes(x = light_exposure, y = plant_height)) +
+  geom_point() +
+  geom_line(aes(y = with_predict), color = "blue") +
+  theme_bw(base_size = 14) 
+
+```
+:::
+
+##  💪In-class exercise 8.4
+
+What happens if you specify the model without the intercept term in R? `y ~ x` instead of `y ~ 1 + x`? 
+
+Try it with the `poly_plants` data and use 'lm()' or 'infer' to fit the model you specified. What do you noticed about the weights? 
+
+
+
+## Degree 2 (Quadratic) {.smaller}
+
+::: {.panel-tabset}
+
+## Plot
+
+:::: {.columns}
+::: {.column width="50%"}
+
+
+```{r}
+#| echo: false
+#| message: false
+#| fig-height: 3
+#| fig-width: 3
+
+poly_plants <- read_csv('https://kathrynschuler.com/datasci/assests/csv/polynomial_plants.csv')
+
+model <- lm(plant_height ~ 1 + light_exposure + I(light_exposure^2), data = poly_plants)
+
+poly_plants <- poly_plants %>%
+  mutate(with_predict= predict(model, poly_plants))
+
+poly_plants %>%
+  ggplot(aes(x = light_exposure, y = plant_height)) +
+  geom_point() +
+  geom_line(aes(y = with_predict), color = "blue") +
+  theme_bw(base_size = 14) 
+
+```
+
+:::
+::: {.column width="50%"}
+
+Model specification: <br>
+$y = w_1\cdot\mathbf{1} + w_2 \cdot \mathbf{x} + w_3 \cdot \mathbf{x}^2$
+
+
+```{r}
+#| echo: false
+
+model
+```
+
+Fitted model: <br>
+$y = -9.245 \cdot\mathbf{1} + 27.973 \cdot \mathbf{x} + -2.214  \cdot \mathbf{x}^2$
+
+:::
+::::
+
+
+## Data
+
+```{r}
+#| echo: false
+#| layout-ncol: 2
+
+
+kable(poly_plants)
+```
+
+
+## Code
+
+```r
+
+model <- lm(plant_height ~ 1 + light_exposure + I(light_exposure^2), data = poly_plants)
+
+poly_plants <- poly_plants %>%
+  mutate(with_predict= predict(model, poly_plants))
+
+poly_plants %>%
+  ggplot(aes(x = light_exposure, y = plant_height)) +
+  geom_point() +
+  geom_line(aes(y = with_predict), color = "blue") +
+  theme_bw(base_size = 14) 
+
+```
+:::
+
+## Degree 3 (Cubic) {.smaller}
+
+::: {.panel-tabset}
+
+## Plot
+
+:::: {.columns}
+::: {.column width="50%"}
+
+
+```{r}
+#| echo: false
+#| message: false
+#| fig-height: 3
+#| fig-width: 3
+
+poly_plants <- read_csv('https://kathrynschuler.com/datasci/assests/csv/polynomial_plants.csv')
+
+model <- lm(plant_height ~ 1 + light_exposure + I(light_exposure^2) + I(light_exposure^3), data = poly_plants)
+
+poly_plants <- poly_plants %>%
+  mutate(with_predict= predict(model, poly_plants))
+
+poly_plants %>%
+  ggplot(aes(x = light_exposure, y = plant_height)) +
+  geom_point() +
+  geom_line(aes(y = with_predict), color = "blue") +
+  theme_bw(base_size = 14) 
+
+```
+
+:::
+::: {.column width="50%"}
+
+Model specification: <br>
+$y = w_1\cdot\mathbf{1} + w_2 \cdot \mathbf{x} + w_3 \cdot \mathbf{x}^2 + w_4 \cdot \mathbf{x}^3$
+
+
+```{r}
+#| echo: false
+
+model
+```
+
+Fitted model: <br>
+$y = 8.7363 \cdot \mathbf{1} + 2.7276  \cdot \mathbf{x} + 3.7796 \cdot \mathbf{x}^2 + -0.3632  \cdot \mathbf{x}^3$
+
+:::
+::::
+
+
+## Data
+
+```{r}
+#| echo: false
+#| layout-ncol: 2
+
+
+kable(poly_plants)
+```
+
+
+## Code
+
+```r
+model <- lm(plant_height ~ 1 + light_exposure + I(light_exposure^2) + I(light_exposure^3), data = poly_plants)
+
+poly_plants <- poly_plants %>%
+  mutate(with_predict= predict(model, poly_plants))
+
+poly_plants %>%
+  ggplot(aes(x = light_exposure, y = plant_height)) +
+  geom_point() +
+  geom_line(aes(y = with_predict), color = "blue") +
+  theme_bw(base_size = 14) 
+
+```
+:::
+
+
+# Brain size (log)
+
+```r
+brain_data <- read_csv('https://kathrynschuler.com/datasci/assests/csv/animal_brain_body_size.csv')
+```
+
+
+## Untransformed {.smaller}
+
+::: {.panel-tabset}
+
+## Plot
+
+:::: {.columns}
+::: {.column width="50%"}
+
+
+```{r}
+#| echo: false
+#| message: false
+#| fig-height: 3
+#| fig-width: 3
+
+brain_data <- read_csv('https://kathrynschuler.com/datasci/assests/csv/animal_brain_body_size.csv') %>%
+  rename(brain_size_cc = `Brain Size (cc)`, body_size_kg = `Body Size (kg)`)
+
+model <- lm(brain_size_cc ~ 1 + body_size_kg, data = brain_data)
+
+brain_data <- brain_data %>%
+  mutate(with_predict= predict(model, brain_data))
+
+brain_data %>%
+  ggplot(aes(x = body_size_kg, y = brain_size_cc)) +
+  geom_point() +
+  geom_line(aes(y = with_predict), color = "blue") +
+  theme_bw(base_size = 14) 
+
+```
+
+:::
+::: {.column width="50%"}
+
+Model specification: <br>
+$y = w_1\cdot\mathbf{1} + w_2\cdot\mathbf{body\_size\_kg}$
+
+```{r}
+#| echo: false
+
+model
+```
+
+Fitted model: <br>
+$y = 816.59014 \cdot\mathbf{1} + 0.05021 \cdot\mathbf{body\_size\_kg}$
+
+:::
+::::
+
+
+## Data
+
+```{r}
+#| echo: false
+#| layout-ncol: 2
+
+
+kable(brain_data)
+```
+
+
+## Code
+
+```r
+brain_data <- read_csv('https://kathrynschuler.com/datasci/assests/csv/animal_brain_body_size.csv') %>%
+  rename(brain_size_cc = `Brain Size (cc)`, body_size_kg = `Body Size (kg)`)
+
+model <- lm(brain_size_cc ~ 1 + body_size_kg, data = brain_data)
+
+brain_data <- brain_data %>%
+  mutate(with_predict= predict(model, brain_data))
+
+brain_data %>%
+  ggplot(aes(x = body_size_kg, y = brain_size_cc)) +
+  geom_point() +
+  geom_line(aes(y = with_predict), color = "blue") +
+  theme_bw(base_size = 14) 
+
+```
+:::
+
+## Log transformed {.smaller}
+
+::: {.panel-tabset}
+
+## Plot
+
+:::: {.columns}
+::: {.column width="50%"}
+
+
+```{r}
+#| echo: false
+#| message: false
+#| fig-height: 3
+#| fig-width: 3
+
+brain_data <- read_csv('https://kathrynschuler.com/datasci/assests/csv/animal_brain_body_size.csv') %>%
+  rename(brain_size_cc = `Brain Size (cc)`, body_size_kg = `Body Size (kg)`)
+
+model <- lm(log(brain_size_cc) ~ 1 + log(body_size_kg), data = brain_data)
+
+brain_data <- brain_data %>%
+  mutate(
+    log_brain_size_cc = log(brain_size_cc), 
+    log_body_size_kg = log(body_size_kg)
+  ) %>%
+  mutate(with_predict= predict(model, brain_data))
+
+brain_data %>%
+  ggplot(aes(x = log_body_size_kg, y = log_brain_size_cc)) +
+  geom_point() +
+  geom_line(aes(y = with_predict), color = "blue") +
+  theme_bw(base_size = 14) 
+
+```
+
+:::
+::: {.column width="50%"}
+
+Model specification: <br>
+$log(y) = w_1\cdot\mathbf{1} + w_2 \cdot log(\mathbf{body\_size\_kg})$
+
+```{r}
+#| echo: false
+
+model
+```
+
+Fitted model: <br>
+$log(y) = 2.2042\cdot\mathbf{1} + 0.6687 \cdot log(\mathbf{body\_size\_kg})$
+
+
+:::
+::::
+
+
+## Data
+
+```{r}
+#| echo: false
+#| layout-ncol: 2
+
+
+kable(brain_data)
+```
+
+
+## Code
+
+```r
+model <- lm(log(brain_size_cc) ~ 1 + log(body_size_kg), data = brain_data)
+
+brain_data <- brain_data %>%
+  mutate(
+    log_brain_size_cc = log(brain_size_cc), 
+    log_body_size_kg = log(body_size_kg)
+  ) %>%
+  mutate(with_predict= predict(model, brain_data))
+
+brain_data %>%
+  ggplot(aes(x = log_body_size_kg, y = log_brain_size_cc)) +
+  geom_point() +
+  geom_line(aes(y = with_predict), color = "blue") +
+  theme_bw(base_size = 14) 
+
+```
+:::
+
+

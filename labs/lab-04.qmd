@@ -1,0 +1,342 @@
+---
+title:  "Lab 4: Sampling distribution"
+subtitle: "Not graded, just practice"
+date:   2024-09-19
+author: Katie Schuler
+---
+
+Practice your new stats skills with these practice exam questions! Best to open a fresh Google Colab notebook and test things out! Refer to the study guide to find answers as well. 
+
+::: {.callout-tip title="Tip"}
+More than one answer may be correct!  
+:::
+
+
+```{r}
+#| echo: false
+#| message: false
+
+library(webexercises)
+library(tidyverse)
+```
+
+If you would like to practice with a set of data, you can import the following dataset with `read_csv`: 
+
+```r
+# brain volumes simulated from Ritchie et al
+"http://kathrynschuler.com/datasets/brain_volume.csv"
+```
+
+## Descriptive statistics
+
+(a) Which of the following is the best choice to visualize the frequency distribution of a set of data? Choose one.
+
+
+```{r}
+#| echo: false
+#| results: asis
+
+# Define the answer choices
+choices <- c(
+   "`geom_rug()`", answer="`geom_histogram()`", "`geom_point()`", "`geom_smooth()`"
+)
+
+cat(longmcq(choices))
+```
+
+(b) Which of the following would summarize the central tendency of a set of data? Choose all that apply.
+
+```{r}
+#| echo: false
+#| results: asis
+
+# Define the answer choices
+choices <- c(
+   answer="mean", 
+   answer="median", 
+   "standard deviation",
+   "inter quartile range (IQR)"
+)
+
+cat(longmcq(choices))
+```
+
+(c) Which of the following would summarize the spread of a set of data? Choose all that apply
+
+```{r}
+#| echo: false
+#| results: asis
+
+# Define the answer choices
+choices <- c(
+   "mean", 
+   "median", 
+   answer="standard deviation",
+   answer="inter quartile range (IQR)"
+)
+
+cat(longmcq(choices))
+```
+
+(d) Which of the following are paramteric statistics?
+
+```{r}
+#| echo: false
+#| results: asis
+
+# Define the answer choices
+choices <- c(
+   answer="mean", 
+   "median", 
+   answer="standard deviation",
+   "inter quartile range (IQR)"
+)
+
+cat(longmcq(choices))
+``` 
+
+(e) Given the following figure, which summary statistics would best describe these data? 
+
+```{r}
+#| echo: false
+not_normal <- tibble(
+    y = c(rep(5, times = 55 ), rep(15, times = 25 ), rep(25, times = 15), rep(32, 5), 42, 55, 62:65, 72:75, 83 
+))
+
+sum_stats_not <- not_normal %>%
+    summarise(n = n(), mean = mean(y), sd = sd(y))
+
+ggplot(not_normal, aes(x = y)) +
+geom_histogram(color = "black", fill = "gray", bins = 9, alpha = 0.5) +
+coord_cartesian(ylim = c(0, 60)) +
+    labs(x = "y")
+
+```
+
+```{r}
+#| echo: false
+#| results: asis
+
+# Define the answer choices
+choices <- c(
+   "mean", 
+   answer="median", 
+   "standard deviation",
+   answer="inter quartile range (IQR)"
+)
+
+cat(longmcq(choices))
+``` 
+
+
+(f) Given the following code, which of the following would fill in the blank to return the value below which 20% of the data fall. 
+
+    ```r
+    data %>% summarise(
+        lower = quantile(y, ________)
+    )
+    ```
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+    20, 
+    -20, 
+    "below",
+    answer=0.2
+    )
+
+    cat(longmcq(choices))
+    ``` 
+
+
+## Probability distributions
+
+(a) Write code to generate 200 data points, sampled from a gaussian distribution with a mean of 0 and a standard deviation of 1.
+
+```{r}
+#| code-summary: "Answer"
+#| code-fold: true
+#| eval: false
+rnorm(200, mean = 0, sd = 1)
+```
+
+(b) Suppose you sampled 500 data points from a uniform distribution and stored the result in `data`. Then, you use the following code to compute the summary stats. What is the height of the probability density function at a value of 5? 
+
+```{r}
+#| echo: false
+data <- tibble(y = runif(500, max = 10, min = 5.01 ))
+
+```
+
+```{r}
+
+data %>% summarise(
+    n = n(),
+    mean = mean(y), 
+    sd = sd(y), 
+    lower = quantile(y, 0), 
+    upper = quantile(y, 1)
+)
+
+```
+
+`r fitb(0, ignore_case = TRUE)`
+
+(c) Suppose your data is normally distributed and has a mean of 25 and a standard deviation of 5. What is the probability a random value drawn from your dataset will be less than 20? Select the closest value.
+
+```{r}
+#| echo: false
+#| results: asis
+
+# Define the answer choices
+choices <- c(
+0.0483, 
+answer=0.1589, 
+1.0, 
+0
+
+)
+
+cat(longmcq(choices))
+``` 
+
+
+
+
+
+
+## Sampling variability
+
+(a) True or false, the `parameter` is the mean of the population and the `parameter estimate` is the mean of your sample? 
+
+```{r}
+#| echo: false
+#| results: asis
+
+# Define the answer choices
+choices <- c(
+answer = TRUE,
+    FALSE
+
+)
+
+cat(longmcq(choices))
+``` 
+
+
+(b) What do we call the probability distribution of the values our parameter estimate can take on? 
+
+`r fitb("sampling distribution", ignore_case = TRUE)`
+
+(c) Suppose we want to quantify the spread of the sampling distribution. What method could we choose? Choose all that apply. 
+
+```{r}
+#| echo: false
+#| results: asis
+
+# Define the answer choices
+choices <- c(
+"mean", "median", 
+answer = "standard error",
+answer = "confidence interval"
+
+)
+
+cat(longmcq(choices))
+``` 
+
+
+(d) For a typical experiment, how many samples from the population is practical for us to take? Enter a number.
+
+`r fitb(1, ignore_case = TRUE)`
+
+
+
+## Bootstrapping
+
+
+(a) True or false, when we generate the bootstrap sampling distribution, we sample our original sample *with replacement*.
+
+```{r}
+#| echo: false
+#| results: asis
+
+# Define the answer choices
+choices <- c(
+answer = TRUE, 
+FALSE
+
+)
+
+cat(longmcq(choices))
+``` 
+
+
+
+(b) Suppose we want to generate the bootstrap sampling distribution for the mean of set of data, `data`, with one variable: `reaction_time`. Write code that uses the `infer` package to accomplish this, generating 1000 samples. 
+
+```{r}
+#| code-summary: "Answer"
+#| code-fold: true
+#| eval: false
+data %>% 
+    specify(response = reaction_time) %>%
+    generate(reps = 1000, type = "bootstrap") %>%
+    calculate(stat = "mean")
+```
+
+(c) Suppose we store our bootstrap sampling distribution from part b in a variable called `bootstrap_distribution`. Which two arguments should we add to the code below to compute the 68% confidence interval and assign it to the value `ci`?
+
+```r
+ci <- bootstrap_distribution %>% 
+    get_confidence_interval(______, ________)
+
+```
+
+```{r}
+#| echo: false
+#| results: asis
+
+# Define the answer choices
+choices <- c(
+'`type="se", level = 68`',
+'`type="se", level = 0.68`', 
+answer='`type="percentage", level = 0.68`',
+'`type="percentage", level = 68`'
+
+)
+
+cat(longmcq(choices))
+``` 
+
+(d) Suppose we store our bootstrap sampling distribution in `bootstrap_distribution` and we want to visualize the confidence interval we just computed in c.  Which of the following could we add to the code below? Choose all that apply.
+
+```r
+bootstrap_distribution %>%
+    visualize() + 
+    _____________
+```
+
+```{r}
+#| echo: false
+#| results: asis
+
+# Define the answer choices
+choices <- c(
+'`get_confidence_interval(endpoints = ci)`',
+answer='`shade_ci(endpoints = ci)`',
+answer='`shade_confidence_interval(endpoints = ci)`',
+'`get_ci(endpoints = ci)`'
+
+)
+
+cat(longmcq(choices))
+``` 
+
+
+
+

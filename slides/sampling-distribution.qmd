@@ -1,0 +1,951 @@
+---
+title: "Sampling Distribution"
+subtitle: "Data Science for Studying Language and the Mind"
+author: Katie Schuler
+date: 2024-09-17
+echo: true
+format: 
+    revealjs:
+        theme: dark
+        slide-number: true
+        incremental: true 
+        footer: "[https://kathrynschuler.com/datasci](https://kathrynschuler.com/datasci/)"
+---
+
+```{r}
+#| echo: false
+library(tidyverse)
+library(infer)
+theme_set(theme_classic(base_size = 20))
+set.seed(123)
+
+```
+
+
+## Announcements
+
+- Grades for Problem Set 1 have been released
+- Problem Set 2 has been posted to the course website 
+  - Due Monday (Sept 23) at **noon**
+- You may request an extension of up to 3 days for any reason
+  - Please ask in advance of the deadline
+  - There is no limit to the number of extensions (you may take one for all 6 problem sets if you need it). 
+
+
+## You are `here` {.smaller} 
+
+:::: {.columns}
+
+::: {.column width="33%"}
+
+##### Data science with R 
+::: {.nonincremental}
+- R basics
+- Data visualization
+- Data wrangling
+:::
+:::
+
+::: {.column width="33%"}
+
+##### Stats & Model building
+::: {.nonincremental}
+- `Sampling distribution`
+- Hypothesis testing
+- Model specification
+- Model fitting 
+- Model accuracy
+- Model reliability
+:::
+:::
+
+::: {.column width="33%"}
+
+##### More advanced 
+::: {.nonincremental}
+
+- Classification
+- Inference for regression
+- Mixed-effect models
+::: 
+:::
+
+::::
+
+## Data science workflow 
+
+![Data Science Workflow by R4DS](/assests/images/data-science-workflow.png)
+
+# Attribution
+
+Inspired by a MATLAB course Katie took by Kendrick Kay 
+
+# Data 
+
+Simulated from Ritchie et al 2018: 
+
+. . . 
+
+> Sex Differences in the Adult Human Brain: Evidence from 5216 UK Biobank Participants
+
+
+# Descriptive statistics
+
+## Dataset 
+
+Suppose we measure a single quantity: `brain volume of human adults` (in cubic centemeters)
+
+```{r}
+#| echo: false 
+
+data <- read_csv("http://kathrynschuler.com/datasets/brain_volume.csv") %>% select(volume) 
+
+head(data, 10) 
+glimpse(data)
+
+```
+
+## Exploring a simple dataset {.smaller}
+
+Each tick mark is one data point: one participant's brain volume
+
+```{r}
+#| echo: false 
+
+ggplot(data, aes(x = volume)) +
+    geom_rug() +
+    labs(x = "brain volume") 
+
+```
+
+
+
+## Visualize the distribution {.smaller}
+
+Visualize the distribution of the data with a `histogram`
+
+```{r}
+#| echo: false 
+
+ggplot(data, aes(x = volume)) +
+    geom_rug() +
+  geom_histogram(color = "black", fill = "gray", bins = 16, alpha = 0.5) +
+    labs(x = "brain volume")
+
+```
+
+
+
+
+## Measure of central tendency {.smaller}
+
+Summarize the data with a single value: `mean`, a measure of where a central or typical value might fall
+
+. . . 
+
+```{r}
+#| output-location: column
+#| echo: false
+
+sum_stats <- data %>% summarise(
+    n = n(), 
+    mean = mean(volume),
+    sd = sd(volume))
+
+  
+```
+
+
+```{r}
+#| echo: false 
+
+ggplot(data, aes(x = volume)) +
+    geom_rug() +
+  geom_histogram(color = "black", fill = "gray", bins = 16, alpha = 0.5) +
+  geom_vline(xintercept = sum_stats$mean, y = 1100, size = 2) +
+  coord_cartesian(ylim = c(0, 1200)) +
+    labs(x = "brain volume")
+
+```
+
+## Measure of central tendency {.smaller}
+
+Summarize the data with a single value: `mean`, a measure of where a central or typical value might fall
+
+
+```{r}
+#| echo: false 
+
+ggplot(data, aes(x = volume)) +
+    geom_rug() +
+  geom_histogram(color = "black", fill = "gray", bins = 16, alpha = 0.5) +
+  geom_vline(xintercept = sum_stats$mean, y = 1100, size = 2) +
+  annotate("text", x = 1250, y = 1200, label =round(sum_stats$mean, 2), size = 8) +
+  coord_cartesian(ylim = c(0, 1200)) +
+    labs(x = "brain volume")
+
+```
+
+
+
+
+## Measure of variability {.smaller}
+
+Summarize the spread of the data with `standard deviation`
+
+
+```{r}
+#| echo: false 
+
+lower <- round(sum_stats$mean - sum_stats$sd, 2)
+upper <- round(sum_stats$mean + sum_stats$sd, 2)
+
+
+ggplot(data, aes(x = volume)) +
+    geom_rug() +
+  geom_histogram(color = "black", fill = "gray", bins = 16, alpha = 0.5) +
+    geom_vline(xintercept = sum_stats$mean, y = 1100, size = 2) +
+
+  geom_vline(xintercept = sum_stats$mean-sum_stats$sd, linetype = "dashed", size = 2) +
+  geom_vline(xintercept = sum_stats$mean+sum_stats$sd, linetype = "dashed", size = 2) +
+
+  coord_cartesian(ylim = c(0, 1200)) +
+    labs(x = "brain volume")
+
+```
+
+## Measure of variability {.smaller}
+
+Summarize the spread of the data with `standard deviation`
+
+. . . 
+
+```{r}
+#| echo: false 
+
+lower <- round(sum_stats$mean - sum_stats$sd, 2)
+upper <- round(sum_stats$mean + sum_stats$sd, 2)
+
+
+ggplot(data, aes(x = volume)) +
+    geom_rug() +
+  geom_histogram(color = "black", fill = "gray", bins = 16, alpha = 0.5) +
+    geom_vline(xintercept = sum_stats$mean, y = 1100, size = 2) +
+
+  geom_vline(xintercept = sum_stats$mean-sum_stats$sd, linetype = "dashed", size = 2) +
+  geom_vline(xintercept = sum_stats$mean+sum_stats$sd, linetype = "dashed", size = 2) +
+    annotate("text", x = 980, y = 1200, label=lower, size = 8) +
+    annotate("text", x = 1360, y = 1200, label=upper, size = 8) +
+
+  coord_cartesian(ylim = c(0, 1200)) +
+    labs(x = "brain volume")
+
+```
+
+## Parametric statistics
+
+Mean and sd are `parametric` summary statistics. They are given by the following equations:
+
+:::: {.columns}
+::: {.column width=50%}
+$mean(x) = \bar{x} = \frac{\sum_{i=i}^{n} x_{i}}{n}$
+:::
+::: {.column width=50%}
+sd($x$) = $\sqrt{\frac{\sum_{i=1}^n (x_i - \bar{x})^2}{n-1}}$
+:::
+::::
+
+## $mean(x) = \bar{x} = \frac{\sum_{i=i}^{n} x_{i}}{n}$
+
+```{r}
+#| echo: false 
+
+lower <- round(sum_stats$mean - sum_stats$sd, 2)
+upper <- round(sum_stats$mean + sum_stats$sd, 2)
+
+
+ggplot(data, aes(x = volume)) +
+    geom_rug() +
+  geom_histogram(color = "black", fill = "gray", bins = 16, alpha = 0.5) +
+    geom_vline(xintercept = sum_stats$mean, y = 1100, size = 2) +
+
+  coord_cartesian(ylim = c(0, 1200)) +
+    labs(x = "brain volume")
+
+```
+
+## sd($x$) = $\sqrt{\frac{\sum_{i=1}^n (x_i - \bar{x})^2}{n-1}}$
+
+
+```{r}
+#| echo: false 
+
+lower <- round(sum_stats$mean - sum_stats$sd, 2)
+upper <- round(sum_stats$mean + sum_stats$sd, 2)
+
+
+ggplot(data, aes(x = volume)) +
+    geom_rug() +
+  geom_histogram(color = "black", fill = "gray", bins = 16, alpha = 0.5) +
+    geom_vline(xintercept = sum_stats$mean, y = 1100, size = 2) +
+
+  geom_vline(xintercept = sum_stats$mean-sum_stats$sd, linetype = "dashed", size = 2) +
+  geom_vline(xintercept = sum_stats$mean+sum_stats$sd, linetype = "dashed", size = 2) +
+
+  coord_cartesian(ylim = c(0, 1200)) +
+    labs(x = "brain volume")
+
+```
+
+
+
+## Nonparametric statistics
+
+- Mean and sd are a good summary of the data when the distribution is `normal` (**gaussian**)
+- But suppose our distribution is not normal.
+
+## Visualize the distribution {.smaller}
+
+Suppose we have a non-normal distribution 
+
+. . . 
+
+```{r}
+#| echo: false
+not_normal <- tibble(
+    y = rexp(1000, rate = 0.5)
+)
+
+sum_stats_not <- not_normal %>%
+    summarise(n = n(), mean = mean(y), sd = sd(y))
+
+ggplot(not_normal, aes(x = y)) +
+    geom_rug(alpha = 0.1) +
+  #geom_histogram(color = "black", fill = "gray", bins = 9, alpha = 0.5) +
+  #coord_cartesian(ylim = c(0, 60)) +
+    labs(x = "y")
+
+```
+
+
+## Nonparametric statistics {.smaller}
+
+`mean()` and `sd()` are not a good summary of central tendency and variability anymore.
+
+```{r}
+#| echo: false
+
+ggplot(not_normal, aes(x = y)) +
+    geom_rug(alpha = 0.1) +
+
+  geom_histogram(color = "black", fill = "gray", bins = 15, alpha = 0.5) +
+    geom_vline(xintercept = sum_stats_not$mean, y = 1100, size = 2) +
+
+  geom_vline(xintercept = sum_stats_not$mean-sum_stats_not$sd, linetype = "dashed", size = 2) +
+  geom_vline(xintercept = sum_stats_not$mean+sum_stats_not$sd, linetype = "dashed", size = 2) +
+    labs(x = "y")
+
+```
+
+## Median {.smaller}
+
+Instead we can use the `median` as our measure of central tendency: the value below which 50% of the data points fall. 
+
+```{r}
+#| echo: false
+
+np_sum_stats <- not_normal %>% summarise(
+    n = n(), 
+    median = median(y))
+```
+
+
+
+```{r}
+#| echo: false 
+
+ggplot(not_normal, aes(x = y)) +
+    geom_rug(alpha = 0.1) +
+
+  geom_histogram(color = "black", fill = "gray", bins = 15, alpha = 0.5) +
+    geom_vline(xintercept = np_sum_stats$median, y = 1100, size = 2, color = "blue") +
+
+#   geom_vline(xintercept = np_sum_stats$lower, linetype = "dashed", size = 2) +
+#   geom_vline(xintercept = np_sum_stats$upper, linetype = "dashed", size = 2) +
+ # coord_cartesian(ylim = c(0, 60)) +
+    labs(x = "brain volume")
+
+```
+ 
+ 
+
+## IQR {.smaller}
+
+And the interquartile range (`IQR`) as a measure of the spread in our data: the difference between the 25th and 75th percentiles (50% of the data fall between these values)
+
+```{r}
+#| echo: false
+
+np_sum_stats <- not_normal %>% summarise(
+    n = n(), 
+    median = median(y),
+    lower = quantile(y, 0.25),
+    upper = quantile(y, 0.75) )
+
+```
+
+. . . 
+
+```{r}
+#| echo: false 
+
+ggplot(not_normal, aes(x = y)) +
+    geom_rug(alpha = 0.1) +
+
+  geom_histogram(color = "black", fill = "gray", bins = 15, alpha = 0.5) +
+    geom_vline(xintercept = np_sum_stats$median, y = 1100, size = 2, color = "blue") +
+
+  geom_vline(xintercept = np_sum_stats$lower, linetype = "dashed", size = 2, color = "blue") +
+  geom_vline(xintercept = np_sum_stats$upper, linetype = "dashed", size = 2, color = "blue") +
+    labs(x = "brain volume")
+
+```
+
+## Coverage interval  {.smaller}
+
+We can calculate any arbitrary coverage interval. In the sciences we often use the `95% coverage interval` — the difference between the 2.5 percentile and the 97.5 percentile — including all but 5% of the data. 
+
+```{r}
+#| echo: false
+
+np_sum_stats <- not_normal %>% summarise(
+    n = n(), 
+    median = median(y),
+    lower = quantile(y, 0.025),
+    upper = quantile(y, 0.975) )
+
+```
+
+. . . 
+
+```{r}
+#| echo: false 
+
+ggplot(not_normal, aes(x = y)) +
+    geom_rug(alpha = 0.1) +
+
+  geom_histogram(color = "black", fill = "gray", bins = 15, alpha = 0.5) +
+    geom_vline(xintercept = np_sum_stats$median, y = 1100, size = 2, color = "blue") +
+
+  geom_vline(xintercept = np_sum_stats$lower, linetype = "dashed", size = 2, color = "orange") +
+  geom_vline(xintercept = np_sum_stats$upper, linetype = "dashed", size = 2, color = "orange") +
+    labs(x = "brain volume")
+
+```
+
+# Probability distributions  {.smaller}
+
+A mathematical function that describes the probability of observing different possible values of a variable (also called `probability density function`)
+
+## Uniform probability distribution  {.smaller}
+
+All possible values are equally likely
+
+```{r}
+#| echo: false
+
+uniform_sample <- tibble(
+  y = rep(1:10, each=100)
+)
+
+# plot uniform with histogram 
+ggplot(uniform_sample, aes(x = y)) +
+
+  geom_histogram(color = "black", fill = "gray", bins = 10, alpha = 0.5)  +
+    coord_cartesian(ylim = c(0, 1))
+
+```
+
+## $p(x) = \frac{1}{max-min}$  {.smaller}
+
+The probability density function for the uniform distribution is given by this equation (with two parameters:  `min` and `max`). 
+
+```{r}
+#| echo: false
+
+uniform_sample <- tibble(
+  y = rep(1:10, each=100)
+)
+
+# plot uniform with histogram 
+ggplot(uniform_sample, aes(x = y)) +
+  geom_histogram(aes(y = after_stat(density)), color = "black", fill = "gray", bins = 10, alpha = 0.5)  +
+  geom_density(color = "red", size = 2) +
+  coord_cartesian(ylim = c(0, 1))
+```
+<!-- 
+:::: {.columns}
+::: {.column width=50%}
+```{r}
+#| echo: false
+
+uniform_sample <- tibble(
+  y = rep(1:10, each=100)
+)
+
+# plot uniform with histogram 
+ggplot(uniform_sample, aes(x = y)) +
+  geom_histogram(color = "black", fill = "gray", bins = 10, alpha = 0.5) 
+```
+
+:::
+
+::: {.column width=50%}
+
+
+```{r}
+uniform_sample %>% summarise(
+    min = min(y), 
+    max = max(y), 
+    prob = 1/(max - min))
+```
+
+
+
+height of prob density func
+```{r}
+dunif(4, min = 1, max = 10)
+```
+
+
+prob less than given value
+```{r}
+punif(4, min = 1, max = 10)
+```
+
+:::
+:::: -->
+
+
+
+
+
+## Gaussian (normal) probability distribution {.smaller}
+
+One of the most useful probability distributions for our purposes is the `Gaussian (or Normal) distribution` 
+
+```{r}
+#| echo: false
+
+normal_sample <- tibble(
+  y = rnorm(1000, mean = 0, sd = 1)
+)
+
+# plot uniform with histogram 
+ggplot(normal_sample, aes(x = y)) +
+  geom_histogram(color = "black", fill = "gray", bins = 12, alpha = 0.5) 
+```
+
+
+## $p(x) = \frac{1}{\sigma\sqrt{2\pi}}\exp\left(-\frac{1}{2}\left(\frac{x-\mu}{\sigma}\right)^{2}\right)$ {.smaller}
+
+The probability density function for the Gaussian distribution is given by the following equation, with the parameters $\mu$ (mean) and $\sigma$ (standard deviation). 
+
+```{r}
+#| echo: false
+
+# plot uniform with density
+ggplot(normal_sample, aes(x = y)) +
+  geom_histogram(aes(y = after_stat(density)), color = "black", fill = "gray", bins = 12, alpha = 0.5)  +
+  geom_density(color = "red", size = 2) + 
+  coord_cartesian(ylim = c(0, 1))
+
+```
+
+## Gaussian (normal) probability distribution {.smaller}
+
+![](/assests/images/gaussian-distribution-rule.jpg)
+
+- When computing the mean and standard deviation of a set of data, we are implicitly fitting a Gaussian distribution to the data. 
+
+
+# Sampling variability
+
+## The population {.smaller}
+
+When measuring some quantity, we are usually interested in knowning something about the `population`: the mean brain volume of Penn undergrads (the **parameter**)
+
+
+```{r}
+#| echo: false
+set.seed(45)
+population <- tibble(
+  volume = rnorm(11250, mean = 1219, sd = 161),
+  sex = NA)
+
+  p_stats <- population %>% summarise(n = n(), mean = mean(volume), sd = sd(volume))
+
+
+population %>%
+  ggplot(aes(x = volume)) +
+  geom_histogram( color = "black", fill = "white", bins = 24, alpha = 0.5) +
+        geom_vline(xintercept = p_stats$mean, color = "gold", linewidth = 2)  +
+  annotate(
+    geom = "point",
+    color = "gold",
+    shape = 8,
+    size = 10,
+    x = p_stats$mean,
+    y = 1600
+    ) +
+      annotate(geom = "text", x = p_stats$mean +200, y = 1600, label = "← parameter", size = 6) +
+      labs( y = "count", x = "brain volume", caption = "n = 11,250")
+
+
+```
+
+
+## The sample  {.smaller}
+
+But we only have a small `sample` of the  population: maybe we can measure the brain volume of 100 students
+
+```{r}
+#| echo: false
+sample <- population %>% 
+  specify(response = volume) %>% 
+  rep_slice_sample(n = 100, reps = 1000) 
+
+s_stats <- sample %>%
+  group_by(replicate) %>%
+  summarise(mean = mean(volume))
+
+use <- s_stats %>% summarise(
+  min = min(mean), rep_min = which.min(mean), max = max(mean), rep_max = which.max(mean))
+
+   population %>%
+  ggplot(aes(x = volume)) +
+  geom_histogram( color = "black", fill = "white", bins = 24, alpha = 0.5) +
+  geom_rug(data = filter(sample, replicate == use$rep_min), color = "navy") +
+  geom_vline(xintercept = p_stats$mean, color = "gold", linewidth = 2)  +
+
+  annotate(
+    geom = "point",
+    color = "gold",
+    shape = 8,
+    size = 10,
+    x = p_stats$mean,
+    y = 1600
+    ) +      annotate(geom = "text", x = p_stats$mean +200, y = 1600, label = "← parameter", size = 6) +
+    labs(y = "count", x = "brain volume", caption = "sample n = 100")
+
+ 
+
+```
+
+## Sampling variability {.smaller}
+
+Any statistic we compute from a random sample we've collected (`parameter estimate`) will be subject to sampling variability and will differ from that statistics computed on the entire population (`parameter`)
+
+```{r}
+#| echo: false
+
+ population %>%
+  ggplot(aes(x = volume)) +
+  #coord_cartesian(xlim = c(800, 1600)) +
+  geom_histogram( color = "black", fill = "white", bins = 24, alpha = 0.5) +
+  geom_rug(data = filter(sample, replicate == use$rep_min), color = "navy") +
+  geom_vline(xintercept = p_stats$mean, color = "gold", linewidth = 2)  +
+  geom_vline(xintercept = use$min, color = "navy", linewidth = 2)  +
+
+  annotate(
+    geom = "point",
+    color = "gold",
+    shape = 8,
+    size = 10,
+    x = p_stats$mean,
+    y = 1600
+    ) +
+         annotate(geom = "text", x = p_stats$mean +200, y = 1600, label = "← parameter", size = 6) +
+    annotate(geom = "text", x = use$min - 250, y = 1600, label = "parameter estimate →", color = "navy", size = 6) +
+    labs(y = "count", x = "brain volume", caption = "sample n = 100")
+ 
+
+```
+
+
+## Sampling variability {.smaller}
+
+If we took another sample of 100 students, our parameter estimate would be different. 
+
+```{r}
+#| echo: false
+
+ population %>%
+  ggplot(aes(x = volume)) +
+  #coord_cartesian(xlim = c(800, 1600)) +
+  geom_histogram( color = "black", fill = "white", bins = 24, alpha = 0.5) +
+  geom_rug(data = filter(sample, replicate == use$rep_max), color = "darkred") +
+  geom_vline(xintercept = p_stats$mean, color = "gold", linewidth = 2)  +
+  geom_vline(xintercept = use$max, color = "darkred", linewidth = 2)  +
+
+  annotate(
+    geom = "point",
+    color = "gold",
+    shape = 8,
+    size = 10,
+    x = p_stats$mean,
+    y = 1600
+    ) +
+         annotate(geom = "text", x = p_stats$mean - 200, y = 1600, label = "parameter →", size = 6) +
+    annotate(geom = "text", x = use$max + 250, y = 1600, label = "← parameter estimate 2", color = "darkred", size = 6) +
+    labs(y = "count", x = "brain volume", caption = "sample #2 n = 100")
+
+```
+
+
+## Sampling distribution {.smaller}
+
+The `sampling distribution` is the probability distribution of values our parameter estimate can take on. Constructed by taking a random sample, computing stat of interest, and repeating many times.
+
+```{r}
+#| echo: false
+
+ggplot(s_stats, aes(x = mean)) +
+    geom_histogram(bins = 18, color = "gray") +
+    #  geom_vline(xintercept = use$max, color = "darkred", linewidth = 2)  +
+    #    geom_vline(xintercept = use$min, color = "navy", linewidth = 2)  +
+
+    labs(title = "Sampling distribution of mean brain volume", x = "parameter estimate (mean)") 
+
+```
+
+## Sampling distribution {.smaller}
+
+Our first sample was on the low end of possible mean brain volume. 
+
+```{r}
+#| echo: false
+
+ggplot(s_stats, aes(x = mean)) +
+    geom_histogram(bins = 18, color = "gray") +
+    #  geom_vline(xintercept = use$max, color = "darkred", linewidth = 2)  +
+       geom_vline(xintercept = use$min, color = "navy", linewidth = 2)  +
+
+    labs(title = "Sampling distribution of mean brain volume", x = "parameter estimate (mean)") 
+
+```
+
+## Sampling distribution {.smaller}
+
+Our second sample was on the high end of possible mean brain volume. 
+
+```{r}
+#| echo: false
+
+ggplot(s_stats, aes(x = mean)) +
+    geom_histogram(bins = 18, color = "gray") +
+     geom_vline(xintercept = use$max, color = "darkred", linewidth = 2)  +
+       geom_vline(xintercept = use$min, color = "navy", linewidth = 2)  +
+
+    labs(title = "Sampling distribution of mean brain volume", x = "parameter estimate (mean)") 
+
+```
+
+
+
+## Quantifying sampling variability {.smaller}
+
+The `spread` of the sampling distribution indicates how the parameter estimate will vary from different random samples. 
+
+
+```{r}
+#| echo: false
+
+ggplot(s_stats, aes(x = mean)) +
+    geom_rug() +
+    geom_histogram(bins = 18, color = "gray")  
+```
+
+## Quantifying sampling variability {.smaller}
+
+We can quantify the spread (express our `uncertainty` on our parameter estimate) in two ways. 
+
+- Parametrically, by compute the `standard error`
+- Nonparametrically, by constructing a `confidence interval` 
+
+
+## Quantifying sampling variability {.smaller}
+
+One way is to compute the standard deviation of the sampling distribution, which has a special name: the `standard error`
+
+
+- The standard error is given by the following equation, where $\sigma$ is the standard deviation of the population and $n$ is the sample size. 
+- $\frac{\sigma}{n}$
+- In practice, the standard deviation of the population is unknown, so we use the standard deviation of the *sample* as an estimate. 
+
+## Standard error is parametric {.smaller}
+
+- Standard error is a `parametric` statistic because we assume a gaussian probaiblity distribution and compute standard error based on what happens theoretically when we sample from that theoretical distribution. 
+- $\frac{\sigma}{n}$
+
+. . . 
+
+```{r}
+#| echo: false
+
+se <- s_stats %>% summarise(samp_mean = mean(mean), samp_sd = sd(mean), se = samp_sd/sqrt(length(mean)))
+
+theoretical_ci <- se %>% mutate(lower = samp_mean-samp_sd, upper = samp_mean + samp_sd) %>% select(lower, upper)
+
+ggplot(s_stats, aes(x = mean)) +
+    #geom_rug() +
+    geom_histogram(bins = 18, color = "white", fill = "white")  +
+    shade_ci(theoretical_ci) +
+    labs(y = "count")
+
+```
+
+## Quantifying sampling variability {.smaller}
+
+Another way is to construct a `confidence interval`
+
+```{r}
+#| echo: false
+
+ci <- s_stats %>%
+  summarise(lower = quantile(mean, 0.157), upper = quantile(mean, .843))
+
+
+ggplot(s_stats, aes(x = mean)) +
+    geom_rug() +
+    geom_histogram(bins = 18, color = "gray")  +
+    shade_ci(ci) +
+    labs(y = "count")
+
+```
+
+## Practical considerations 
+
+- We don't have access to the entire population
+- We can (usually) only do our experiment once
+- So, in practice we only have `one` sample 
+
+
+# Bootstrapping
+
+To construct the sampling distribution
+
+## Bootstrapping 
+
+Instead of assuming a parametric probability distributon, we use the data themselves to approximate the underlying distribution: we `sample our sample`!
+
+
+##  Bootsrapping with `infer` 
+
+> The objective of this package is to perform statistical inference using an expressive statistical grammar that coheres with the tidyverse design framework
+
+```r
+install.packages("infer")`
+```
+
+## Let's create some data {.smaller}
+
+Suppose we collect a sample of 100 subjects and find their mean brain volume is 1200 cubic cm and sd is 100: 
+
+```{r}
+#| echo: true
+#| output-location: column
+# get a sample to work with as our "data"
+sample1 <- tibble(
+  subject_id = 1:100,
+  volume = rnorm(100, mean = 1200, sd = 100)
+)
+
+sample1 %>% head(10)
+```
+
+## Generate the sampling distribution {.smaller}
+
+Generate the sampling distribution with `specify()`, `generate()`, and `calculate()`
+
+```{r}
+#| output-location: column
+
+bootstrap_distribution <- sample1  %>% 
+  specify(response = volume) %>% 
+  generate(reps = 1000, type = "bootstrap") %>% 
+  calculate(stat = "mean")
+
+bootstrap_distribution
+```
+
+## Visualize the bootstrap distribution {.smaller}
+
+Visualize the bootstrap distribution you generated with `visualize()`
+
+```{r}
+#| output-location: column
+bootstrap_distribution %>% 
+  visualize()
+```
+
+- Visualize is a shortcut function to ggplot!
+
+## Quantify the spread with `se` {.smaller}
+
+Quantify the spread of the bootstrapped sampling distributon with `get_confidence_interval()`, and set the type to `se` for standard error. 
+
+```{r}
+#| output-location: column
+se_bootstrap <- bootstrap_distribution %>% 
+  get_confidence_interval(
+    type = "se",
+    point_estimate = mean(sample1$volume)
+  )
+
+se_bootstrap
+
+```
+
+. . . 
+
+
+```{r}
+#| output-location: column
+bootstrap_distribution %>% 
+  visualize() +
+  shade_confidence_interval(
+    endpoints = se_bootstrap
+  )
+```
+
+## Quantify the spread with `ci` {.smaller}
+
+Quantify the spread of the sampling distributon with `get_confidence_interval`, and set the type to `percentile` for **confidence interval**
+
+```{r}
+#| output-location: column
+ci_bootstrap <- bootstrap_distribution %>% 
+  get_confidence_interval(
+    type  ="percentile", 
+    level = 0.95
+  )
+
+ci_bootstrap
+```
+
+. . . 
+
+```{r}
+#| output-location: column
+
+bootstrap_distribution %>% 
+  visualize() +
+  shade_confidence_interval(
+    endpoints = ci_bootstrap
+  )
+```
+
+## More next lecture 
+
+- Let's stop there, and work through some more demos in our next lecture!

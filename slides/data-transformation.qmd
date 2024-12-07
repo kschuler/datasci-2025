@@ -1,0 +1,703 @@
+---
+title: "Data transformation"
+subtitle: "Data Science for Studying Language and the Mind"
+author: Katie Schuler
+date: 2024-09-12
+echo: true
+format: 
+    revealjs:
+        theme: dark
+        slide-number: true
+        incremental: true 
+        footer: "[https://kathrynschuler.com/datasci](https://kathrynschuler.com/datasci/)"
+---
+
+```{r}
+#| echo: false
+library(tidyverse)
+library(languageR)
+```
+
+
+## Announcements {.smaller}
+
+- Solutions to the pset are posted
+- Remember what's most efficient: 
+    - Come to class/lab and follow along = easy exams 
+
+## You are `here` {.smaller} 
+
+:::: {.columns}
+
+::: {.column width="33%"}
+
+##### Data science with R 
+::: {.nonincremental}
+- R basics
+- Data visualization
+- `Data wrangling`
+:::
+:::
+
+::: {.column width="33%"}
+
+##### Stats & Model buidling
+::: {.nonincremental}
+- Sampling distribution
+- Hypothesis testing
+- Model specification
+- Model fitting 
+- Model accuracy
+- Model reliability
+:::
+:::
+
+::: {.column width="33%"}
+
+##### More advanced 
+::: {.nonincremental}
+
+- Classification
+- Inference for regression
+- Mixed-effect models
+::: 
+:::
+
+::::
+
+## Data science workflow 
+
+![Data Science Workflow by R4DS](/assests/images/data-science-workflow.png)
+
+
+# Acknowledgements
+
+R for Data Science, Ch 4
+
+
+## Why transform 
+
+> Visualization is an important tool for generating insight, but it’s rare that you get the data in exactly the right form you need to make the graph you want. Often you’ll need to create some new variables or summaries to answer your questions with your data, or maybe you just want to rename the variables or reorder the observations to make the data a little easier to work with.
+
+--- 
+
+![Art by Allison Horst https://allisonhorst.com/](/assests/images/why-tidy-3.jpg)
+
+--- 
+
+![Art by Allison Horst https://allisonhorst.com/](/assests/images/why-tidy.jpg)
+
+--- 
+
+![Art by Allison Horst https://allisonhorst.com/](/assests/images/why-tidy-2.jpg)
+
+
+
+
+# `dplyr` 
+
+## Common structure of `dplyr` verbs 
+
+All `dplyr` functions (verbs) share a common structure:
+
+- 1st argument is always a data frame
+- Subsequent arguments typically describe which columns to operate on (via their names) 
+- Output is always a new data frame
+
+## Some `dplyr` verbs operate on {.smaller}
+
+- rows - `filter()`, `arrange()`, `distinct()`
+- columns - `mutate()`, `select()`, `rename()`
+- groups - `group_by()`, `summarise()`, `ungroup()`
+- tables - see joins and pivots (not covered)
+
+## Combine `dplyr` verbs with the pipe
+
+We can easily combine `dplyr` functions to solve complex problems:
+
+- The pipe operator, `|>` takes the output from one function and passes it as input (the first argument) to the next function.
+- There is another version of the pipe, `%>%`. See the reading on data transformation if you are curious about the difference. 
+
+# Rows
+
+## Manipualate rows with `dplyr` 
+
+| | |
+| --- | ------- | 
+| `filter()` | keep only some rows based on values of column |
+| `arrange()` | arrange rows in order you specify |
+| `distinct()` | finds unique rows | 
+
+--- 
+
+![Art by Allison Horst https://allisonhorst.com/](/assests/images/dplyr_filter.jpg)
+
+## `fliter()` {.smaller}
+
+Keep only some rows based on values of the column using logical operations
+
+```{r}
+#| echo: true
+#| code-line-numbers: "3"
+english %>%  
+    select(RTlexdec:Word) %>%
+    filter(Familiarity < 3.0)
+
+```
+
+## `fliter()` {.smaller}
+
+
+
+:::: {.columns}
+
+::: {.column width=50%}
+
+Common mistake is using `=` 
+
+
+```{r}
+#| echo: true
+#| error: true
+#| code-line-numbers: "3"
+english %>%  
+    select(RTlexdec:Word) %>%
+    filter(Word = 'zoo')
+
+```
+
+::: 
+
+::: {.column width=50%}
+
+instead of `==`
+
+```{r}
+#| echo: true
+#| code-line-numbers: "3"
+english %>%  
+    select(RTlexdec:Word) %>%
+     filter(Word == 'zoo')
+
+```
+
+::: 
+
+::::
+
+## `arrange()` {.smaller}
+
+Arranges rows in the order you specify 
+
+```{r}
+#| echo: true
+#| code-line-numbers: "3"
+english %>%  
+    select(RTlexdec:Word) %>%
+    arrange(Word)
+
+```
+
+## `arrange()` {.smaller}
+
+
+:::: {.columns}
+
+::: {.column width=50%}
+
+Will use ascending order
+
+
+```{r}
+#| echo: true
+#| code-line-numbers: "3"
+english %>%  
+    select(RTlexdec:Word) %>%
+    arrange(Word)
+
+```
+
+::: 
+
+::: {.column width=50%}
+
+Unless you specify descending 
+
+```{r}
+#| echo: true
+#| code-line-numbers: "3"
+english %>%  
+    select(RTlexdec:Word) %>%
+    arrange(desc(Word))
+
+```
+
+::: 
+
+::::
+
+## `distinct()` {.smaller}
+
+Finds unique rows in a dataset; no arguments removes duplicates in dataset (if any exist)
+
+```{r}
+#| echo: true
+#| code-line-numbers: "3"
+english %>%  
+    select(RTlexdec:Word) %>%
+    distinct(Word)
+
+```
+
+## `distinct()` {.smaller}
+
+You can optionally specify columns to find unique combinations 
+
+:::: {.columns}
+
+::: {.column width=50%}
+
+Returns only the columns you specify
+
+```{r}
+#| echo: true
+#| code-line-numbers: "3"
+english %>%  
+    select(RTlexdec:Word) %>%
+    distinct(Word)
+
+```
+
+::: 
+
+::: {.column width=50%}
+
+Unless you add `.keep_all=TRUE` argument
+
+```{r}
+#| echo: true
+#| code-line-numbers: "3"
+english %>%  
+    select(RTlexdec:Word) %>%
+    distinct(Word, .keep_all=TRUE)
+
+```
+
+::: 
+
+::::
+
+
+
+
+
+
+# Columns
+
+## Manipualate columns with `dplyr` 
+
+| | |
+| --- | ------- | 
+| `mutate()` | adds new columns calculated from existing columns |
+| `select()` | selects columns based on their names |
+| `rename()` | renames some columns | 
+
+
+
+
+## `select()` {.smaller}
+
+Select columns based on their names 
+
+```{r}
+#| echo: true
+#| code-line-numbers: "2"
+english %>%  
+    select(RTlexdec, Familiarity, AgeSubject)
+
+```
+
+
+## `select()` {.smaller}
+
+Use `:` to select everything from one column to another
+
+```{r}
+#| echo: true
+#| code-line-numbers: "2"
+english %>%  
+    select(RTlexdec:AgeSubject)
+
+```
+
+## `select()` {.smaller}
+
+Use logical operators like `&` or `!` to identify the subset of columns you want to select
+
+```{r}
+#| echo: true
+#| code-line-numbers: "2"
+english %>%  
+    select(!RTlexdec:AgeSubject)
+
+```
+
+## `select()` {.smaller}
+
+You can rename columns when you select them
+
+```{r}
+#| echo: true
+#| code-line-numbers: "2"
+english %>%  
+    select(RTlex = RTlexdec, Familiarity, AgeSubject)
+
+```
+
+## `rename()` {.smaller}
+
+Keep all columns but rename one or more
+
+```{r}
+#| echo: true
+#| code-line-numbers: "2"
+english %>%  
+    rename(RTlex = RTlexdec, WordCat = WordCategory)
+
+```
+
+--- 
+
+![Art by Allison Horst https://allisonhorst.com/](/assests/images/dplyr_mutate.jpg)
+
+## `mutate()` {.smaller}
+
+Add new columns that are calculated from exising columns 
+
+
+```{r}
+#| echo: true
+#| code-line-numbers: "3"
+english %>%  
+    select(RTlexdec:AgeSubject) %>%
+    mutate(RTdiff = RTlexdec - RTnaming)
+
+```
+
+
+## `mutate()` {.smaller}
+
+Columns are added to the right by default, but you can specify where you'd like to add them by number or name 
+
+:::: {.columns}
+
+::: {.column width=50%}
+
+With `.after` 
+
+```{r}
+#| echo: true
+#| code-line-numbers: "5"
+english %>%  
+    select(RTlexdec:Familiarity) %>%
+    mutate(
+        RTdiff = RTlexdec - RTnaming,
+        .after = RTnaming
+    )
+
+```
+
+::: 
+
+::: {.column width=50%}
+
+With `.before` 
+
+```{r}
+#| echo: true
+#| code-line-numbers: "5"
+english %>%  
+    select(RTlexdec:Familiarity) %>%
+    mutate(
+        RTdiff = RTlexdec - RTnaming,
+        .before = RTlexdec
+    )
+
+```
+
+::: 
+
+::::
+
+
+# Group and summarise 
+
+## Group and summarise with `dplyr` 
+
+| | |
+| --- | ------- | 
+| `group_by()` | used to divide your dataset into groups |
+| `summarise()` | often used after `group_by()` to calculate summary statistics on grouped data |
+| `ungroup()` | used to remove the grouping | 
+
+## `group_by()` {.smaller}
+
+Divide your dataset into groups 
+
+```{r}
+#| echo: true
+#| code-line-numbers: "3"
+english %>%  
+    select(RTlexdec, Familiarity, AgeSubject) %>%
+    group_by(AgeSubject)
+
+```
+
+## `group_by()` {.smaller}
+
+Can group by more than one variable
+
+```{r}
+#| echo: true
+#| code-line-numbers: "3"
+english %>%  
+    select(RTlexdec, Familiarity, AgeSubject, Voice) %>%
+    group_by(AgeSubject, Voice)
+
+```
+
+## `group_by()` {.smaller}
+
+Does not change original df, adds groups attribute
+
+
+:::: {.columns}
+
+::: {.column width=50%}
+
+```{r}
+#| echo: true
+#| code-line-numbers: "3"
+grouped_english <- english %>%  
+    select(RTlexdec, Familiarity, AgeSubject) %>%
+    group_by(AgeSubject)
+
+grouped_english
+```
+
+::: 
+
+::: {.column width=50%}
+
+
+```{r}
+attr(english, "groups")
+```
+
+```{r}
+attr(grouped_english, "groups")
+```
+
+::: 
+
+::::
+
+
+. . . 
+
+
+## `summarise()` {.smaller}
+
+Often used after `group_by()` to calculate summary stats on grouped data 
+
+```{r}
+#| echo: true
+#| code-line-numbers: "4"
+summary_english <- english %>%  
+    select(RTlexdec, Familiarity, AgeSubject) %>%
+    group_by(AgeSubject) %>%
+    summarise(n = n())
+
+summary_english
+```
+
+## `summarise()` {.smaller}
+
+You can add any number of summary stats 
+
+```{r}
+#| echo: true
+#| code-line-numbers: "5-6"
+summary_english <- english %>%  
+    select(RTlexdec, Familiarity, AgeSubject, Voice) %>%
+    group_by(AgeSubject, Voice) %>%
+    summarise(
+        n = n(), 
+        mean = mean(RTlexdec)
+    )
+
+summary_english
+```
+
+- Note that the returned dataframe is grouped!
+
+## `summarise()` {.smaller}
+
+Use the `.groups` argument to drop or keep grouping in returned dataframe
+
+:::: {.columns}
+
+::: {.column width=50%}
+
+Drop all groups
+
+```{r}
+#| echo: true
+#| code-line-numbers: "7"
+summary_english <- english %>%  
+    select(RTlexdec, Familiarity, AgeSubject, Voice) %>%
+    group_by(AgeSubject, Voice) %>%
+    summarise(
+        n = n(), 
+        mean = mean(RTlexdec), 
+        .groups = "drop"
+    )
+
+summary_english
+```
+
+::: 
+
+::: {.column width=50%}
+
+Keep all groups
+
+```{r}
+#| echo: true
+#| code-line-numbers: "7"
+summary_english <- english %>%  
+    select(RTlexdec, Familiarity, AgeSubject, Voice) %>%
+    group_by(AgeSubject, Voice) %>%
+    summarise(
+        n = n(), 
+        mean = mean(RTlexdec), 
+        .groups = "keep"
+    )
+
+summary_english
+```
+
+::: 
+
+::::
+
+## `summarise()`  {.smaller}
+
+Or use the new `.by` argument **instead of** group_by() to return an ungrouped dataframe
+
+:::: {.columns}
+
+::: {.column width=50%}
+
+Drop all groups
+
+```{r}
+#| echo: true
+#| code-line-numbers: "3,7"
+summary_english <- english %>%  
+    select(RTlexdec, Familiarity, AgeSubject, Voice) %>%
+    group_by(AgeSubject, Voice) %>%
+    summarise(
+        n = n(), 
+        mean = mean(RTlexdec), 
+        .groups = "drop"
+    )
+
+summary_english
+```
+
+::: 
+
+::: {.column width=50%}
+
+Or just use by!
+
+```{r}
+#| echo: true
+#| code-line-numbers: "6"
+summary_english <- english %>%  
+    select(RTlexdec, Familiarity, AgeSubject, Voice) %>%
+    summarise(
+        n = n(), 
+        mean = mean(RTlexdec), 
+        .by = c(AgeSubject, Voice)
+    )
+
+summary_english
+```
+
+::: 
+
+::::
+
+
+## `ungroup()`  {.smaller}
+
+Can also remove grouping after with `ungroup()`
+
+:::: {.columns}
+
+::: {.column width=50%}
+
+Drop all groups
+
+```{r}
+#| echo: true
+#| code-line-numbers: "7"
+summary_english <- english %>%  
+    select(RTlexdec, Familiarity, AgeSubject, Voice) %>%
+    group_by(AgeSubject, Voice) %>%
+    summarise(
+        n = n(), 
+        mean = mean(RTlexdec), 
+        .groups = "drop"
+    )
+
+summary_english
+```
+
+::: 
+
+::: {.column width=50%}
+
+Or ungroup after
+
+```{r}
+#| echo: true
+#| code-line-numbers: "8"
+summary_english <- english %>%  
+    select(RTlexdec, Familiarity, AgeSubject, Voice) %>%
+    summarise(
+        n = n(), 
+        mean = mean(RTlexdec), 
+        .by = c(AgeSubject, Voice)
+    ) %>% 
+    ungroup()
+
+summary_english
+```
+
+::: 
+
+::::
+
+
+
+# More advanced 
+
+## Not covered, but good to know
+
+There are a few more advanced techniques for transforming and tidying data that we won't cover now, but might be useful to you in your own research.
+
+- **joins** - sometimes you have more than one dataset that you want to join into one. `dplyr` also has functions for handling that. [Learn more about joins](https://r4ds.hadley.nz/joins)
+- **pivots** - sometimes your data doesn't arrive in the tidy data form.  The `tidyr` package can help with  `pivot_longer()` and `pivot_wider()`. [Learn more about pivots](https://r4ds.hadley.nz/data-tidy)

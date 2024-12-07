@@ -1,0 +1,257 @@
+---
+title: "Week 07: Model Specification"
+subtitle: "Handout to practice specifying"
+author: Katie Schuler
+date: 2024-10-10
+echo: true
+format: 
+    revealjs:
+        chalkboard: true
+        slide-number: true
+        incremental: true 
+---
+
+--- 
+
+```{dot}
+//|echo: false
+
+digraph G {
+
+rankdir=LR;  // Left to Right layout
+
+  // Column 1: x values
+  x1 [label="x1"];
+  x2 [label="x2"];
+  x3 [label="x3"];
+
+  // Column 2: model
+  model [label="Linear model", shape=box, width=1.5, height=1, style = filled];
+
+  // Column 3: y value
+  y [label="y"];
+
+  // Keep x values in the same rank
+  { rank=same; x1; x2; x3; }
+
+  // Keep alignment using invisible edges
+  x1 -> model;
+  x2 -> model;
+  x3 -> model;
+  x4 -> model;
+  x5 -> model;
+
+  model -> y;  // Connect the model to y
+}
+
+```
+
+--- 
+
+```{dot}
+//|echo: false
+
+digraph G {
+
+rankdir=LR;  // Left to Right layout
+
+  // Column 1: x values
+  x1 [label="x1"];
+  x2 [label="x2"];
+  x3 [label="x3"];
+
+  // Column 2: model
+  model [label="Linear model", shape=box, width=1.5, height=1, style = filled];
+
+  // Column 3: y value
+  y [label="y"];
+
+  // Keep x values in the same rank
+  { rank=same; x1; x2; x3; }
+
+  // Keep alignment using invisible edges
+  x1 -> model;
+  x2 -> model;
+  x3 -> model;
+  x4 -> model;
+  x5 -> model;
+
+  model -> y;  // Connect the model to y
+}
+
+```
+
+--- 
+
+```{dot}
+//|echo: false
+
+digraph G {
+
+rankdir=LR;  // Left to Right layout
+
+  // Column 1: x values
+  x1 [label="x1"];
+  x2 [label="x2"];
+  x3 [label="x3"];
+
+  // Column 2: model
+  model [label="Linear model", shape=box, width=1.5, height=1, style = filled];
+
+  // Column 3: y value
+  y [label="y"];
+
+  // Keep x values in the same rank
+  { rank=same; x1; x2; x3; }
+
+  // Keep alignment using invisible edges
+  x1 -> model;
+  x2 -> model;
+  x3 -> model;
+  x4 -> model;
+  x5 -> model;
+
+  model -> y;  // Connect the model to y
+}
+
+```
+
+--- 
+
+```{dot}
+//|echo: false
+
+digraph G {
+
+rankdir=LR;  // Left to Right layout
+
+  // Column 1: x values
+  x1 [label="x1"];
+  x2 [label="x2"];
+  x3 [label="x3"];
+
+  // Column 2: model
+  model [label="Linear model", shape=box, width=1.5, height=1, style = filled];
+
+  // Column 3: y value
+  y [label="y"];
+
+  // Keep x values in the same rank
+  { rank=same; x1; x2; x3; }
+
+  // Keep alignment using invisible edges
+  x1 -> model;
+  x2 -> model;
+  x3 -> model;
+  x4 -> model;
+  x5 -> model;
+
+  model -> y;  // Connect the model to y
+}
+
+```
+
+--- 
+
+```{dot}
+//|echo: false
+
+digraph G {
+
+rankdir=LR;  // Left to Right layout
+
+  // Column 1: x values
+  x1 [label="x1"];
+  x2 [label="x2"];
+  x3 [label="x3"];
+
+  // Column 2: model
+  model [label="Linear model", shape=box, width=1.5, height=1, style = filled];
+
+  // Column 3: y value
+  y [label="y"];
+
+  // Keep x values in the same rank
+  { rank=same; x1; x2; x3; }
+
+  // Keep alignment using invisible edges
+  x1 -> model;
+  x2 -> model;
+  x3 -> model;
+  x4 -> model;
+  x5 -> model;
+
+  model -> y;  // Connect the model to y
+}
+
+```
+
+--- 
+
+```{dot}
+//|echo: false
+
+digraph G {
+
+rankdir=LR;  // Left to Right layout
+
+  // Column 1: x values
+  x1 [label="x1"];
+  x2 [label="x2"];
+  x3 [label="x3"];
+
+  // Column 2: model
+  model [label="Linear model", shape=box, width=1.5, height=1, style = filled];
+
+  // Column 3: y value
+  y [label="y"];
+
+  // Keep x values in the same rank
+  { rank=same; x1; x2; x3; }
+
+  // Keep alignment using invisible edges
+  x1 -> model;
+  x2 -> model;
+  x3 -> model;
+  x4 -> model;
+  x5 -> model;
+
+  model -> y;  // Connect the model to y
+}
+
+```
+
+---
+
+```{dot}
+//|echo: false
+
+digraph G {
+
+rankdir=LR;  // Left to Right layout
+
+  // Column 1: x values
+  x1 [label="x1"];
+  x2 [label="x2"];
+  x3 [label="x3"];
+
+  // Column 2: model
+  model [label="Linear model", shape=box, width=1.5, height=1, style = filled];
+
+  // Column 3: y value
+  y [label="y"];
+
+  // Keep x values in the same rank
+  { rank=same; x1; x2; x3; }
+
+  // Keep alignment using invisible edges
+  x1 -> model;
+  x2 -> model;
+  x3 -> model;
+  x4 -> model;
+  x5 -> model;
+
+  model -> y;  // Connect the model to y
+}
+
+```

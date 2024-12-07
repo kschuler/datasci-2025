@@ -1,0 +1,792 @@
+---
+title: "R basics"
+author: Katie Schuler
+subtitle: "Data Science for Studying Language and the Mind"
+date: 2024-08-29
+echo: true
+format: 
+    revealjs:
+        theme: dark
+        incremental: true
+        footer: "[https://kathrynschuler.com/datasci](/index.html)"
+
+---
+
+## Announcements
+
+- Course is full
+- Thursday 3:30 moved to 5:15pm 
+- Please join the waitlist 
+- Please fill out Who's in class 
+
+## You are `here` {.smaller} 
+
+:::: {.columns}
+
+::: {.column width="33%"}
+
+##### Data science with R 
+::: {.nonincremental}
+- `R basics`
+- Data visualization 
+- Data wrangling 
+:::
+:::
+
+::: {.column width="33%"}
+
+##### Stats & Model buidling
+::: {.nonincremental}
+- Sampling distribution
+- Hypothesis testing
+- Model specification
+- Model fitting 
+- Model accuracy
+- Model reliability
+:::
+:::
+
+::: {.column width="33%"}
+
+##### More advanced 
+::: {.nonincremental}
+
+- Classification
+- Inference for regression
+- Mixed-effect models
+::: 
+:::
+
+::::
+
+# Today
+
+Let's find what we need for today (see course website)
+
+## Basic concepts {.smaller}
+
+- `Expressions`: fundamental building blocks of programming 
+- `Objects`: allow us to store stuff, created with assignment operator
+- `Names`: names w give objects must be letters, numbers, ., or _
+- `Attributes`: allow us to attach arbitrary metadata to objects
+- `Functions`: take some input, perform some computation, and return some output
+- `Environment`: collection of all objects we defined in current R session
+- `Packages`: collections of functions, data, and documentation bundled together in R
+- `Comments`: notes you leave for yourself, not evaluated
+- `Messages`: notes R leaves for you (FYI, warning, error)
+
+
+## Important functions 
+#### Objects
+- `str(x)` - returns summary of object's structure
+- `typeof(x)` - returns object's data type
+- `length(x)` - returns object's length
+- `attributes(x)` - returns list of object's attributes
+
+## Important functions  
+#### Environment
+
+- `ls()` - list all variables in environment
+- `rm(x)` - remove x variable from environment
+- `rm(list = ls())` - remove all variables from environment
+
+## Important function 
+#### Packages
+
+- `install.packages()` to install packages
+- `library()` to load package into current R session.
+- `data()` to load data from package into environment
+- `sessionInfo()` - version info, packages for current R session 
+
+## Important functions  
+####  Help
+
+- `?mean` - get help with a function
+- `help('mean')` - search help files for word or phrase
+- `help(package='tidyverse')` - find help for a package 
+
+# Vectors
+
+
+## Vectors
+
+are fundamental data structures in R. There are two types:
+
+- **atomic vectors** - elements of the same data type
+- **lists** - elements refer to any object 
+
+
+
+
+## Atomic vectors 
+
+Atomic vectors can be one of six **data types**:
+
+|`typeof(x)` | examples |
+|-|---|
+| double | 3, 3.32 |
+| integer | 1L, 144L |
+| character | "hello", 'hello, world!'|
+| logical | TRUE, F |
+
+. . . 
+
+*atomic* because they must contain only one type
+
+## Atomic vectors 
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+`double` 
+
+```{r}
+typeof(3.34)
+```
+
+`integer` 
+
+```{r}
+typeof(3L)
+```
+
+
+:::
+
+::: {.column width="50%"}
+`character` 
+
+```{r}
+typeof('hello, world!')
+```
+
+`logical` 
+
+```{r}
+typeof(TRUE)
+```
+
+:::
+
+::::
+
+
+
+## Create a vector
+
+
+with `c()` for `concatenate`
+
+```{r}
+
+c(2,4,6)
+c("hello", "world", "!")
+c(T, F, T)
+c("hello", c(2, 3))
+```
+
+
+## Create a vector
+
+with sequences `seq()` or repetitions `rep()`
+
+```{r}
+# sequence of integers have a special shorthand
+6:10
+```
+
+. . . 
+
+```{r}
+# sequence from, to, by 
+seq(from=3, to=5, by=0.5)
+```
+
+. . . 
+
+```{r}
+# rep(x, times = 1, each = 1)
+rep(c(1,0), times = 4)
+```
+
+. . . 
+
+```{r}
+# rep(x, times = 1, each = 1)
+rep(c(1,0), each = 4)
+```
+
+## Check data type
+
+with `typeof(x)` - returns the type of vector x
+
+```{r}
+typeof(3)
+typeof(3L)
+typeof("three")
+typeof(TRUE)
+
+```
+
+## Check data type
+
+with `is.*(x)` - returns `TRUE` if x has type `*`
+
+```{r}
+is.double(3)
+is.integer(3L)
+is.character("three")
+is.logical(TRUE)
+```
+
+## Coercion, implicit
+
+If you try to include elements of different types, R will coerce them into the same type without warning (**implicit coercion**)
+
+```{r}
+x <- c(1, 2, "three", 4, 5 )
+x
+typeof(x)
+```
+
+## Coercion, explicit
+
+You can also use **explict coercion** to change a vector to another data type with `as.*()`
+
+```{r}
+x <- c(1, 0 , 1, 0)
+as.logical(x)
+```
+
+. . . 
+
+::: aside
+hierarchy: character > double > integer > logical 
+:::
+
+# More complex structures 
+
+## More complex structures {.smaller}
+
+Some more complex data structures are **built from atomic vectors** by adding **attributes**:
+
+| Structure | Description | 
+| -- | -------- |
+| `matrix` | vector with `dim` attribute representing 2 dimensions
+| `array` | vector with `dim` attribute representing n dimensions
+| `data.frame` | a named list of vectors (of equal length) with attributes for `names` (column names), `row.names`, and `class="data.frame"` |
+
+## Create more complex structures 
+
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+`matrix` 
+
+```{r}
+matrix(0, nrow=2, ncol=3)
+```
+
+
+
+
+`data.frame` 
+
+```{r}
+data.frame(x=c(1,2,3), y=c('a','b','c'))
+```
+
+
+:::
+
+::: {.column width="50%"}
+
+`array` 
+
+```{r}
+array(0, dim=c(2,3,2))
+```
+
+
+:::
+
+::::
+
+# Operations
+
+## Basic math operators
+
+
+| Operator | Operation |
+| -- | -- |
+| `()` | Parentheses | 
+| `^` | Exponent | 
+| `*` | Multiply | 
+| `/` | Divide | 
+| `+` | Add |
+ `-` | Subtract |
+
+
+## Basic math operations
+
+follow the order of operations you expect (PEMDAS)
+
+
+```{r}
+# multiplication takes precedence
+2 + 3 * 10
+
+# we can use paratheses to be explicit
+(2 + 3) * 10 
+```
+
+
+
+
+## Comparison operators
+
+| Operator | Comparison | 
+| -- | -- |
+| `x < y` | less than |
+| `x > y` | greater than | 
+| `x <= y` | less than or equal to | 
+| `x >= y` | greater than or equal to |
+| `x != y` | not equal to | 
+| `x == y` | equal to | 
+
+## Comparison operators
+
+
+```{r}
+x <- 2
+y <- 3
+```
+
+. . . 
+
+<br> 
+
+```{r}
+x < y
+x > y 
+x != y
+x == y
+```
+
+## Logical operators 
+
+| Operator | Operation | 
+| -- | -- | 
+| `x | y` | or |
+| `x & y` | and |
+| `!x` | not |
+| `any()` | true if any element meets condition | 
+|`all()` | true if all elements meet condition | 
+| `%in%` | true if any element is in following vector | 
+
+## Logical operators 
+
+```{r}
+x <- TRUE
+y <- FALSE
+```
+
+. . . 
+
+<br> 
+
+```{r}
+x | y
+x & y 
+!x 
+any(c(x,y))
+all(c(x,y))
+```
+
+## Operations are vectorized 
+
+Almost all operations (and many functions) are vectorized 
+
+. . .
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+`math` 
+
+```{r}
+c(1, 2, 3) + c(4, 5, 6)
+c(1, 2, 3) / c(4, 5, 6)
+c(1, 2, 3) * 10 
+c(1, 2, 30) > 10
+```
+
+
+
+:::
+
+::: {.column width="50%"}
+`logical` 
+
+```{r}
+x <- c(TRUE, FALSE, FALSE)
+y <- c(TRUE, TRUE, FALSE)
+z <- TRUE
+```
+
+```{r}
+x | y
+x & y 
+x | z 
+x & z 
+```
+
+:::
+
+::::
+
+
+
+## Operator coercion 
+
+Operators and functions will also coerce values when needed (and without warning)
+
+```{r}
+5.6 + 2L
+10 + FALSE 
+log(1)
+log(TRUE)
+```
+
+
+
+
+# Subsetting 
+
+## Subsetting
+
+> Subsetting is a natural complement to str(). While str() shows you all the pieces of any object (its structure), subsetting allows you to pull out the pieces that you’re interested in. ~ Hadley Wickham, Advanced R
+
+`str()`
+
+```{r}
+x <- c("hello", "world", "!")
+str(x)
+
+y <- c(1, 2, 3, 4, 5)
+str(y)
+```
+
+## Subsetting
+
+There are three operators for subsetting objects: 
+
+- `[` - *subsets* (one or more) elements
+- `[[` and `$` - *extracts* a single element 
+
+---
+## Subset multiple elements with `[` {.smaller}
+
+| Code | Returns |
+| ---- | -------- |
+| `x[c(1,2)]` | positive integers select elements at specified indexes |
+| `x[-c(1,2)]` | negative integers select all but elements at specified indexes |
+|`x[c("x", "y")]` | select elements by name, if elements are named |
+| `x[]` |  nothing returns the original object |
+| `x[0]` | zero returns a zero-length vector |
+| `x[c(TRUE, TRUE)]` | select elements where corresponding logical value is TRUE |
+
+## Subset multiple elements with `[` {.smaller}
+
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+`atomic vector`
+
+```{r}
+x <- c("hello", "world", "1")
+```
+
+```{r}
+x[c(1,2)]
+x[-c(1,2)]
+x[]
+
+```
+
+
+
+
+:::
+
+::: {.column width="50%"}
+
+`data.frame`
+
+```{r}
+y <- data.frame(
+        this = c(1, 2,3), 
+        that = c("a", "b", "c"),
+        theother = c(4, 5, 6)
+        )
+```
+
+```{r}
+
+y[c(1,2)]
+y[-c(1,2)]
+y[c("this")]
+
+```
+
+
+:::
+
+:::: 
+
+
+
+## 3 ways to extract a single element {.smaller}
+
+| Code | Returns |
+| ---- | -------- |
+| `[[2]]` | a single positive integer (index) |
+| `[['name']]` | a single string  |
+| `x$name` | the `$` operator is a useful shorthand for `[['name']]` |
+
+## 3 ways to extract a single element {.smaller}
+
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+`atomic vector`
+
+```{r}
+x <- c("hello", "world", "1")
+```
+
+```{r}
+x[[1]]
+x[[2]]
+x[[3]]
+
+```
+
+
+
+
+:::
+
+::: {.column width="50%"}
+
+`data.frame`
+
+```{r}
+y <- data.frame(
+        this = c(1, 2,3), 
+        that = c("a", "b", "c"),
+        theother = c(4, 5, 6)
+        )
+```
+
+```{r}
+
+y[[1]]
+y[["that"]]
+y$that
+
+```
+
+
+:::
+
+:::: 
+
+
+
+## R has many built-in functions
+
+```{r}
+x <- c(1, -2, 3)
+```
+
+. . . 
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+Some are vectorized
+
+```{r}
+log(x)
+abs(x)
+round(x, 2)
+
+```
+
+
+:::
+
+::: {.column width="50%"}
+
+Some are not
+
+```{r}
+mean(x)
+max(x)
+min(x)
+```
+
+
+:::
+
+:::: 
+
+
+
+
+
+
+## Missing values {.smaller}
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+`NA`
+
+- used to represent missing or unknown elements in vectors
+- Note that `NA` is contageous: expressions including `NA` usually return `NA`
+- Check for `NA` values with `is.na()`
+
+```{r}
+x <- c(1, NA, 3)
+is.na(x)
+length(x)
+mean(x)
+```
+
+
+
+:::
+
+::: {.column width="50%"}
+
+`NULL` 
+
+- used to represent an empty or absent vector of arbitrary type
+- `NULL` is its own special type and always has length zero and `NULL` attributes
+- Check for `NULL` values with `is.null()`
+
+```{r}
+x <- c()
+is.null(x)
+length(x)
+mean(x)
+```
+
+
+:::
+
+::::
+
+
+
+
+
+## Programming {.smaller}
+
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+`functions`
+
+are reusable pieces of code that take some input, perform some task or computation, and return an output
+
+
+```r
+function(inputs){
+    # do something
+    return(output)
+}
+```
+
+
+:::
+
+::: {.column width="50%"}
+
+`control flow` 
+
+refers to managing the order in which expressions are executed in a program
+
+- `if`...`else` - if something is true, do this; otherwise do that
+- `for` loops - repeat code a specific number of times 
+- `while` loops - repeat code as long as certain conditions are true
+- `break` - exit a loop early
+- `next` - skip to next iteration in a loop 
+
+:::
+
+::::
+
+# Subsetting quirks 
+
+If we have time 
+
+## Notes on `[` with higher dim objects 
+
+```{r}
+m <- matrix(1:6, nrow=2, ncol=3)
+m
+```
+
+```{r}
+# separate dimensions by comma 
+m[1, 2]
+
+# omitted dim return all from that dim 
+m[2, ]
+m[ , 2]
+
+```
+
+## Notes on `[[` and `$`: {.smaller}
+
+both `[[` and `[` work for vectors; use `[[`
+
+```{r}
+x <- c(1, -2, 3)
+x[[1]]
+x[1]
+```
+
+`$` does partial matching without warning
+
+```{r}
+df <- data.frame(
+        this = c(1, 2,3), 
+        that = c("a", "b", "c"),
+        theother = c(4, 5, 6)
+        )
+```
+
+```{r}
+df[['theo']]
+df$theo
+```
+
+# Questions?
+
+Have a great weekend!

@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.56">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Katie Schuler">
+<meta name="dcterms.date" content="2024-09-12">
+
+<title>Lab 3: Data wrangling – DataSci for Lang &amp; Mind</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../include/webex.css">
+</head>
+
+<body class="nav-sidebar docked">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">
+      DataSci for Lang &amp; Mind
+      </li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">DataSci for Lang &amp; Mind</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Syllabus</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#resources" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Resources</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../index.html#materials" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Materials</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#study-guides" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Study guides</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#problem-sets" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Problem sets</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#exams" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exams</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#lab-exercises" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab exercises</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#schedule" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Schedule</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#materials-from-lab" id="toc-materials-from-lab" class="nav-link active" data-scroll-target="#materials-from-lab">Materials from lab</a></li>
+  <li><a href="#tidy" id="toc-tidy" class="nav-link" data-scroll-target="#tidy"><span class="header-section-number">1</span> Tidy</a>
+  <ul class="collapse">
+  <li><a href="#tidyverse" id="toc-tidyverse" class="nav-link" data-scroll-target="#tidyverse"><span class="header-section-number">1.1</span> Tidyverse</a></li>
+  <li><a href="#purrr" id="toc-purrr" class="nav-link" data-scroll-target="#purrr"><span class="header-section-number">1.2</span> purrr</a></li>
+  <li><a href="#tibbles" id="toc-tibbles" class="nav-link" data-scroll-target="#tibbles"><span class="header-section-number">1.3</span> Tibbles</a></li>
+  </ul></li>
+  <li><a href="#import" id="toc-import" class="nav-link" data-scroll-target="#import"><span class="header-section-number">2</span> Import</a></li>
+  <li><a href="#transform" id="toc-transform" class="nav-link" data-scroll-target="#transform"><span class="header-section-number">3</span> Transform</a></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="lab-03.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Lab 3: Data wrangling</h1>
+<p class="subtitle lead">Not graded, just practice</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Katie Schuler </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">September 12, 2024</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="materials-from-lab" class="level1 unnumbered">
+<h1 class="unnumbered">Materials from lab</h1>
+<ul>
+<li><a href="../assests/pdfs/lab-03-brittany.pdf">Brittany’s slides</a></li>
+<li><a href="../assests/pdfs/lab-03-wesley.pdf">Wesley’s slides</a></li>
+</ul>
+</section>
+<section id="tidy" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Tidy</h1>
+<section id="tidyverse" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="tidyverse"><span class="header-section-number">1.1</span> Tidyverse</h2>
+<ol type="1">
+<li><p>What is the relationship between tidyverse and readr?</p>
+<div id="radio_HAHUFTMOLO" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_HAHUFTMOLO" value=""> <span>tidyverse is a package in the readr family of packages</span></label><label><input type="radio" autocomplete="off" name="radio_HAHUFTMOLO" value="answer"> <span>readr is a package in the tidyverse family of packages</span></label><label><input type="radio" autocomplete="off" name="radio_HAHUFTMOLO" value=""> <span>tidyverse and readr are two unrelated packages</span></label><label><input type="radio" autocomplete="off" name="radio_HAHUFTMOLO" value=""> <span>tidyverse and reader are two names for the same package</span></label>
+</div></li>
+<li><p>In the tidyverse, what does “tidy data” refer to?</p>
+<div id="radio_SQWIBASYLQ" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_SQWIBASYLQ" value=""> <span>any data we load into the tidyverse</span></label><label><input type="radio" autocomplete="off" name="radio_SQWIBASYLQ" value=""> <span>a dataset with no missing values</span></label><label><input type="radio" autocomplete="off" name="radio_SQWIBASYLQ" value="answer"> <span>a standard way to organize a dataset</span></label><label><input type="radio" autocomplete="off" name="radio_SQWIBASYLQ" value=""> <span>the process of cleaning a dataset</span></label>
+</div></li>
+<li><p>What is the purpose of the <code>purrr</code> package?</p>
+<div id="radio_HMINDHSMMQ" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_HMINDHSMMQ" value=""> <span>Data visualization</span></label><label><input type="radio" autocomplete="off" name="radio_HMINDHSMMQ" value=""> <span>Data wrangling</span></label><label><input type="radio" autocomplete="off" name="radio_HMINDHSMMQ" value=""> <span>Data importing</span></label><label><input type="radio" autocomplete="off" name="radio_HMINDHSMMQ" value="answer"> <span>Functional programming</span></label><label><input type="radio" autocomplete="off" name="radio_HMINDHSMMQ" value=""> <span>All of the above</span></label>
+</div></li>
+<li><p>What is the primary purpose of the <code>readr</code> package?</p>
+<div id="radio_ZMRBFZHRIM" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_ZMRBFZHRIM" value=""> <span>Data visualization</span></label><label><input type="radio" autocomplete="off" name="radio_ZMRBFZHRIM" value=""> <span>Data wrangling</span></label><label><input type="radio" autocomplete="off" name="radio_ZMRBFZHRIM" value="answer"> <span>Data importing</span></label><label><input type="radio" autocomplete="off" name="radio_ZMRBFZHRIM" value=""> <span>Functional programming</span></label><label><input type="radio" autocomplete="off" name="radio_ZMRBFZHRIM" value=""> <span>All of the above</span></label>
+</div></li>
+<li><p>Which of the following returned this message?</p>
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.2     ✔ readr     2.1.4
+✔ forcats   1.0.0     ✔ stringr   1.5.0
+✔ ggplot2   3.5.0     ✔ tibble    3.2.1
+✔ lubridate 1.9.2     ✔ tidyr     1.3.0
+✔ purrr     1.0.2     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+<div id="radio_UBIIZRQVSG" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_UBIIZRQVSG" value="answer"> <span><code>library(tidyverse)</code></span></label><label><input type="radio" autocomplete="off" name="radio_UBIIZRQVSG" value=""> <span><code>family(tidyverse)</code></span></label><label><input type="radio" autocomplete="off" name="radio_UBIIZRQVSG" value=""> <span><code>library.collection(tidyverse)</code></span></label><label><input type="radio" autocomplete="off" name="radio_UBIIZRQVSG" value=""> <span><code>library(tidyverse, report=TRUE)</code></span></label>
+</div></li>
+</ol>
+</section>
+<section id="purrr" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="purrr"><span class="header-section-number">1.2</span> purrr</h2>
+<p>Suppose we have the following tibble, stored with the variable <code>df</code>.</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 3
+      x     y     z
+  &lt;int&gt; &lt;int&gt; &lt;int&gt;
+1     1     5     9
+2     2     6    10
+3     3     7    11
+4     4     8    12</code></pre>
+</div>
+</div>
+<ol type="1">
+<li><p>What will <code>map(df, mean)</code> return?</p>
+<div id="radio_AMACCFQRJM" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_AMACCFQRJM" value=""> <span>the mean of each row</span></label><label><input type="radio" autocomplete="off" name="radio_AMACCFQRJM" value="answer"> <span>the mean of each column</span></label><label><input type="radio" autocomplete="off" name="radio_AMACCFQRJM" value=""> <span>the mean of all values</span></label><label><input type="radio" autocomplete="off" name="radio_AMACCFQRJM" value=""> <span>Error: cannot compute mean of type integer</span></label>
+</div></li>
+<li><p>Suppose we wanted to coerce each column in the previous tibble to the data type <code>double</code> with one line of code. Fill in the two arguments to <code>map</code> that would accomplish this:</p></li>
+</ol>
+<ul>
+<li>map(<input class="webex-solveme nospaces" size="10" data-answer="[&quot;df&quot;]">, <input class="webex-solveme nospaces" size="10" data-answer="[&quot;as.double&quot;]">)</li>
+</ul>
+</section>
+<section id="tibbles" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="tibbles"><span class="header-section-number">1.3</span> Tibbles</h2>
+<p>Suppose we run the following code block and create 3 tibbles:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># create tibble tib</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>tib <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">x =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>, <span class="at">y =</span> <span class="fu">c</span>(<span class="st">"a"</span>, <span class="st">"b"</span>))</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># create tibble x </span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">tribble</span>(</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="sc">~</span>x, <span class="sc">~</span>y, </span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="dv">2</span>, <span class="dv">3</span>, </span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="dv">4</span>, <span class="dv">5</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co"># create tibble tibby</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>tibby <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">age =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">5</span>),</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>        <span class="at">name =</span> <span class="fu">c</span>(<span class="st">"dory"</span>, <span class="st">"hazel"</span>, <span class="st">"graham"</span>, <span class="st">"joan"</span>),</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">alt_name =</span> <span class="fu">c</span>(<span class="st">"dolores"</span>, <span class="cn">NA</span>, <span class="cn">NA</span>, <span class="st">"joanie"</span>)</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ol type="1">
+<li><p>What will <code>is.data.frame(tib)</code> return?</p>
+<div id="radio_NSIVHSDMUB" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_NSIVHSDMUB" value="answer"> <span>True</span></label><label><input type="radio" autocomplete="off" name="radio_NSIVHSDMUB" value=""> <span>False</span></label>
+</div></li>
+<li><p>What will <code>typeof(tib)</code> return?</p>
+<div id="radio_NXHMIMRKCO" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_NXHMIMRKCO" value=""> <span>double</span></label><label><input type="radio" autocomplete="off" name="radio_NXHMIMRKCO" value=""> <span>character</span></label><label><input type="radio" autocomplete="off" name="radio_NXHMIMRKCO" value=""> <span>'double' • 'character'</span></label><label><input type="radio" autocomplete="off" name="radio_NXHMIMRKCO" value="answer"> <span>list</span></label><label><input type="radio" autocomplete="off" name="radio_NXHMIMRKCO" value=""> <span>tibble</span></label><label><input type="radio" autocomplete="off" name="radio_NXHMIMRKCO" value=""> <span>data.frame</span></label>
+</div></li>
+<li><p>What will <code>is_tibble(x)</code> return?</p>
+<div id="radio_KQUCPBNHZK" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_KQUCPBNHZK" value="answer"> <span>True</span></label><label><input type="radio" autocomplete="off" name="radio_KQUCPBNHZK" value=""> <span>False</span></label>
+</div></li>
+<li><p>Which of the following would convert a dataframe called <code>df</code> to a tibble? (note that <code>df</code> is not defined above, consider any artibrary dataframe)</p>
+<div id="radio_RHQAIGTZIX" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_RHQAIGTZIX" value="answer"> <span><code>as_tibble(df)</code></span></label><label><input type="radio" autocomplete="off" name="radio_RHQAIGTZIX" value=""> <span><code>as.data.frame(df, tibble)</code></span></label><label><input type="radio" autocomplete="off" name="radio_RHQAIGTZIX" value=""> <span><code>tribble(df)</code></span></label><label><input type="radio" autocomplete="off" name="radio_RHQAIGTZIX" value="answer"> <span><code>df %&gt;% as_tibble()</code></span></label><label><input type="radio" autocomplete="off" name="radio_RHQAIGTZIX" value="answer"> <span><code>df |&gt; as_tibble()</code></span></label>
+</div></li>
+<li><p>What will <code>tibby$a</code> return?</p>
+<div id="radio_EEOMMABHDX" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_EEOMMABHDX" value="answer"> <span>a warning and the value NULL</span></label><label><input type="radio" autocomplete="off" name="radio_EEOMMABHDX" value=""> <span><code>age</code> via partial matching</span></label><label><input type="radio" autocomplete="off" name="radio_EEOMMABHDX" value=""> <span><code>age</code> and <code>alt_name</code> via partial matching</span></label><label><input type="radio" autocomplete="off" name="radio_EEOMMABHDX" value=""> <span><code>hazel</code>, <code>graham</code>, <code>joan</code>, and <code>joanie</code> via partial matching</span></label><label><input type="radio" autocomplete="off" name="radio_EEOMMABHDX" value=""> <span>an empty vector</span></label>
+</div></li>
+</ol>
+</section>
+</section>
+<section id="import" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Import</h1>
+<p>The questions below refer to this dataset borrowed from R4DS and available at the url <a href="https://pos.it/r4ds-students-csv">https://pos.it/r4ds-students-csv</a>.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../assests/images/rectangle-data.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:60.0%"></p>
+</figure>
+</div>
+<ol type="1">
+<li>What does the csv in <code>read_csv()</code> stand for? Fill in the blank.</li>
+</ol>
+<ul>
+<li><input class="webex-solveme nospaces" size="10" data-answer="[&quot;comma&quot;]"> separated values</li>
+</ul>
+<ol start="2" type="1">
+<li><p>Suppose we attempt to import the csv file given above with the code below. What will be the result?</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"https://pos.it/r4ds-students-csv"</span>,</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">col_types =</span> <span class="fu">list</span>(<span class="at">AGE =</span> <span class="fu">col_double</span>())</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="radio_RIMTFYXJJY" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_RIMTFYXJJY" value=""> <span>imports with no errors or warnings</span></label><label><input type="radio" autocomplete="off" name="radio_RIMTFYXJJY" value=""> <span>fails to import, throws error</span></label><label><input type="radio" autocomplete="off" name="radio_RIMTFYXJJY" value="answer"> <span>imports, but with a warning that there are parsing issues</span></label><label><input type="radio" autocomplete="off" name="radio_RIMTFYXJJY" value=""> <span>imports, but changes the column name to <code>age</code></span></label>
+</div></li>
+<li><p>Suppose we import the dataset given above and name it <code>data</code>. What will <code>is.na(data[3,3])</code> return?</p>
+<div id="radio_CSBXXQJFPF" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_CSBXXQJFPF" value=""> <span>True</span></label><label><input type="radio" autocomplete="off" name="radio_CSBXXQJFPF" value="answer"> <span>False</span></label>
+</div></li>
+<li><p>Suppose we import the dataset given above and name it <code>data</code>. Which of the following would return the first column?</p>
+<div id="radio_BPOWDVMGUG" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_BPOWDVMGUG" value="answer"> <span><code>data[1]</code></span></label><label><input type="radio" autocomplete="off" name="radio_BPOWDVMGUG" value="answer"> <span><code>data[[1]]</code></span></label><label><input type="radio" autocomplete="off" name="radio_BPOWDVMGUG" value=""> <span><code>data[[Student ID]]</code></span></label><label><input type="radio" autocomplete="off" name="radio_BPOWDVMGUG" value="answer"> <span><code>data$`Student ID`</code></span></label>
+</div></li>
+<li><p>True or false, assuming the same dataset the following code would rename the <code>Student ID</code> column to <code>student_id</code>?</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>data <span class="sc">%&gt;%</span> <span class="fu">rename</span>(<span class="at">student_id =</span> <span class="st">`</span><span class="at">Student ID</span><span class="st">`</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="radio_TZODVJVMRX" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_TZODVJVMRX" value="answer"> <span>True</span></label><label><input type="radio" autocomplete="off" name="radio_TZODVJVMRX" value=""> <span>False</span></label>
+</div></li>
+<li><p>True or false, we can use a <code>read_*()</code> function from <code>readr</code> to import a google sheet.</p>
+<div id="radio_CZOPUIJRFE" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_CZOPUIJRFE" value=""> <span>True</span></label><label><input type="radio" autocomplete="off" name="radio_CZOPUIJRFE" value="answer"> <span>False</span></label>
+</div></li>
+</ol>
+</section>
+<section id="transform" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Transform</h1>
+<ol type="1">
+<li><p>Which of the following <code>dplyr</code> functions retuns a data frame?</p>
+<div id="radio_PVFOGNCHPY" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_PVFOGNCHPY" value="answer"> <span><code>select()</code></span></label><label><input type="radio" autocomplete="off" name="radio_PVFOGNCHPY" value="answer"> <span><code>mutate()</code></span></label><label><input type="radio" autocomplete="off" name="radio_PVFOGNCHPY" value="answer"> <span><code>filter()</code></span></label><label><input type="radio" autocomplete="off" name="radio_PVFOGNCHPY" value="answer"> <span><code>rename()</code></span></label><label><input type="radio" autocomplete="off" name="radio_PVFOGNCHPY" value=""> <span>None of the above</span></label>
+</div></li>
+<li><p>Which of the following <code>dplyr</code> functions takes a number as their first argument?</p>
+<div id="radio_PFWEDTRTYG" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_PFWEDTRTYG" value=""> <span><code>select()</code></span></label><label><input type="radio" autocomplete="off" name="radio_PFWEDTRTYG" value=""> <span><code>mutate()</code></span></label><label><input type="radio" autocomplete="off" name="radio_PFWEDTRTYG" value=""> <span><code>filter()</code></span></label><label><input type="radio" autocomplete="off" name="radio_PFWEDTRTYG" value=""> <span><code>rename()</code></span></label><label><input type="radio" autocomplete="off" name="radio_PFWEDTRTYG" value="answer"> <span>None of the above</span></label>
+</div></li>
+<li><p>True or false, the following code blocks are equivalent.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># option 1</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>ratings <span class="sc">%&gt;%</span> <span class="fu">select</span>(Word, Frequency) <span class="sc">%&gt;%</span> <span class="fu">glimpse</span>()</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># option 2</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(<span class="fu">select</span>(ratings, Word, Frequency))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="radio_ILOBJFTFJZ" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_ILOBJFTFJZ" value="answer"> <span>True</span></label><label><input type="radio" autocomplete="off" name="radio_ILOBJFTFJZ" value=""> <span>False</span></label>
+</div></li>
+<li><p>True or false, the following code options are equivalent</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># option 1</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>ratings <span class="sc">%&gt;%</span> </span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(Word<span class="sc">:</span>Class) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(Length<span class="sc">/</span>Frequency, <span class="at">.after =</span> Class)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co"># option 2</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>ratings <span class="sc">%&gt;%</span> </span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(Word<span class="sc">:</span>Class) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(Length<span class="sc">/</span>Frequency)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="radio_NCNIBMLYXD" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_NCNIBMLYXD" value="answer"> <span>True</span></label><label><input type="radio" autocomplete="off" name="radio_NCNIBMLYXD" value=""> <span>False</span></label>
+</div></li>
+<li><p>Recall that there are two possible values in the <code>Class</code> variable in the <code>ratings</code> dataset: “animal” or “plant”. How many rows would be in the data frame returned by the following code block?</p>
+<p><code>ratings %&gt;% group_by(Class) %&gt;% summarise(n = n())</code></p>
+<div id="radio_NQSFPTXLRK" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_NQSFPTXLRK" value=""> <span>0</span></label><label><input type="radio" autocomplete="off" name="radio_NQSFPTXLRK" value=""> <span>2</span></label><label><input type="radio" autocomplete="off" name="radio_NQSFPTXLRK" value="answer"> <span>4</span></label><label><input type="radio" autocomplete="off" name="radio_NQSFPTXLRK" value=""> <span>81</span></label>
+</div></li>
+<li><p>Given the code block in the previous question, what will <code>n()</code> do?</p>
+<div id="radio_YLMFENNUHC" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_YLMFENNUHC" value=""> <span>summarize all classes including the letter n</span></label><label><input type="radio" autocomplete="off" name="radio_YLMFENNUHC" value="answer"> <span>count the number of rows per Class</span></label><label><input type="radio" autocomplete="off" name="radio_YLMFENNUHC" value=""> <span>adds the string <code>n</code> before each value of Class</span></label><label><input type="radio" autocomplete="off" name="radio_YLMFENNUHC" value=""> <span>error: missing arguments to n()</span></label>
+</div></li>
+<li><p>True or false, the following code blocks will return the same dataframe</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># code block 1</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>ratings <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="at">complexity =</span> Complex) </span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co"># code block 2</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>ratings <span class="sc">%&gt;%</span> <span class="fu">rename</span>(<span class="at">complexity =</span> Complex)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="radio_XXEWFZPQOR" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_XXEWFZPQOR" value=""> <span>True</span></label><label><input type="radio" autocomplete="off" name="radio_XXEWFZPQOR" value="answer"> <span>False</span></label>
+</div></li>
+<li><p>Which of the following code blocks will return a dataframe including only the rows in <code>ratings</code> for which the Class value is “animal”?</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># code block a</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>ratings <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="at">Class =</span> <span class="st">"animal"</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># code block b</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>ratings <span class="sc">%&gt;%</span> <span class="fu">filter</span>(Class <span class="sc">==</span> <span class="st">"animal"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="radio_CKATVNVCXE" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_CKATVNVCXE" value=""> <span>a</span></label><label><input type="radio" autocomplete="off" name="radio_CKATVNVCXE" value="answer"> <span>b</span></label><label><input type="radio" autocomplete="off" name="radio_CKATVNVCXE" value=""> <span>both a and b</span></label>
+</div></li>
+<li><p>By default the <code>arrange()</code> function arranges the rows in ascending order. Which of the following code blocks would arrange the Frequency variable in descending order?</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># code block a</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>ratings <span class="sc">%&gt;%</span> <span class="fu">arrange</span>(Frequency, <span class="at">order =</span> <span class="st">"descending"</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co"># code block b</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>ratings <span class="sc">%&gt;%</span> <span class="fu">arrange</span>(Frequency, <span class="at">order =</span> <span class="st">"reverse"</span>)</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="co"># code block c</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>ratings <span class="sc">%&gt;%</span> <span class="fu">arrange</span>(<span class="fu">desc</span>(Frequency))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="radio_HYBOEUNGPQ" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_HYBOEUNGPQ" value=""> <span>a</span></label><label><input type="radio" autocomplete="off" name="radio_HYBOEUNGPQ" value=""> <span>b</span></label><label><input type="radio" autocomplete="off" name="radio_HYBOEUNGPQ" value="answer"> <span>c</span></label><label><input type="radio" autocomplete="off" name="radio_HYBOEUNGPQ" value=""> <span>a and b</span></label><label><input type="radio" autocomplete="off" name="radio_HYBOEUNGPQ" value=""> <span>a and c</span></label>
+</div></li>
+<li><p>Which of the following code blocks could be used to return the mean frequency by class?</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># code block a</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>ratings <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(Class) <span class="sc">%&gt;%</span> <span class="fu">summarise</span>( <span class="at">mean =</span> <span class="fu">mean</span>(Frequency) )</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co"># code block b</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>ratings <span class="sc">%&gt;%</span> <span class="fu">summarise</span>( </span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean =</span> <span class="fu">mean</span>(Frequency), <span class="at">.by =</span> <span class="fu">c</span>(Class) )</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="co"># code block c</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>ratings <span class="sc">%&gt;%</span> <span class="fu">mean</span>(Frequency) <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(Class)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="radio_TKACTLVWBJ" class="webex-radiogroup">
+<label><input type="radio" autocomplete="off" name="radio_TKACTLVWBJ" value=""> <span>a only</span></label><label><input type="radio" autocomplete="off" name="radio_TKACTLVWBJ" value=""> <span>b only</span></label><label><input type="radio" autocomplete="off" name="radio_TKACTLVWBJ" value=""> <span>c only</span></label><label><input type="radio" autocomplete="off" name="radio_TKACTLVWBJ" value="answer"> <span>a and b</span></label><label><input type="radio" autocomplete="off" name="radio_TKACTLVWBJ" value=""> <span>b and c</span></label><label><input type="radio" autocomplete="off" name="radio_TKACTLVWBJ" value=""> <span>a, b, and c</span></label>
+</div></li>
+</ol>
+
+
+</section>
+
+</main> <!-- /main -->
+<script>
+
+/* update total correct if #webex-total_correct exists */
+update_total_correct = function() {
+  console.log("webex: update total_correct");
+
+  var t = document.getElementsByClassName("webex-total_correct");
+  for (var i = 0; i < t.length; i++) {
+    p = t[i].parentElement;
+    var correct = p.getElementsByClassName("webex-correct").length;
+    var solvemes = p.getElementsByClassName("webex-solveme").length;
+    var radiogroups = p.getElementsByClassName("webex-radiogroup").length;
+    var selects = p.getElementsByClassName("webex-select").length;
+
+    t[i].innerHTML = correct + " of " + (solvemes + radiogroups + selects) + " correct";
+  }
+}
+
+/* webex-solution button toggling function */
+b_func = function() {
+  console.log("webex: toggle hide");
+
+  var cl = this.parentElement.classList;
+  if (cl.contains('open')) {
+    cl.remove("open");
+  } else {
+    cl.add("open");
+  }
+}
+
+/* check answers */
+check_func = function() {
+  console.log("webex: check answers");
+
+  var cl = this.parentElement.classList;
+  if (cl.contains('unchecked')) {
+    cl.remove("unchecked");
+    this.innerHTML = "Hide Answers";
+  } else {
+    cl.add("unchecked");
+    this.innerHTML = "Show Answers";
+  }
+}
+
+/* function for checking solveme answers */
+solveme_func = function(e) {
+  console.log("webex: check solveme");
+
+  var real_answers = JSON.parse(this.dataset.answer);
+  var my_answer = this.value;
+  var cl = this.classList;
+  if (cl.contains("ignorecase")) {
+    my_answer = my_answer.toLowerCase();
+  }
+  if (cl.contains("nospaces")) {
+    my_answer = my_answer.replace(/ /g, "")
+  }
+
+  if (my_answer == "") {
+    cl.remove("webex-correct");
+    cl.remove("webex-incorrect");
+  } else if (real_answers.includes(my_answer)) {
+    cl.add("webex-correct");
+    cl.remove("webex-incorrect");
+  } else {
+    cl.add("webex-incorrect");
+    cl.remove("webex-correct");
+  }
+
+  // match numeric answers within a specified tolerance
+  if(this.dataset.tol > 0){
+    var tol = JSON.parse(this.dataset.tol);
+    var matches = real_answers.map(x => Math.abs(x - my_answer) < tol)
+    if (matches.reduce((a, b) => a + b, 0) > 0) {
+      cl.add("webex-correct");
+    } else {
+      cl.remove("webex-correct");
+    }
+  }
+
+  // added regex bit
+  if (cl.contains("regex")){
+    answer_regex = RegExp(real_answers.join("|"))
+    if (answer_regex.test(my_answer)) {
+      cl.add("webex-correct");
+    }
+  }
+
+  update_total_correct();
+}
+
+/* function for checking select answers */
+select_func = function(e) {
+  console.log("webex: check select");
+
+  var cl = this.classList
+
+  /* add style */
+  cl.remove("webex-incorrect");
+  cl.remove("webex-correct");
+  if (this.value == "answer") {
+    cl.add("webex-correct");
+  } else if (this.value != "blank") {
+    cl.add("webex-incorrect");
+  }
+
+  update_total_correct();
+}
+
+/* function for checking radiogroups answers */
+radiogroups_func = function(e) {
+  console.log("webex: check radiogroups");
+
+  var checked_button = document.querySelector('input[name=' + this.id + ']:checked');
+  var cl = checked_button.parentElement.classList;
+  var labels = checked_button.parentElement.parentElement.children;
+
+  /* get rid of styles */
+  for (i = 0; i < labels.length; i++) {
+    labels[i].classList.remove("webex-incorrect");
+    labels[i].classList.remove("webex-correct");
+  }
+
+  /* add style */
+  if (checked_button.value == "answer") {
+    cl.add("webex-correct");
+  } else {
+    cl.add("webex-incorrect");
+  }
+
+  update_total_correct();
+}
+
+window.onload = function() {
+  console.log("webex onload");
+  /* set up solution buttons */
+  var buttons = document.getElementsByTagName("button");
+
+  for (var i = 0; i < buttons.length; i++) {
+    if (buttons[i].parentElement.classList.contains('webex-solution')) {
+      buttons[i].onclick = b_func;
+    }
+  }
+
+  var check_sections = document.getElementsByClassName("webex-check");
+  console.log("check:", check_sections.length);
+  for (var i = 0; i < check_sections.length; i++) {
+    check_sections[i].classList.add("unchecked");
+
+    let btn = document.createElement("button");
+    btn.innerHTML = "Show Answers";
+    btn.classList.add("webex-check-button");
+    btn.onclick = check_func;
+    check_sections[i].appendChild(btn);
+
+    let spn = document.createElement("span");
+    spn.classList.add("webex-total_correct");
+    check_sections[i].appendChild(spn);
+  }
+
+  /* set up webex-solveme inputs */
+  var solveme = document.getElementsByClassName("webex-solveme");
+
+  for (var i = 0; i < solveme.length; i++) {
+    /* make sure input boxes don't auto-anything */
+    solveme[i].setAttribute("autocomplete","off");
+    solveme[i].setAttribute("autocorrect", "off");
+    solveme[i].setAttribute("autocapitalize", "off");
+    solveme[i].setAttribute("spellcheck", "false");
+    solveme[i].value = "";
+
+    /* adjust answer for ignorecase or nospaces */
+    var cl = solveme[i].classList;
+    var real_answer = solveme[i].dataset.answer;
+    if (cl.contains("ignorecase")) {
+      real_answer = real_answer.toLowerCase();
+    }
+    if (cl.contains("nospaces")) {
+      real_answer = real_answer.replace(/ /g, "");
+    }
+    solveme[i].dataset.answer = real_answer;
+
+    /* attach checking function */
+    solveme[i].onkeyup = solveme_func;
+    solveme[i].onchange = solveme_func;
+
+    solveme[i].insertAdjacentHTML("afterend", " <span class='webex-icon'></span>")
+  }
+
+  /* set up radiogroups */
+  var radiogroups = document.getElementsByClassName("webex-radiogroup");
+  for (var i = 0; i < radiogroups.length; i++) {
+    radiogroups[i].onchange = radiogroups_func;
+  }
+
+  /* set up selects */
+  var selects = document.getElementsByClassName("webex-select");
+  for (var i = 0; i < selects.length; i++) {
+    selects[i].onchange = select_func;
+    selects[i].insertAdjacentHTML("afterend", " <span class='webex-icon'></span>")
+  }
+
+  update_total_correct();
+}
+
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

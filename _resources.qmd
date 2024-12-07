@@ -1,0 +1,18 @@
+# Resources
+
+In addition to our course website, we will use the following:
+
+* [google colab (r kernel)](https://colab.research.google.com/#create=true&language=r) - for computing
+* [canvas](https://canvas.upenn.edu/courses/1809306)- for posting grades
+* [gradescope](https://www.gradescope.com/courses/814032) - for submitting problem sets
+* [ed discussion](https://edstem.org/us/courses/61540/discussion/) - for announcements and questions
+
+Other helpful materials and resources: 
+
+* [markdown tutorial](https://www.markdowntutorial.com/)
+* [tidyverse cheatsheets]()
+
+Please consider using these Penn resources this semester:
+
+- [Weingarten Center](https://weingartencenter.universitylife.upenn.edu/academic-support/) for academic support and tutoring. 
+- [Wellness at Penn](https://wellness.upenn.edu/) for health and wellbeing.

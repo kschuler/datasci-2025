@@ -1,0 +1,42 @@
+---
+title:  "Problem set 5"
+subtitle: "due Monday, Nov 18, 2024 at noon"
+# author: 
+#     name: Katie Schuler
+#     affiliation: University of Pennsylvania
+number-sections: false
+format: 
+  html: 
+    number-sections: false
+  pdf: default
+
+---
+
+::: {.callout-tip title="Run your code"}
+Make sure your code can run before submission! Runtime > Run all
+:::
+
+Instructions
+: Upload your `.ipynb` notebook to gradescope by 11:59am (noon) on the due date. Please include your name, Problem set number, and any collaborators you worked with at the top of your notebook. Please also number your problems and include comments in your code to indicate what part of a problem you are working on.  
+
+
+## Problem 1
+
+
+## Problem 2
+
+## Problem 3 
+
+## Problem 4
+
+## Problem 5
+
+## Problem 6
+
+## Challenge (optional)
+
+*No points awarded or removed for this question! Just for fun!*
+
+
+
+

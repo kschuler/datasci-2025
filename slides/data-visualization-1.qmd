@@ -1,0 +1,1502 @@
+---
+title: "Data Visualization Day 1"
+subtitle: "Data Science for Studying Language and the Mind"
+author: Katie Schuler
+date: 2024-09-03
+echo: true
+format: 
+    revealjs:
+        theme: dark
+        slide-number: true
+        incremental: true 
+        footer: "[https://kathrynschuler.com/datasci](https://kathrynschuler.com/datasci/)"
+---
+
+## Announcements
+
+- Permits are being issued today!
+    - First, for students dropped due to the rescheduled lab
+    - Next, for students on the waitlist 
+
+- If you are unable to request a permit in Path @ Penn, please send me an email to let me know
+    - These are the [instructions](https://apps.srfs.upenn.edu:44306/secure/Pennant-Training/Path-Request-Permission-to-Take-a-Class.pdf) 
+
+- The Friday 12pm lab has 8 more seats 🙂
+
+
+--- 
+
+![](/assests/images/Rlearning.png){#fig-rlearning fig-align="center" width=100%}
+
+
+
+## You are `here` {.smaller} 
+
+:::: {.columns}
+
+::: {.column width="33%"}
+
+##### Data science with R 
+::: {.nonincremental}
+- R basics
+- `Data visualization` 
+- Data wrangling 
+:::
+:::
+
+::: {.column width="33%"}
+
+##### Stats & Model buidling
+::: {.nonincremental}
+- Sampling distribution
+- Hypothesis testing
+- Model specification
+- Model fitting 
+- Model accuracy
+- Model reliability
+:::
+:::
+
+::: {.column width="33%"}
+
+##### More advanced 
+::: {.nonincremental}
+
+- Classification
+- Inference for regression
+- Mixed-effect models
+::: 
+:::
+
+::::
+
+# Acknowledgements
+
+Adapted from [R for Data Science Ch 2](https://r4ds.hadley.nz/data-visualize)
+and some materials by Dr. Colin Rundel at Duke
+
+
+## Why visualize? 
+
+> “The simple graph has brought more information to the data analyst’s mind than any other device.” — John Tukey
+
+## Why visualize? 
+
+> "`Visualization` is a fundamentally human activity. A good visualization will show you things you did not expect or raise new questions about the data. A good visualization might also hint that you’re asking the wrong question or that you need to collect different data. Visualizations can surprise you, but they don’t scale particularly well because they require a human to interpret them." -- R4DS
+
+
+## Datasaurus dozen {.smaller}
+
+```{r}
+#| echo: false
+library(tidyverse)
+library(datasauRus)
+
+datasaurus_dozen %>% 
+group_by(dataset) %>% 
+summarize(
+    mean_x    = mean(x),
+    mean_y    = mean(y),
+    std_dev_x = sd(x),
+    std_dev_y = sd(y),
+    corr_x_y  = cor(x, y)
+)
+```
+
+
+::: aside
+Datasaurus was created by Alberto Cairo, `library(datasauRus)`
+:::
+
+## Datasaurus dozen {.smaller}
+
+```{r }
+#| echo: false
+#| fig-height: 6
+#| fig-width: 8
+  ggplot(datasaurus_dozen, aes(x = x, y = y, colour = dataset))+
+    geom_point()+
+    theme_classic()+
+    theme(legend.position = "none")+
+    facet_wrap(~dataset, ncol = 4)
+```
+
+
+::: aside
+Datasaurus was created by Alberto Cairo
+:::
+
+
+
+## ggplot2
+
+![](/assests/images/ggplot-hexlogo.png){#fig-ggplothexlogo fig-align="center" width=20%}
+
+## Using `ggplot2` 
+
+Google Colab already has `ggplot2` installed by default. There is no need to run `install.packages()`. 
+
+```{r}
+#| echo: true
+#| message: true
+library(ggplot2)
+```
+
+## Why ggplot2? 
+
+> "R has several systems for making graphs, but ggplot2 is one of the most elegant and most versatile. ggplot2 implements the `grammar of graphics`, a coherent system for describing and building graphs. With ggplot2, you can do more and faster by learning one system and applying it in many places." -- R4DS
+
+## ggplot2's grammar of graphics 
+
+![](/assests/images/gglayers.png){#fig-gglayers fig-align="center" width=100%}
+
+
+
+## Today's data: `ratings` {.smaller}
+
+> Subjective frequency ratings, ratings of estimated weight, and ratings of estimated size, averaged over subjects, for 81 concrete English nouns. -- languageR
+
+```{r}
+#| echo: true
+library(languageR)
+str(ratings)
+```
+
+## Today's data: `ratings` {.smaller}
+
+We will make use of the following variables:
+
+1. `Frequency` - actual word frequency
+2. `meanFamiliarity` - subjective frequency rating
+3. `Class` - whether word is a plant or animal
+
+. . . 
+
+```{r}
+#| echo: false
+ratings %>% 
+    select(Word, Frequency, meanFamiliarity, Class) %>%
+    str()
+```
+
+## Today's goal {.smaller}
+
+Create this figure showing the relationship between actual frequency and subjective frequency rating of each word, considering the class the word belongs to
+
+
+
+```{r}
+#| echo: false
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = Frequency, 
+        y = meanFamiliarity
+    )
+ ) +
+  geom_point( 
+    mapping = aes(color = Class), 
+    size = 3
+    ) +
+  labs(
+    title = "Subjective frequency ratings", 
+    subtitle = "for 81 english nouns",
+    x = "Actual frequency",
+    y = "Frequency rating",
+    color = "word class"
+  ) +
+  theme_classic(base_size = 20) +
+  scale_color_brewer(palette = "Paired")
+```
+
+
+# The basic ggplot
+
+1. Using your `data`
+2. define how variables in your dataset are mapped to visual properties (`aesthetics`)
+3. determine the geometrical object that a plot uses to represent data (`geom`)
+
+
+
+## 1 `data` {.smaller}
+
+> Use `ratings` data
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "1-3"
+ggplot(
+    data = ratings
+ )
+```
+
+## 2 `aesthetic mapping` {.smaller}
+
+> Map `Frequency` to x-axis and `meanFamiliarity` to y-axis. 
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "3-6"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = Frequency, 
+        y = meanFamiliarity
+    )
+ )
+```
+
+## 3 `geom` {.smaller}
+
+> Represent each value with a point.
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "8"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = Frequency, 
+        y = meanFamiliarity
+    )
+ ) +
+  geom_point()
+```
+
+# Adding to the basics
+
+## Mapping categorical variables {.smaller}
+
+> When a categorical variable is mapped to an aesthetic, ggplot2 will automatically assign a unique value of the aesthetic (here color) ... a process known as `scaling`. -- R4DS
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "6"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = Frequency, 
+        y = meanFamiliarity,
+        color = Class
+    )
+ ) +
+  geom_point()
+```
+
+
+## Global vs. local `aesthetics` {.smaller}
+
+- **globally** in `ggplot()`, which are passed down to all geoms
+- **locally** in `geom_*()` which are used by that geom only
+
+. . . 
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "9"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = Frequency, 
+        y = meanFamiliarity
+    )
+ ) +
+  geom_point( 
+    mapping = aes(color = Class)
+    ) 
+```
+
+
+
+## Mapping vs. setting `aesthetics` {.smaller}
+
+- mapping allows us to determine a geom's aesthetics based on a variable, and is passed as argument in `aes()`
+- setting allows us to set a geom's aestheics to a constant value (not based on any variable), and passed as argument in `geom_*()` directly
+
+. . . 
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "10"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = Frequency, 
+        y = meanFamiliarity
+    )
+ ) +
+  geom_point( 
+    mapping = aes(color = Class), 
+    size = 3
+    ) 
+```
+
+
+
+# Labels
+
+
+## `labels`: title and subtitle {.smaller}
+
+> Add title "Subjective frequency ratings" with subtitle "for 81 english nouns"
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "12-15"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = Frequency, 
+        y = meanFamiliarity
+    )
+ ) +
+  geom_point( 
+    mapping = aes(color = Class), 
+    size = 3
+    ) +
+  labs(
+    title = "Subjective frequency ratings", 
+    subtitle = "for 81 english nouns"
+  ) 
+```
+
+## `labels`: x and y axis {.smaller}
+
+> Label x-axis "Actual frequency" and y-axis "Frequency rating"
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "15-16"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = Frequency, 
+        y = meanFamiliarity
+    )
+ ) +
+  geom_point( 
+    mapping = aes(color = Class), 
+    size = 3
+    ) +
+  labs(
+    title = "Subjective frequency ratings", 
+    subtitle = "for 81 english nouns",
+    x = "Actual frequency",
+    y = "Frequency rating"
+  ) 
+```
+
+::: aside 
+Note these are mapped to the aesthetic (x and y)
+:::
+
+## `labels`: legend {.smaller}
+
+> Label the legend "word class".
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "17"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = Frequency, 
+        y = meanFamiliarity
+    )
+ ) +
+  geom_point( 
+    mapping = aes(color = Class), 
+    size = 3
+    ) +
+  labs(
+    title = "Subjective frequency ratings", 
+    subtitle = "for 81 english nouns",
+    x = "Actual frequency",
+    y = "Frequency rating",
+    color = "word class"
+  ) 
+```
+
+::: aside 
+Note these are mapped to the aesthetic as well (color)
+:::
+
+# Theme and adjusting scaling
+
+## `themes` {.smaller}
+
+> Apply classic theme with base_size 20.
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "19"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = Frequency, 
+        y = meanFamiliarity
+    )
+ ) +
+  geom_point( 
+    mapping = aes(color = Class), 
+    size = 3
+    ) +
+  labs(
+    title = "Subjective frequency ratings", 
+    subtitle = "for 81 english nouns",
+    x = "Actual frequency",
+    y = "Frequency rating",
+    color = "word class"
+  ) +
+  theme_classic(base_size = 20) 
+```
+
+## `scales`: changing color {.smaller}
+
+> Remember: When a categorical variable is mapped to an aesthetic, ggplot2 will automatically assign a unique value of the aesthetic (here color) ... a process known as `scaling`. -- R4DS
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "20"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = Frequency, 
+        y = meanFamiliarity
+    )
+ ) +
+  geom_point( 
+    mapping = aes(color = Class), 
+    size = 3
+    ) +
+  labs(
+    title = "Subjective frequency ratings", 
+    subtitle = "for 81 english nouns",
+    x = "Actual frequency",
+    y = "Frequency rating",
+    color = "word class"
+  ) +
+  theme_classic(base_size = 20) +
+  scale_color_brewer(palette = "Paired")
+```
+
+# Aesthetics
+
+## color
+
+Map the color aesthetic to a variable
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "9"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = Frequency, 
+        y = meanFamiliarity
+    )
+ ) +
+  geom_point( 
+    mapping = aes(color = Class),
+    size = 3
+    ) +
+ theme_classic(base_size = 20)
+
+```
+
+## color
+
+Set a constant value for the color aesthetic 
+
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "9"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = Frequency, 
+        y = meanFamiliarity
+    )
+ ) +
+  geom_point( 
+    color = "blue",
+    size = 3
+    ) +
+ theme_classic(base_size = 20)
+
+```
+
+
+
+## size 
+
+Setting a constant value for the size aesthetic
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "10"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = Frequency, 
+        y = meanFamiliarity
+    )
+ ) +
+  geom_point( 
+    mapping = aes(color = Class),
+    size = 3
+    ) +
+ theme_classic(base_size = 20)
+
+```
+
+## size
+
+Mapped the size aesthetic to a variable 
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "9-12"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = Frequency, 
+        y = meanFamiliarity
+    )
+ ) +
+  geom_point( 
+    mapping = aes(
+        color = Class,
+        size = Complex
+    ),
+    ) +
+ theme_classic(base_size = 20)
+
+```
+
+
+## shape
+
+Map the shape aesthetic to a different variable
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "9-11"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = Frequency, 
+        y = meanFamiliarity
+    )
+ ) +
+  geom_point( 
+    mapping = aes(
+        color = Class,
+        shape = Complex),
+    size = 3
+    ) +
+ theme_classic(base_size = 20)
+
+```
+
+## shape 
+
+Map the shape aesthetic to the same variable 
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "9-11"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = Frequency, 
+        y = meanFamiliarity
+    )
+ ) +
+  geom_point( 
+    mapping = aes(
+        color = Class,
+        shape = Class),
+    size = 3
+    ) +
+ theme_classic(base_size = 20)
+
+```
+
+
+
+## alpha 
+
+Set a constant value for the alpha aesthetic
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "12"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = Frequency, 
+        y = meanFamiliarity
+    )
+ ) +
+  geom_point( 
+    mapping = aes(
+        color = Class,
+        shape = Class),
+    alpha = 0.5,
+    size = 3
+    ) +
+ theme_classic(base_size = 20)
+
+```
+
+## alpha
+
+Mapped to a variable 
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "9-12"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = Frequency, 
+        y = meanFamiliarity
+    )
+ ) +
+  geom_point( 
+    mapping = aes(
+        color = Class,
+        shape = Class,
+        alpha = Length),
+    size = 3
+    ) +
+ theme_classic(base_size = 20)
+
+```
+
+
+# Geometric objects 
+
+## `geom_*()` aka geoms {.smaller}
+
+There are [many](https://ggplot2.tidyverse.org/reference/#geoms). We will start with these, and add a few additional geoms as we move through the course: 
+
+| | |
+| --- | ------- | 
+| `geom_histogram()` | histogram, distribution of a continuous variable |
+| `geom_density()` | distribution of a continuous variable |
+| `geom_bar()` | distribution of a categorical data | 
+| `geom_point()` |  scatterplot |
+| `geom_smooth()` | smoothed line of best fit |
+
+## `geom_histogram()` 
+
+> A histogram divides the x-axis into equally spaced bins and then uses the height of a bar to display the number of observations that fall in each bin. -- R4DS
+
+. . . 
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "7"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = meanFamiliarity
+    )
+) + 
+    geom_histogram() 
+
+```
+
+## `geom_histogram()`
+
+bins - How many bins should we have? 
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "8"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = meanFamiliarity
+    )
+) + 
+    geom_histogram(
+        bins = 10
+    )
+
+```
+
+
+## `geom_histogram()`
+
+binwidth - How wide should the bins be?  
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "8"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = meanFamiliarity
+    )
+) + 
+    geom_histogram(
+        binwidth = 0.25
+    )
+
+```
+
+## `geom_histogram()`
+
+color - What should the outline color be? 
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "9"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = meanFamiliarity
+    )
+) + 
+    geom_histogram(
+        binwidth = 0.25,
+        color = "red"
+    )
+
+```
+
+## `geom_histogram()`
+
+fill - What should the fill color be? 
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "10"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = meanFamiliarity
+    )
+) + 
+    geom_histogram(
+        binwidth = 0.25,
+        color = "red",
+        fill = "lightblue"
+    )
+
+```
+
+## `geom_density()` {.smaller}
+
+> Imagine a histogram made out of wooden blocks. Then, imagine that you drop a cooked spaghetti string over it. The shape the spaghetti will take draped over blocks can be thought of as the shape of the density curve. -- R4DS 
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "7"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = meanFamiliarity
+    )
+) + 
+    geom_density() 
+
+```
+
+## `geom_density()`
+
+Map Class to color aesthetic 
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "5"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = meanFamiliarity,
+        color = Class
+    )
+) + 
+    geom_density() 
+
+```
+
+## `geom_density()`
+
+Set linewidth 
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "8"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = meanFamiliarity,
+        color = Class
+    )
+) + 
+    geom_density(linewidth = 2) 
+
+```
+
+## `geom_density()`
+
+Map Class to fill and set alpha 
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "8"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = meanFamiliarity,
+        fill = Class
+    )
+) + 
+    geom_density(alpha = 0.5) 
+
+```
+<!-- 
+## `geom_bar()` {.smaller}
+
+> To examine the distribution of a categorical variable, you can use a bar chart. The height of the bars displays how many observations occurred with each x value. -- R4DS
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "8"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = Class
+    )
+) + 
+    geom_bar()
+
+```
+
+## `geom_bar()` - stacked {.smaller}
+
+We can use stacked bar plots to visualize the relationship between two categorical variables
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "5"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = Class,
+        fill = Complex
+    )
+) + 
+    geom_bar()
+
+```
+
+## `geom_bar()` - relative frequency {.smaller}
+
+We can use relative frequency to visualize the relationship between two categorical variables (as a percentage)
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "8"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = Class,
+        fill = Complex
+    )
+) + 
+    geom_bar(position = "fill")
+
+```
+
+## `geom_bar()` - dodged {.smaller}
+
+We can use a dodged bar plot to visualize the relationship between two categorical variables side-by-side, not stacked
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "8"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = Class,
+        fill = Complex
+    )
+) + 
+    geom_bar(position = "dodge")
+
+```
+
+## `geom_point()` {.smaller}
+
+> Scatterplots are useful for displaying the relationship between two numerical variables -- R4DS
+
+. . . 
+
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "8-11"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = Frequency, 
+        y = meanFamiliarity
+    )
+ ) +
+  geom_point( 
+    color = "blue", 
+    size = 3
+    ) +
+  labs(
+    title = "Subjective frequency ratings", 
+    subtitle = "for 81 english nouns",
+    x = "Actual frequency",
+    y = "Frequency rating",
+    color = "word class"
+  ) +
+  theme_classic(base_size = 20) 
+```
+
+## `geom_point()` with `geom_smooth()` {.smaller}
+
+draws a best fitting curve 
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "12"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = Frequency, 
+        y = meanFamiliarity
+    )
+ ) +
+  geom_point( 
+    color = "blue", 
+    size = 3
+    ) +
+  geom_smooth() +
+  labs(
+    title = "Subjective frequency ratings", 
+    subtitle = "for 81 english nouns",
+    x = "Actual frequency",
+    y = "Frequency rating",
+    color = "word class"
+  ) +
+  theme_classic(base_size = 20) 
+```
+
+## `geom_point()` with `geom_smooth(method="lm")` {.smaller}
+
+draws the best fitting linear model
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "12"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = Frequency, 
+        y = meanFamiliarity
+    )
+ ) +
+  geom_point( 
+    color = "blue", 
+    size = 3
+    ) +
+  geom_smooth(method="lm") +
+  labs(
+    title = "Subjective frequency ratings", 
+    subtitle = "for 81 english nouns",
+    x = "Actual frequency",
+    y = "Frequency rating",
+    color = "word class"
+  ) +
+  theme_classic(base_size = 20) 
+```
+
+## `geom_point()` with `geom_smooth(method="lm")` {.smaller}
+
+We can also map to color, by specifying globally
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "6"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = Frequency, 
+        y = meanFamiliarity,
+        color = Class
+    )
+ ) +
+  geom_point( 
+    size = 3
+    ) +
+  geom_smooth(method="lm") +
+  labs(
+    title = "Subjective frequency ratings", 
+    subtitle = "for 81 english nouns",
+    x = "Actual frequency",
+    y = "Frequency rating",
+    color = "word class"
+  ) +
+  theme_classic(base_size = 20) 
+```
+
+## `geom_point()` with `geom_smooth(method="lm")` {.smaller}
+
+Or include only a single smooth, by specifying color in the point geom only
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "9"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = Frequency, 
+        y = meanFamiliarity
+    )
+ ) +
+  geom_point( 
+    aes(color = Class),
+    size = 3
+    ) +
+  geom_smooth(method="lm") +
+  labs(
+    title = "Subjective frequency ratings", 
+    subtitle = "for 81 english nouns",
+    x = "Actual frequency",
+    y = "Frequency rating",
+    color = "word class"
+  ) +
+  theme_classic(base_size = 20) 
+```
+
+
+
+# Facets 
+
+smaller plots that display different subsets of data
+
+## `facet_grid()`
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "9"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = Frequency, 
+        y = meanFamiliarity
+    )
+ ) +
+  geom_point() +
+  facet_grid(Class ~ Complex) +
+  theme_classic(base_size = 20) 
+```
+
+## `facet_grid()` {.smaller}
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "9"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = Frequency, 
+        y = meanFamiliarity
+    )
+ ) +
+  geom_point() +
+  facet_grid(Class ~ Complex) +
+  theme_classic(base_size = 20) 
+```
+
+. . . 
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "9"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = Frequency, 
+        y = meanFamiliarity
+    )
+ ) +
+  geom_point(
+    aes(color = Class, shape = Complex)
+  ) +
+  theme_classic(base_size = 20) 
+```
+
+
+## `facet_grid()` - just columns {.smaller}
+
+and note we can still map other aesthetics!
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "9"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = Frequency, 
+        y = meanFamiliarity
+    )
+ ) +
+  geom_point() +
+  facet_grid(. ~ Complex) +
+  theme_classic(base_size = 20) 
+```
+
+## `facet_grid()` - just columns {.smaller}
+
+and note we can still map other aesthetics!
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "8-11"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = Frequency, 
+        y = meanFamiliarity
+    )
+ ) +
+  geom_point(
+    aes(color = Class),
+    shape = "triangle"
+  ) +
+  facet_grid(. ~ Complex) +
+  theme_classic(base_size = 20) 
+```
+
+
+
+## `facet_grid()` - just rows {.smaller}
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "9"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = Frequency, 
+        y = meanFamiliarity
+    )
+ ) +
+  geom_point() +
+  facet_grid(Class ~ .) +
+  theme_classic(base_size = 20) 
+```
+
+
+## `facet_wrap()`  {.smaller}
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "9"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = Frequency, 
+        y = meanFamiliarity
+    )
+ ) +
+  geom_point() +
+  facet_wrap(~ Class) +
+  theme_classic(base_size = 20) 
+```
+
+## `facet_wrap()` - number of columns {.smaller}
+
+```{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "9"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = Frequency, 
+        y = meanFamiliarity
+    )
+ ) +
+  geom_point() +
+  facet_wrap(~ Class, ncol = 1) +
+  theme_classic(base_size = 20) 
+```
+
+# Helper functions 
+
+## remember our goal plot? {.smaller}
+
+```{r}
+#| echo: true
+#| output-location: column
+
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = Frequency, 
+        y = meanFamiliarity
+    )
+ ) +
+  geom_point( 
+    mapping = aes(color = Class), 
+    size = 3
+    ) +
+  labs(
+    title = "Subjective frequency ratings", 
+    subtitle = "for 81 english nouns",
+    x = "Actual frequency",
+    y = "Frequency rating",
+    color = "word class"
+  ) +
+  theme_classic(base_size = 20) +
+  scale_color_brewer(palette = "Paired")
+```
+
+## `last_plot()` {.smaller}
+
+returns the last plot
+
+```{r}
+last_plot()
+```
+
+## `ggsave()` 
+
+saves last plot
+
+```r
+ggsave("plot.png", width=5, height=5)
+```
+
+# Themes 
+
+ggplot comes with many [Complete themes](https://ggplot2.tidyverse.org/reference/ggtheme.html)
+
+## Default theme {.smaller}
+
+```{r}
+last_plot() + theme_gray(base_size=20)
+```
+
+## Sample themes {.smaller}
+
+:::: {.columns}
+
+::: {.column width=50%}
+
+```{r}
+last_plot() + theme_bw(base_size=20)
+```
+
+```{r}
+last_plot() + theme_classic(base_size=20)
+```
+
+::: 
+
+::: {.column width=50%}
+
+```{r}
+last_plot() + theme_minimal(base_size=20)
+```
+
+```{r}
+last_plot() + theme_void(base_size=20)
+```
+
+::: 
+
+::::
+
+
+# Shortcuts 
+
+## ggplot2 calls {.smaller}
+
+:::: {.columns}
+
+::: {.column width=50%}
+
+Explicit argument names:
+
+```{r}
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = Frequency,
+        y = meanFamiliarity
+    )
+) + 
+   geom_point()
+```
+
+
+::: 
+
+
+::: {.column width=50%}
+
+Implied argument names:
+
+```{r}
+ggplot(
+    ratings,
+    aes(
+        x = Frequency,
+        y = meanFamiliarity
+    )
+) + 
+   geom_point()
+```
+
+::: 
+
+::::
+
+
+## the pipe `%>%` {.smaller}
+
+> the pipe takes the thing on its left and passes it along to the function on its right 
+
+. . .
+
+`x %>% f(y)` is equivalent to `f(x, y)`
+
+. . . 
+
+```{r}
+x <- c(1.0, 2.245, 3, 4.22222)
+x
+
+# pass x as an argument to function usual way
+round(x, digits = 2)
+```
+
+. . . 
+```{r}
+# pass x as an argument to function with pipe
+x %>% round(digits = 2)
+```
+
+
+::: aside
+There are two ways to write the pipe: `%>%` or `|>`
+:::
+
+## the pipe `%>%` and ggplot {.smaller}
+
+
+:::: {.columns}
+
+::: {.column width=50%}
+
+Implied argument names:
+
+```{r}
+#| code-line-numbers: "2"
+ggplot(
+    data = ratings,
+    mapping = aes(
+        x = Frequency,
+        y = meanFamiliarity
+    )
+) + 
+   geom_point()
+```
+
+
+::: 
+
+
+::: {.column width=50%}
+
+Implied argument names + pipe:
+
+```{r}
+#| code-line-numbers: "1"
+
+ratings %>% 
+ggplot(
+    aes(
+        x = Frequency,
+        y = meanFamiliarity
+    )
+) + 
+   geom_point()
+```
+
+::: 
+
+::::
+
+::: aside
+Note that we pipe `%>%` in arguments to functions but we ADD `+` layers to ggplot. Common mistake!
+:::
+
+## Exercise 1
+
+> The basic ggplot
+
+![Data from `penguins` dataframe in `palmerpenguins` package](/include/targets/class-target-basicpenguins.png){#fig-basicpenguintarget}
+
+## Exercise 2
+
+> Adding aesthetics and layers
+
+![Data from `penguins` dataframe in `palmerpenguins` package](/include/targets/class-target-penguins.png){#fig-penguintarget} -->

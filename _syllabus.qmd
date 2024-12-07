@@ -1,0 +1,48 @@
+# Syllabus
+
+**Course description**: Data Sci for Lang & Mind is an entry-level course designed to teach basic principles of statistics and data science to students with little or no background in statistics or computer science. Students will learn to identify patterns in data using visualizations and descriptive statistics; make predictions from data using machine learning and optimization; and quantify the certainty of their predictions using statistical models. This course aims to help students build a foundation of critical thinking and computational skills that will allow them to work with data in all fields related to the study of the mind (e.g. linguistics, psychology, philosophy, cognitive science, neuroscience).
+
+**Prerequisites**: There are *no prerequisites beyond high school algebra*. No prior programming or statistics experience is necessary, though you will still enjoy this course if you already have a little. Students who have taken several computer science or statistics classes should look for a more advanced course.
+
+**Instructor**: [Dr. Katie Schuler (she/her)](https://kathrynschuler.com)
+
+**TAs**: [Brittany Zykoski](mailto:zykoski@sas.upenn.edu) and [Wesley Lincoln](mailto:wlincoln@sas.upenn.edu ) 
+
+**Lectures**: Tuesdays and Thursdays from 12 - 1:29pm in COHN 402.
+
+**Labs**: Hands-on practice and exam prep guided by TAs.
+
+* 402: Fri at 3:30p in WILL 201 with Brittany
+* 403: Thu at 1:45p in WILL 321 with Wesley
+* ~~404: Thu at 3:30p~~ **CANCELLED** 
+* 405: Fri at 12:00p in ~~WILL 316~~ **WILL 306** with Wesley 
+* 406: Thu at 5:15p in TBD with Brittany
+
+**Office Hours**: You are welcome to attend any office hours that fit your schedule. The linguistics department is located on the 3rd floor of 3401-C Walnut street, between Franklin's Table and Modern Eye. 
+
+- Katie Schuler: 11:30-12:30 on Fridays in 314C
+- Brittany Zykoski: 10:30-11:30 on Wednesdays in 325C
+- Wesley Lincoln: 2-3 on Mondays in 325C
+
+**Grading**:
+
+- 40% Homework (equally weighted, lowest dropped)
+- 60% exams (equally weighted, final is optional to replace lowest exam)
+
+**Collaboration**: Collaboration on problem sets is highly encouraged! If you collaborate, you need to write your own code/solutions, name your collaborators, and cite any outside sources you consulted (you don't need to cite the course material).
+
+
+
+**Accomodations**: We will support any accommodations arranged through Disability Services via the [Weingarten Center](https://weingartencenter.universitylife.upenn.edu/disability-services/). Please make arrangements as soon as possible (1-2 weeks in advance).
+
+**Extra credit**: There is no extra credit in the course. However, students can submit any missed problem set or exam by the end of the semester for half credit (50%).  To ensure fair treatment, all students will receive a 1% "bonus" to their final course grade: 92.54% will become 93.54%.
+
+**Regrade requests** Regrade requests should be submitted through Gradescope within one week of receiving your graded assignment. Please explain why you believe there was a grading mistake, given the posted solutions and rubric
+
+
+
+
+
+
+
+

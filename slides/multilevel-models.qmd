@@ -1,0 +1,375 @@
+---
+title: "Week 15: Multilevel models"
+subtitle: "Data Science for Studying Language and the Mind"
+author: Katie Schuler
+date: 2024-12-05
+echo: true
+format: 
+    revealjs:
+        chalkboard: true
+        slide-number: true
+        incremental: true 
+        footer: "[https://kathrynschuler.com/datasci](https://kathrynschuler.com/datasci/)"
+---
+
+```{r}
+#| echo: false
+library(tidyverse)
+library(tidymodels)
+library(infer)
+library(easystats)
+library(lme4)
+library(languageR)
+theme_set(theme_classic(base_size = 20))
+set.seed(123)
+
+```
+
+## Announcements {.smaller}
+
+
+- You must attempt pset06 to be elligible to drop a pset (canvas reflects your grade now)
+  - No, you can't turn it in blank -- a good faith attempt
+- Please complete the Final exam survey on canvas if you haven't already
+  - Required to receive 1% bonus to final course grade (90% becomes 91%)
+- Wesley is repairing the small hiccup in pset grading (each out of different point values)
+- Regrade requests for Exam 2 considered tonight 
+
+
+
+
+
+## You are `here` {.smaller} 
+
+:::: {.columns}
+
+::: {.column width="33%"}
+
+##### Data science with R 
+::: {.nonincremental}
+- R basics
+- Data visualization
+- Data wrangling
+:::
+:::
+
+::: {.column width="33%"}
+
+##### Stats & Model building
+::: {.nonincremental}
+- Sampling distribution
+- Hypothesis testing
+- Model specification
+- Model fitting 
+- Model accuracy
+- Model reliability
+:::
+:::
+
+::: {.column width="33%"}
+
+##### More advanced 
+::: {.nonincremental}
+
+- Classification
+- `Mixed-effect models`
+::: 
+:::
+
+::::
+
+# Addressing the elephant
+
+![](/assests/images/elephant.jpg)
+
+##  Conditions for inference
+
+- Up until now, there is no math reason we can't fit a model (mostly)
+- But when we start **interpreting** and **using statistical inference** we have to be more careful. We want to infer something about the population. 
+- Certain conditions need to be met for the results of hypothesis tests and confidence intervals to have intepretable meanings. 
+
+## What are the conditions? 
+
+1. Linearity
+2. Normality of residuals
+3. Homogeneity of variance
+4. Independence 
+
+. . . 
+
+We can check Linearity, Normality, and Equality with `check_model()`. But the independence condition can only be verified through an understanding of how the data was collected. 
+
+## 1. Linearity {.smaller}
+
+The relationship between the response and explantory variables must be linear. The model assumes that the response variable can be expressed as a linear combination (weighted sum of inputs). 
+
+. . . 
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+![](/assests/images/assume-linearity-bad.png)
+
+:::
+
+::: {.column width="50%"}
+
+![](/assests/images/assume-linearity-good.png)
+
+
+:::
+
+::::
+
+## Reminder: residuals  {.smaller}
+
+. . . 
+
+![](/assests/images/residuals.png)
+
+
+## 2. Normality {.smaller}
+
+The residuals should be a **normal distribution** centered at zero. 
+
+. . . 
+
+![](/assests/images/assume-normality.png)
+
+. . . 
+
+Important for hypothesis testing, because many theoretical distributions (t-test, F-test, etc) assume a normal distribution. 
+
+## 3. Homogeneity of variance {.smaller}
+
+The residuals should have **equal variance** across all values of the explanatory variables (homoscedasticity). The value/spread of residuals should not depend on the value of our explanatory variable. 
+
+. . . 
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+![](/assests/images/assume-equality-bad.png)
+
+:::
+
+::: {.column width="50%"}
+
+![](/assests/images/assume-equality-good.png)
+
+
+:::
+
+::::
+
+. . . 
+
+Important because unequal variances can distort the standard errors of our parameter estimates (unreliable estimates of reliability!)
+
+
+## 4. Independence 
+
+The observations in our data must be independent. Important because this can inflate our test statistics
+
+
+# Multilevel models 
+
+
+
+## 🥸 Aliases of multilevel models 
+
+- Mixed models
+- Mixed effect models 
+- Hierarchical models 
+- Mixed effect regression
+- Probably even more!
+
+## Basics of multilevel models
+
+A great visualization: [http://mfviz.com/hierarchical-models/](http://mfviz.com/hierarchical-models/)
+
+--- 
+
+![](/assests/images/hm-intro.png)
+
+--- 
+ 
+
+![](/assests/images/hm-nested-data.png)
+
+--- 
+
+![](/assests/images/hm-linear.png)
+
+--- 
+
+![](/assests/images/hm-intercepts.png)
+
+--- 
+
+![](/assests/images/hm-slopes.png)
+
+--- 
+
+![](/assests/images/hm-slopes-and-intercepts.png)
+
+--- 
+
+
+# Demo with `lexdec`
+
+```r
+library(languageR)
+```
+
+## Lexical decision data {.smaller}
+
+```{r}
+lexdec %>% glimpse
+```
+
+## Explore RT by Frequency {.smaller}
+
+```{r}
+ggplot(lexdec, aes(x = Frequency, y = RT)) +
+  geom_point()
+```
+
+## Model RT by Frequency {.smaller}
+
+```{r}
+model <- lm(RT ~ Frequency, data = lexdec) 
+summary(model)
+
+```
+
+
+## Plot the model {.smaller}
+
+```{r}
+ggplot(lexdec, aes(x = Frequency, y = RT)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+```
+
+
+## Check assumptions  {.smaller}
+
+```{r}
+check_model(model)
+```
+
+## Is independence violated? {.smaller}
+
+```{r}
+lexdec %>% 
+  group_by(Subject) %>% 
+  tally()
+```
+
+## Can we just add subject? {.smaller}
+
+```{r}
+model_subj <- lm(RT ~ Frequency + Subject, data = lexdec)
+summary(model_subj)
+```
+
+Math says yes! But this is not a great idea. 
+
+## The model specification {.smaller}
+
+in R: 
+
+```r
+RT ~ Frequency + Subject
+```
+
+. . . 
+
+in Eq:
+
+\begin{align}
+RT_i &= \beta_0 + \beta_1 \cdot \text{Frequency}_i + \beta_2 \cdot \text{Subject}_2 + \beta_3 \cdot \text{Subject}_3 \\
+ &+ \beta_4 \cdot \text{Subject}_4 + \beta_5 \cdot \text{Subject}_5 + \cdots + \beta_{21} \cdot \text{Subject}_{21} + \epsilon_i
+\end{align}
+
+
+## Solution: multilevel-model! {.smaller}
+
+`lmer` instead of `lm` and include random intercepts 
+
+```{r}
+model_multi <- lmer(RT ~ Frequency + (1|Subject), data = lexdec)
+
+```
+
+. . . 
+
+```{r}
+summary(model_multi)
+```
+
+## Model specification {.smaller}
+
+\begin{align}
+RT_{ij} &= \beta_0 + \beta_1 \cdot \text{Frequency}_i + u_j + \epsilon_{ij} 
+\end{align}
+
+In a fitted model:
+
+- $\beta_0$ is overall intercept
+- $\beta_1$ is the fixed effect of frequency on RT 
+- $u_j$ is the  random intercept for subject $j$, representing the **individual deviation** for each subject from the overall mean RT. 
+
+## Returning the random effects {.smaller}
+
+We can get the value of $u_j$ for each subject with ranef. 
+
+```{r}
+# Get the random effects (u_j values)
+ranef(model_multi)
+```
+
+## Plotting the model with predict {.smaller}
+
+```{r}
+lexdec_w_predict <- lexdec %>%
+  mutate(prediction = predict(model_multi, lexdec)) %>%
+  mutate(prediction_fixed = predict(model_multi, lexdec, re.form = NA)) %>%
+  select(Subject, Word, Frequency, RT, prediction, prediction_fixed)
+
+lexdec_w_predict %>% filter(Frequency == 4.859812)
+```
+
+## Plotting the model with predict {.smaller}
+
+```{r}
+lexdec_w_predict %>%
+  ggplot(aes(x = Frequency, y = RT)) +
+  geom_point(alpha = 0.5) +
+  geom_line(aes(color = Subject, y = prediction)) 
+```
+
+## Plotting the model with predict {.smaller}
+
+```{r}
+lexdec_w_predict %>%
+  ggplot(aes(x = Frequency, y = RT)) +
+  geom_point(alpha = 0.5) +
+  geom_line(aes(color = Subject, y = prediction)) +
+  geom_line(aes(y = prediction_fixed), linewidth = 3, color = "blue")
+```
+
+## All of our usual stuff applies! 
+
+
+```{r}
+summary(model_multi)
+
+```
+
+- we can't use infer anymore, but all the rest!
+
+# Thanks for a great semester!

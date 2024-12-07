@@ -1,0 +1,21 @@
+# Schedule 
+
+| Week | Begins |  Topic | Practice | Due on Monday  |
+| -  | -- |  ------- | --- | ---- |
+| 1 | Aug 26 | [R Basics](/notes/r-basics.qmd) |  [Lab 1](labs/lab-01.qmd) | |
+| 2 | Sep 2 | [Data visualization](notes/data-visualization.qmd) |  [Lab 2](labs/lab-02.qmd) |  |
+| 3 | Sep 9 | [Data import, tidy, wrangle](notes/data-wrangling.qmd) |  [Lab 3](labs/lab-03.qmd) | [Problem set 1](psets/pset-01.qmd) |
+| 4 | Sep 16 | [Sampling distribution](notes/sampling-distribution.qmd) |  [Lab 4](labs/lab-04.qmd) |  | 
+| 5 | Sep 23 | [Hypothesis testing (Thu)](notes/hypothesis-testing.qmd)<br>[Exam 1 review (Fri)](notes/exam-1-review.qmd)  | [Lab 5](labs/lab-05.qmd) | [Problem set 2](/psets/pset-02.qmd) |
+| 6 | Sep 30 | [Exam 1 (Tue in class)](exams/exam-01.qmd)<br> **Fall break** (Thu)| | |
+| 7 | Oct 7 | [Model specification](notes/model-specification.qmd) |  [Lab 6](labs/lab-06.qmd) |  | 
+| 8 | Oct 14 | [Applied model specification](notes/model-specification-applied.qmd) | [Lab 7](labs/lab-07.qmd) | | 
+| 9 | Oct 21 | [Model fitting](notes/model-fitting.qmd) | [Lab 8](labs/lab-08.qmd) | [Problem set 3](psets/pset-03.qmd)  | 
+| 10 | Oct 28 | [Model accuracy](notes/model-accuracy.qmd) | [Lab 9](labs/lab-09.qmd) |  |
+| 11 | Nov 4 | **Election day & conference (no class)** | No lab | [Problem set 4](psets/pset-04.qmd)  |
+| 12 | Nov 11 | [Model reliability (Tue)](notes/model-reliability.qmd)<br>[Classification (Thu)](https://docs.google.com/presentation/d/1y6AdgBK51n_8XAVVnaMXy10Qi-OVWeOlVy86fn_rT90/edit?usp=sharing) |  [Lab 10](labs/lab-10.qmd) | | 
+| 13 | Nov 18 | [Exam 2 review (Tue)](https://app.sli.do/event/cxU1dzVyvnxR3gtzH3LT6g/live/questions)<br> [Exam 2 (Thu)](exams/exam-02.qmd) |  | ~~Problem set 5~~    | 
+| 14 | Nov 25 |**Thanksgiving break (no class)**  |   |
+| 15 | Dec 2 | [Model extrapolation (Tue)](https://colab.research.google.com/drive/1muawzmVzjpCZgWaUlDE07cdHBhsLa1Fg?usp=sharing)<br>[Multilevel models](slides/multilevel-models.qmd) |  Lab is Pset 6 support |  |
+| 16 | Dec 9 | Last day of classes (no class) |   | [Problem set 6](psets/pset-06.qmd) |
+| 17 | Dec 19 | Final exam at noon (optional) | 

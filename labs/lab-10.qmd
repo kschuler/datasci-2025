@@ -1,0 +1,365 @@
+---
+title:  "Lab 10"
+subtitle: "Not graded, just practice"
+date:   2024-11-14
+author: Katie Schuler
+number-sections: false
+---
+
+```{r}
+#| echo: false
+#| message: false
+
+library(webexercises)
+library(tidyverse)
+library(optimg)
+library(tidymodels)
+theme_set(theme_gray(base_size = 16))
+set.seed(60)
+
+data_n10 <- read_csv("http://kathrynschuler.com/datasets/model-reliability-sample10.csv") 
+data_n200 <- read_csv("http://kathrynschuler.com/datasets/model-reliability-sample200.csv") 
+```
+
+
+## 1 Model reliability 
+
+a. As we collect more data, our parameter estimates
+
+```{r}
+#| echo: false
+#| results: asis
+
+# Define the answer choices
+choices <- c(
+    answer = "become more reliable",
+    "become less reliable", 
+    "stay the same"
+)
+
+cat(longmcq(choices))
+```
+
+b. Each figure below plots 100 bootstrapped models with data drawn from the same population. In one figure, the model is fit to 10 data points. In the other, each model is fit to 200 data points. Which figure shows the model fit to 200 data points? 
+
+```{r}
+#| echo: false
+#| layout-ncol: 2
+
+bootstrapped_fits <- data_n10 %>%
+  specify(y ~ x) %>%
+  generate(reps = 100, type = "bootstrap") %>%
+  fit()
+
+bootstrapped_fits_wide <- bootstrapped_fits %>%
+  spread(term, estimate)
+
+ggplot(
+  data = data_n10,
+  mapping = aes(x = x, y = y)
+) +
+  geom_point(alpha = 0) +
+  geom_abline(data = bootstrapped_fits_wide,
+     aes(slope =  x, intercept = intercept, group = replicate), alpha = 0.05)  +
+  labs(tag = "A")
+
+
+bootstrapped_fits <- data_n200 %>%
+  specify(y ~ x) %>%
+  generate(reps = 100, type = "bootstrap") %>%
+  fit()
+
+bootstrapped_fits_wide <- bootstrapped_fits %>%
+  spread(term, estimate)
+
+ggplot(
+  data = data_n200,
+  mapping = aes(x = x, y = y)
+) +
+  geom_point(alpha = 0) +
+  geom_abline(data = bootstrapped_fits_wide,
+     aes(slope =  x, intercept = intercept, group = replicate), alpha = 0.05)  +
+  #geom_smooth(method = "lm", formula = "y ~ x", se = FALSE, linewidth = 2) +
+  labs(tag = "B")
+
+```
+
+```{r}
+#| echo: false
+#| results: asis
+
+# Define the answer choices
+choices <- c(
+    "Figure A",
+    answer = "Figure B", 
+    "Both figures have the same number of data points"
+)
+
+cat(longmcq(choices))
+```
+
+c. As we collect more data, what happens to the confidence interval around our parameter estimates? 
+
+```{r}
+#| echo: false
+#| results: asis
+
+# Define the answer choices
+choices <- c(
+    "It gets bigger (wider)",
+    "It stays the same", 
+    answer = "It gets smaller (narrower)"
+)
+
+cat(longmcq(choices))
+```
+
+d. True or false, we can obtain confidence intervals around parameter estimates for models in the same we we did for point estimates like the mean. 
+
+```{r}
+#| echo: false
+#| results: asis
+
+# Define the answer choices
+choices <- c(answer = "True", "False")
+
+cat(longmcq(choices))
+
+```
+
+e. Model reliability asks how certain we can be about our parameter estimates. Why is there uncertainty around our parameter estimates? 
+
+```{r}
+#| code-fold: true
+#| code-summary: "answer"
+#| eval: false
+"Because we are interested in the model parameters that 
+best describe the population from which the sample was
+ drawn. Due to sampling error, we can expect some 
+ variability in the model parameters."
+
+```
+
+f. The figure below shows the model fit for a sample of 10 participants. Suppose we repeated our experiment with 10 new participants. True or false, fitting the same model to these new data would yield approximately the same parameter estimates. 
+
+```{r}
+#| echo: false
+#| results: asis
+
+# Define the answer choices
+choices <- c("True", answer = "False")
+
+cat(longmcq(choices))
+
+```
+
+g. True or false, a model with high accuracy must also have high reliability.
+
+```{r}
+#| echo: false
+#| results: asis
+
+# Define the answer choices
+choices <- c("True", answer="False")
+
+cat(longmcq(choices))
+
+```
+
+## 2 Classification 
+
+a. Which of the following aspects of model building apply to classification models? (Choose all that apply)
+
+```{r}
+#| echo: false
+#| results: asis
+
+# Define the answer choices
+choices <- c(
+    answer="specify",
+    answer="fit",
+    answer="accuracy", 
+    answer="reliability"
+)
+
+cat(longmcq(choices))
+```
+
+b. What is the difference between regression and classification? 
+
+```{r}
+#| code-fold: true
+#| code-summary: "answer"
+#| eval: false
+"Regression predicts a continuous response varaible, 
+classification predicts a discrete response variable"
+
+```
+
+c. Which accuracy metric is best applied to classification models? 
+
+```{r}
+#| echo: false
+#| results: asis
+
+# Define the answer choices
+choices <- c(
+    "R squared",
+    "RMSE",
+    answer ="Pecent correct",
+    "All of the above"
+)
+
+cat(longmcq(choices))
+```
+
+d. In the figure below, which aspect shows the response variable? 
+
+![](/assests/images/pquiz4-3d.png)
+
+```{r}
+#| echo: false
+#| results: asis
+
+# Define the answer choices
+choices <- c(
+    "x-axis",
+    "y-axis",
+    answer ="color of points",
+    "blue line"
+)
+
+cat(longmcq(choices))
+```
+
+e. Which figure below could show a plotted classification model? Choose all that apply.
+
+![](/assests/images/pquiz4-3e.png)
+
+
+```{r}
+#| echo: false
+#| results: asis
+
+# Define the answer choices
+choices <- c(
+    answer = "Figure A",
+    answer = "Figure B",
+    answer = "Figure C"
+)
+
+cat(longmcq(choices))
+```
+
+
+f. Name two kinds of linear classifiers
+
+```{r}
+#| code-fold: true
+#| code-summary: "answer"
+#| eval: false
+"Any 2 of those mentioned in class: 
+Logistic regression
+Linear discriminant analysis (LDA)
+Linear support vector machines (SVM)
+Nearest-prototype classifiers
+Naive Bayes classifiers
+"
+
+```
+
+
+## 4 Classification in R 
+
+a. We can impliment classification via `r mcq(c("linear regression", "cubic polynomials", answer =  "logistic regression", "nearest-neighbor regression", "all of the above"))`
+
+b. True or false, in R, we can perform logistic regression with a generalized linear model. 
+
+```{r}
+#| echo: false
+#| results: asis
+
+# Define the answer choices
+choices <- c(answer="True", "False")
+
+cat(longmcq(choices))
+
+```
+
+c. What 3 elements do all GLMs have? 
+
+```{r}
+#| code-fold: true
+#| code-summary: "answer"
+#| eval: false
+"1. A particular distribution for modeling the response variable
+2. A linear model 
+3. A link function
+"
+
+```
+
+d. What is the link function for logistic regression? 
+
+```{r}
+#| echo: false
+#| results: asis
+
+# Define the answer choices
+choices <- c(
+    answer = "logistic function", 
+    "polynomial expansion",
+    "log transformation",
+    "inverse transformation"
+)
+
+cat(longmcq(choices))
+
+```
+
+f. Which of the following fits a logistic regression model in R? Choose one.
+
+
+```r
+# code A
+glm(y ~ x, data = data, family = "binomial")
+
+# code B
+data %>%
+    specify(y ~ x) %>%
+    fit() 
+
+# code C 
+logistic_reg %>%
+    set_engine("glm") %>%
+    fit(y ~ x, data = data)
+```
+
+```{r}
+#| echo: false
+#| results: asis
+
+# Define the answer choices
+choices <- c(
+    "code A", 
+    "code B",
+    "code C",
+    "code A and B only",
+    answer = "all of the above"
+)
+
+cat(longmcq(choices))
+
+```
+
+
+
+
+
+
+
+
+
+
+
+

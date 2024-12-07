@@ -1,0 +1,581 @@
+---
+title:  "Lab 3: Data wrangling"
+subtitle: "Not graded, just practice"
+date:   2024-09-12
+author: Katie Schuler
+---
+
+```{r}
+#| echo: false
+library(languageR)
+library(webexercises)
+```
+
+# Materials from lab {.unnumbered}
+
+- [Brittany's slides](/assests/pdfs/lab-03-brittany.pdf)
+- [Wesley's slides](/assests/pdfs/lab-03-wesley.pdf)
+
+# Tidy
+
+## Tidyverse
+
+1. What is the relationship between tidyverse and readr? 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        "tidyverse is a package in the readr family of packages", 
+        answer ="readr is a package in the tidyverse family of packages",
+        "tidyverse and readr are two unrelated packages",
+        "tidyverse and reader are two names for the same package"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+1. In the tidyverse, what does "tidy data" refer to? 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        "any data we load into the tidyverse",
+        "a dataset with no missing values",
+        answer="a standard way to organize a dataset",
+        "the process of cleaning a dataset"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+1. What is the purpose of the `purrr` package? 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        "Data visualization",
+        "Data wrangling",
+        "Data importing",
+        answer="Functional programming",
+        "All of the above"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+1. What is the primary purpose of the `readr` package? 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        "Data visualization",
+        "Data wrangling",
+        answer="Data importing",
+        "Functional programming",
+        "All of the above"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+1. Which of the following returned this message? 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+    library(tidyverse)
+
+    # Define the answer choices
+    choices <- c(
+        answer="`library(tidyverse)`",
+        "`family(tidyverse)`",
+        "`library.collection(tidyverse)`",
+        "`library(tidyverse, report=TRUE)`"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+
+## purrr 
+
+Suppose we have the following tibble, stored with the variable `df`. 
+
+```{r}
+#| echo: false
+
+df <- tibble(
+    x = 1:4,
+    y = 5:8,
+    z = 9:12
+)
+print(df)
+```
+
+1. What will `map(df, mean)` return? 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        "the mean of each row",
+        answer="the mean of each column",
+        "the mean of all values",
+        "Error: cannot compute mean of type integer"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+
+2. Suppose we wanted to coerce each column in the previous tibble to the data type `double` with one line of code. Fill in the two arguments to `map` that would accomplish this: 
+
+- map(`r fitb("df", width = 10)`, `r fitb("as.double", width = 10)`)
+
+
+
+## Tibbles
+
+Suppose we run the following code block and create 3 tibbles: 
+
+```r
+# create tibble tib
+tib <- tibble(x = 1:2, y = c("a", "b"))
+
+# create tibble x 
+x <- tribble(
+    ~x, ~y, 
+    2, 3, 
+    4, 5
+)
+
+# create tibble tibby
+tibby <- tibble(
+        age = c(1, 2, 3, 5),
+        name = c("dory", "hazel", "graham", "joan"),
+        alt_name = c("dolores", NA, NA, "joanie")
+    )
+```
+
+
+1. What will `is.data.frame(tib)` return? 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(answer ="True","False")
+
+    cat(longmcq(choices))
+    ```
+
+1. What will `typeof(tib)` return? 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        "double", 
+        "character",
+        "'double' • 'character'",
+        answer ="list",
+        "tibble",
+        "data.frame"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+1. What will `is_tibble(x)` return? 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        answer ="True",
+        "False"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+1. Which of the following would convert a dataframe called `df` to a tibble? (note that `df` is not defined above, consider any artibrary dataframe) 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        answer ="`as_tibble(df)`", 
+        "`as.data.frame(df, tibble)`",
+        "`tribble(df)`",
+        answer ="`df %>% as_tibble()`",
+        answer = "`df |> as_tibble()`"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+
+1. What will `tibby$a` return?
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        answer="a warning and the value NULL", 
+        "`age` via partial matching",
+        "`age` and `alt_name` via partial matching",
+        "`hazel`, `graham`, `joan`, and `joanie` via partial matching",
+        "an empty vector"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+
+# Import 
+
+The questions below refer to this dataset borrowed from R4DS and available at the url [https://pos.it/r4ds-students-csv](https://pos.it/r4ds-students-csv). 
+
+![](/assests/images/rectangle-data.png){fig-align="center" width=60%}
+
+
+1. What does the csv in `read_csv()` stand for? Fill in the blank. 
+
+- `r fitb("comma", width = 10)` separated values 
+
+
+2. Suppose we attempt to import the csv file given above with the code below. What will be the result? 
+
+    ```r
+    data <- read_csv("https://pos.it/r4ds-students-csv",
+        col_types = list(AGE = col_double())
+    )
+    ```
+
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        "imports with no errors or warnings",
+        "fails to import, throws error", 
+        answer="imports, but with a warning that there are parsing issues",
+        "imports, but changes the column name to `age`"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+
+
+3. Suppose we import the dataset given above and name it `data`. What will `is.na(data[3,3])` return? 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        "True",
+        answer="False"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+4. Suppose we import the dataset given above and name it `data`. Which of the following would return the first column? 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        answer="`data[1]`",
+        answer="`data[[1]]`",
+        "`data[[Student ID]]`",
+        answer="`` data$`Student ID` ``"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+5. True or false, assuming the same dataset the following code would rename the `Student ID` column to `student_id`? 
+
+    ```r
+    data %>% rename(student_id = `Student ID`)
+    ```
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        answer="True",
+        "False"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+6. True or false, we can use a `read_*()` function from `readr` to import a google sheet.
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        "True",
+        answer="False"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+# Transform 
+
+1. Which of the following `dplyr` functions retuns a data frame? 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        answer ="`select()`", 
+        answer ="`mutate()`", 
+        answer ="`filter()`",
+        answer ="`rename()`",
+        "None of the above"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+
+1. Which of the following `dplyr` functions takes a number as their first argument? 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        "`select()`", 
+        "`mutate()`", 
+        "`filter()`",
+        "`rename()`",
+        answer = "None of the above"
+    )
+
+    cat(longmcq(choices))
+    ``` 
+
+
+1. True or false, the following code blocks are equivalent. 
+
+    ```r
+    # option 1
+    ratings %>% select(Word, Frequency) %>% glimpse()
+
+    # option 2
+    glimpse(select(ratings, Word, Frequency))
+
+    ```
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(answer="True", "False")
+
+    cat(longmcq(choices))
+    ```
+
+
+ 
+1. True or false, the following code options are equivalent 
+
+
+    ```r
+    # option 1
+    ratings %>% 
+        select(Word:Class) %>% 
+        mutate(Length/Frequency, .after = Class)
+
+    # option 2
+    ratings %>% 
+        select(Word:Class) %>% 
+        mutate(Length/Frequency)
+
+    ```
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(answer="True", "False")
+
+    cat(longmcq(choices))
+    ```
+
+1. Recall that there are two possible values in the `Class` variable in the `ratings` dataset: "animal" or "plant". How many rows would be in the data frame returned by the following code block? 
+
+    `ratings %>% group_by(Class) %>% summarise(n = n())`
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        0, 
+        2, 
+        answer = 4, 
+        81
+    )
+
+    cat(longmcq(choices))
+    ```
+   
+
+    
+
+1. Given the code block in the previous question, what will `n()` do? 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        "summarize all classes including the letter n",
+        answer = "count the number of rows per Class",
+        "adds the string `n` before each value of Class",
+        "error: missing arguments to n()"
+
+    )
+
+    cat(longmcq(choices))
+    ```
+
+1. True or false, the following code blocks will return the same dataframe
+
+    ```r
+    # code block 1
+    ratings %>% select(complexity = Complex) 
+
+
+    # code block 2
+    ratings %>% rename(complexity = Complex)
+    ```
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c("True", answer="False")
+
+    cat(longmcq(choices))
+    ```
+
+
+1. Which of the following code blocks will return a dataframe including only the rows in `ratings` for which the Class value is "animal"? 
+
+    ```r
+    # code block a
+    ratings %>% filter(Class = "animal")
+
+    # code block b
+    ratings %>% filter(Class == "animal")
+    ```
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c("a", answer="b", "both a and b")
+
+    cat(longmcq(choices))
+    ```
+
+
+1. By default the `arrange()` function arranges the rows in ascending order. Which of the following code blocks would arrange the Frequency variable in descending order? 
+
+    ```r
+    # code block a
+    ratings %>% arrange(Frequency, order = "descending")
+
+    # code block b
+    ratings %>% arrange(Frequency, order = "reverse")
+
+    # code block c
+    ratings %>% arrange(desc(Frequency))
+    ```
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c("a", "b", answer ="c", "a and b", "a and c")
+
+    cat(longmcq(choices))
+    ```
+
+
+1. Which of the following code blocks could be used to return the mean frequency by class? 
+
+    ```r
+    # code block a
+    ratings %>% group_by(Class) %>% summarise( mean = mean(Frequency) )
+
+    # code block b
+    ratings %>% summarise( 
+        mean = mean(Frequency), .by = c(Class) )
+
+    # code block c
+    ratings %>% mean(Frequency) %>% group_by(Class)
+    ```
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c("a only", "b only", "c only", answer="a and b", "b and c", "a, b, and c")
+
+    cat(longmcq(choices))
+    ```

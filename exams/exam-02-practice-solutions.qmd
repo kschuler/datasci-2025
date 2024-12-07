@@ -1,0 +1,491 @@
+---
+title:  "(Practice) Exam 2"
+subtitle: "Data Science for Studying Language & the Mind"
+# author: 
+#     name: Katie Schuler
+#     affiliation: University of Pennsylvania
+number-sections: false
+format: 
+  pdf: default
+
+---
+
+**Instructions**
+
+You have **1 hours and 30 minutes** to complete the exam. 
+
+- The exam is closed book/note/computer/phone except for the provided reference sheets
+- If you need to use the restroom, leave your exam and phone with the TAs
+- If you finish early, you may turn in your exam and leave early
+
+<!-- For all multiple choice questions, **only one choice is correct**: 
+
+- [ ] Choose this option
+- [ ] Or this option, but not both! -->
+
+```{r}
+#| echo: false
+#| message: false
+library(tidyverse)
+```
+
+\newcommand\answerbox{%%
+    \framebox(400,50){}}
+
+\newcommand\shorteranswerbox{%%
+    \framebox(400,20){}}
+
+\newcommand\biggeranswerbox{%%
+    \framebox(400,100){}}
+
+
+
+**Preliminary questions**
+
+Please complete these questions *before* the exam begins. 
+
+(a) **(1 point)** What is your full name? 
+
+    \shorteranswerbox
+
+(b) **(1 point)** What is your penn ID number? 
+
+    \shorteranswerbox
+
+(c) **(1 point)** What is your lab section TA's name? 
+
+    \shorteranswerbox
+
+(d) **(1 point)** Who is sitting to your left? 
+
+    \shorteranswerbox
+
+(e) **(1 point)** Who is sitting to your right? 
+
+    \shorteranswerbox
+
+
+\clearpage
+
+
+
+
+```{r}
+#| echo: false
+#| message: false
+
+library(tidyverse)
+library(tidymodels)
+library(optimg)
+theme_set(theme_gray(base_size = 16))
+```
+
+```{r}
+#| echo: false
+
+set.seed(1234)
+beta0 = 60
+beta1 = 0.8
+beta2 = 0.2
+data <- tibble(
+    hours = runif(500, min = 0, max = 100), # time practicing
+    instrument_recoded = sample(c(1, 0), 500, replace = TRUE),
+    skill = beta0+(beta1*hours) + (beta2*instrument_recoded) + rnorm(500, sd=25)
+) %>% mutate(instrument = ifelse(instrument_recoded == 1, "piano", "guitar"))
+
+```
+
+
+## The data
+
+Suppose we want to study the effect hours practicing an instrument has on your ultimate skill level with the instrument. We study 500 participants who are learning to play either piano or guitar. Below we explore these data in a few ways. 
+
+```{r}
+glimpse(data)
+```
+
+```{r}
+#| echo: false
+
+ggplot(data = data, aes(x = hours, y = skill)) + 
+    facet_grid(.~ instrument) +
+    geom_point()
+
+```
+
+```{r}
+data %>% 
+    group_by(instrument) %>%
+    summarise( 
+        n = n(), 
+        mean_skill = mean(skill), sd_skill = sd(skill), 
+        mean_hours = mean(hours), sd_hours = sd(hours))
+
+```
+
+## 1 Model Fitting 
+
+Suppose we fit a model represented by the following equation, where $x_1$ is the number of hours spent practicing, $x_2$ is the instrument, and $y$ is the skill acheived: 
+
+$y = b_0 + b_1x_1 + b_2x_2$ 
+
+(a) Which of the following would work to estimate the free parameters of this model? Choose one.
+
+    - [ ] only gradient descent
+    - [ ] only ordinary least squares
+    - [x] both gradient descent and ordinary least squares
+
+(b) True or false, when performing gradient descent on a **nonlinear** model, we might arrive at a local minimum and miss the global one.
+
+    - [x] True
+    - [ ] False
+
+(c) True or False, given the model above, gradient descent and ordinary least squares would both converge on approximately the same parameter estimates.
+
+    - [x] True
+    - [ ] False
+
+(d) The following plots a linear model of the formula `y ~ 1 + x` and one data point. Which dashed line represents the model's **residual** for this point? Circle one.
+
+![](/assests/images/quiz3-residuals.png){width=90%}
+
+> Line **C**
+
+\newpage
+
+## 2 Model Fitting in R 
+
+Questions in section 2 refer to the code below.
+
+```{r}
+#| echo: false
+
+model <- lm(skill ~ hours + instrument_recoded, data = data)
+
+SSE <- function(data, par){
+    data %>%
+        mutate(pred = 
+        par[1] + par[2]*hours + par[3]*instrument_recoded) %>%
+        mutate(error = skill - pred) %>%
+        mutate(sq_error = error ^2) %>%
+        with(sum(sq_error))
+}
+
+```
+
+```{r}
+
+model
+
+#fit model with optimg 
+optimg(data = data, par = c(1,1,1), fn=SSE, method = "STGD")
+
+```
+
+(a) Which of the following could be the model specification in R? Choose all the apply.
+
+    - [x] `skill ~ hours + instrument_recoded`
+    - [ ] `skill ~ hours * instrument_recoded`
+    - [x] `skill ~ 1 + hours + instrument_recoded`
+
+(b) In the code, `SSE()` is a function we have defined to calculate the sum of squared errors. Which of the following correctly describes the steps of calculating SSE? Choose one.
+
+    - [x] 1) calculate the residuals, 2) square each of the residuals, 3) add them up
+    - [ ] 1) calculate the residuals, 2) add them up, 3) square the sum of residuals
+    - [ ] 1) calculate the residuals, 2) calculate their standard deviation, 3) square it
+    - [ ] 1) calculate the residuals, 2) calculate their mean, 3) square it
+
+(c) Using the estimated parameters from `lm()`, fill in the blanks to calculate the model's predicted value of `skill` for a participant who played the **piano** for **20 hours**. You may round to the first decimal place.
+
+\hspace*{1cm}
+
+        skill = 58.9 + ( 0.8 * 20 ) + ( 0.7 * 1 )
+
+\hspace*{1cm}
+
+(d) Which of the following is the most likely value of the sum of squared errors when the parameters $b_0$, $b_1$, and $b_2$ are all set to 0? Choose one.
+
+    - [ ] exactly 0
+    - [ ] exactly 286497.6
+    - [x] a value higher than 286497.6
+    - [ ] a value lower than 286497.6
+
+
+## 3 Model Accuracy 
+
+Questions in section 3 refer to the following `summary()` of the same model from section 2:
+
+(a) Which of the following is a correct interpretation of the model's $R^2$ value? Choose one.
+
+    - [ ] The model has a 46.49% chance of explaining the true pattern in the data.
+    - [x] The model explains 46.49% of the variance found in the data.
+    - [ ] The sample shows 46.49% of the variance found in the population.
+
+(b) Which of the following is true about the model's $R^2$? Choose all that apply.
+
+    - [x] tends to overestimate $R^2$ on the population 
+    - [ ] tends to underestimate $R^2$ on the population
+    - [ ] tends to overestimate $R^2$ on the sample
+    - [ ] tends to underestimate $R^2$ on the sample
+
+\newpage
+
+(c) Which one of the following is true about $R^2$? Use the below formula as a guide and choose one.
+
+    $R^2=1-\frac{unexplained \; variance}{total \; variance}$
+
+    - [ ] The unexplained variance refers to the fact that linear model haveh low accuracy.
+    - [ ] The total variance is about the overall variability of the data in the population.
+    - [x] $R^2$ of 0 means that the model predicts the mean of the data but nothing else.
+    - [ ] $R^2$ of 1 means that the model will be perfect at predicting new data points.
+
+(d) Which of the following is a correct statement about estimating $R^2$ for the _population_? Choose all that apply.
+
+    - [ ] We can use OLS
+    - [x] We can use bootstrapping
+    - [x] We can use cross-validation
+    - [ ] We must go out and collect more samples from the population
+
+## 4 Model Accuracy in R 
+
+Questions in section 4 refer to the following code:
+
+```{r}
+# we divide the data 
+set.seed(2) 
+splits <- vfold_cv(data, v = 20)
+
+# model secification 
+model_spec <- 
+  linear_reg() %>%  
+  set_engine(engine = "lm")  
+
+# add a workflow
+our_workflow <- 
+  workflow() %>%
+  add_model(model_spec) %>%  
+  add_formula(skill ~ hours + instrument_recoded) 
+
+# fit models 
+fitted_models <- 
+  fit_resamples(object = our_workflow, 
+                resamples = splits) 
+
+fitted_models %>%
+  collect_metrics()
+```
+
+(a) In the output above, what is the $R^2$ estimate for the population?
+
+    - [ ] 23.8
+    - [x] 0.468
+    - [ ] 0.468 + 0.0267
+
+(b) In the code above, which method did we use to estimate $R^2$ on the population? Choose one.
+
+    - [x] k-fold cross-valiation 
+    - [ ] leave one out cross-valiation
+    - [ ] boostrapping 
+
+(c) In the code above, how many models did we fit when calling `fit_resamples()`? 
+
+    - [ ] 10
+    - [x] 20
+    - [ ] 100 
+
+(d) You are no longer doing a valid cross-validation if you change (choose all that apply):
+
+    - [ ] How many iterations you want to do.
+    - [ ] How much data you want to use for each part of training vs. testing.
+    - [x] Whether models are fitted to the entire sample instead of a part of the sample
+    - [x] Whether models are tested on the training data instead of the testing data
+
+
+```{r}
+#| echo: false
+#| message: false
+
+library(tidyverse)
+library(tidymodels)
+theme_set(theme_classic(base_size = 16))
+set.seed(60)
+
+data_n10 <- read_csv("http://kathrynschuler.com/datasets/model-reliability-sample10.csv") 
+data_n200 <- read_csv("http://kathrynschuler.com/datasets/model-reliability-sample200.csv") 
+```
+
+## 5 Model reliability 
+
+
+(a) True or false, as we collect more data, the confidence interval around our parameter estimates gets bigger (wider). 
+
+    - [ ] True
+    - [x] False
+
+(b) Model reliability asks how certain we can be about our parameter estimates. Why is there uncertainty around our parameter estimates? 
+
+    > Due to sampling error! Our goal is to find the parameters that would best describe the population, but we only have a small sample. If we took a different random sample, we'd get different parameter estimates. 
+
+(c) True or false, a model with low reliability also has low accuracy. 
+
+    - [ ] True
+    - [x] False
+
+(d) Suppose we conduct an experiment by drawing a random sample from the population. We fit a linear model to these data. Then we repeat our experiment 10 times, fitting the same model each time. Which figure could show the fitted models for the 10 experiments? Choose all that apply.
+
+
+    ```{r}
+    #| echo: false
+    #| layout-ncol: 3
+
+    bootstrapped_fits <- data_n10 %>%
+    specify(y ~ x) %>%
+    generate(reps = 10, type = "bootstrap") %>%
+    fit()
+
+    bootstrapped_fits_wide <- bootstrapped_fits %>%
+    spread(term, estimate)
+
+    ggplot(
+    data = data_n10,
+    mapping = aes(x = x, y = y)
+    ) +
+    geom_point(alpha = 0) +
+    geom_abline(data = bootstrapped_fits_wide,
+        aes(slope =  x, intercept = intercept, group = replicate))  +
+    labs(tag = "A", title = "10 different model fits")
+
+
+    bootstrapped_fits <- data_n200 %>%
+    specify(y ~ x) %>%
+    generate(reps = 10, type = "bootstrap") %>%
+    fit()
+
+    bootstrapped_fits_wide <- bootstrapped_fits %>%
+    spread(term, estimate)
+
+    ggplot(
+    data = data_n200,
+    mapping = aes(x = x, y = y)
+    ) +
+    geom_point(alpha = 0) +
+    geom_abline(data = bootstrapped_fits_wide,
+        aes(slope =  x, intercept = intercept, group = replicate))  +
+    #geom_smooth(method = "lm", formula = "y ~ x", se = FALSE, linewidth = 2) +
+    labs(tag = "B", title = "10 similar model fits")
+
+    ggplot(
+    data = data_n200,
+    mapping = aes(x = x, y = y)
+    ) +
+    geom_point(alpha = 0) +
+    geom_smooth(method = "lm", se = FALSE, color = "black", linewidth = 2, formula = "y ~ x") +
+    #geom_smooth(method = "lm", formula = "y ~ x", se = FALSE, linewidth = 2) +
+    labs(tag = "C", title = "10 identical model fits")
+
+    ```
+
+
+    - [x] Figure A
+    - [ ] Figure B
+    - [ ] Figure C
+
+\clearpage
+
+
+## 6 Nonlinear models 
+
+(a) Circle the figure below that plots the model represented by the equation $y = \beta_0 + \beta_1x_1 + \beta_2x_1^2$
+
+    ![](/assests/images/polynomials.png)
+
+> Figure **Quadratic function degree 2**
+
+
+(b) Which of the model specifications expresses a cubic polynomial model in R? 
+
+    - [ ] `y ~ poly(x, 1)`
+    - [ ] `y ~ poly(x, 2)`
+    - [x] `y ~ poly(x, 3)`
+    - [ ] `y ~ poly(x, 4)`
+
+(c) True or false, we can use `lm()` to fit a quadratic polynomial.
+
+    - [x] `True`
+    - [ ] `False` 
+
+(d) Which of the following aspects of model building apply to nonlinear models? Choose all that apply.
+
+    - [x] model specification
+    - [x] model fitting 
+    - [x] model accuracy 
+    - [x] model reliability 
+
+\clearpage
+
+
+## 7 Classification 
+
+(a) True or false, logistic regression is a linear classificaiton model. 
+
+    - [x] True
+    - [ ] False
+
+(b) What is the difference between regression and classification? 
+
+> If y is continuous, we call the problem "regression"; if y is discrete/categorical we call is classification
+
+(c) What accuracy metric(s) have we been applying to classification models? Choose all that apply.
+
+    - [x] Percent correct 
+    - [ ] $R^2$
+    - [ ] RMSE 
+    - [ ] Sum of squared error
+
+(d) True or false, each of the following figures can be modeled with a linear classifier. 
+
+    ![](/assests/images/pquiz4-3e.png)
+
+    - [x] True
+    - [ ] False 
+
+\clearpage
+
+## 8 Classification in R 
+
+(a) Which of the following can be used to fit a logistic regression model in R? Choose all that apply.
+
+    - [ ] `lm()`
+    - [x] `glm()`
+    - [ ] `poly()`
+    - [ ] `log()`
+
+(b) True or false, the link function in a generalized linear model **must be** the logistic function.
+
+    - [x] True
+    - [ ] False
+
+(c) Which of the following fits a logistic regression model in R? Choose all that apply. 
+
+    ```r
+    # code A
+    glm(y ~ x, data = data, family = "binomial")
+
+    # code B
+    data %>%
+        specify(y ~ x) %>%
+        fit() 
+
+    # code C 
+    linear_reg %>%
+        set_engine("lm") %>%
+        fit(y ~ x, data = data)
+    ```
+
+    - [x] Code A
+    - [x] Code B 
+    - [ ] Code C 
+
+(d) What 3 elements do all generalized linear models have? 
+
+> (1) a paticular distribution for modeling the response variable; (2) a linear model; (3) a link function 

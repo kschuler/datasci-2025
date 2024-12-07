@@ -1,0 +1,808 @@
+---
+title: "Sampling Distribution Demo"
+subtitle: "Data Science for Studying Language and the Mind"
+author: Katie Schuler
+date: 2024-09-17
+echo: true
+format: 
+    revealjs:
+        theme: dark
+        slide-number: true
+        incremental: true 
+        footer: "[https://kathrynschuler.com/datasci](https://kathrynschuler.com/datasci/)"
+---
+
+```{r}
+#| echo: false
+library(tidyverse)
+library(infer)
+theme_set(theme_classic(base_size = 20))
+set.seed(123)
+
+```
+
+
+## Announcements
+
+- My office hours now 11:30-12:30 on Fridays in 314C
+  - Same day, same location; just slightly different time
+- Pset 1 grading was holistic 
+  - But this was confusing for a lot of people
+  - Going forward, we will attach teeny tiny point deductions so grading is more transparent
+
+## You are `here` {.smaller} 
+
+:::: {.columns}
+
+::: {.column width="33%"}
+
+##### Data science with R 
+::: {.nonincremental}
+- R basics
+- Data visualization
+- Data wrangling
+:::
+:::
+
+::: {.column width="33%"}
+
+##### Stats & Model building
+::: {.nonincremental}
+- `Sampling distribution`
+- Hypothesis testing
+- Model specification
+- Model fitting 
+- Model accuracy
+- Model reliability
+:::
+:::
+
+::: {.column width="33%"}
+
+##### More advanced 
+::: {.nonincremental}
+
+- Classification
+- Inference for regression
+- Mixed-effect models
+::: 
+:::
+
+::::
+
+
+# Attribution 
+
+Inspired by a MATLAB course Katie took by Kendrick Kay 
+
+# Plan for today 
+
+Tuesday's lecture was conceptual. Today we will demo those concepts to try to understand them better. 
+
+# Descriptive statistics
+
+Let's first try to understand descriptive statistics a bit better by using a toy dataset. 
+
+## Creating a 'toy' dataset {.smaller}
+
+Suppose we create a tibble that measures a single quantity: how many minutes your instructor was late to class for 10 days. 
+
+```{r}
+#| echo: true
+#| output-location: column
+
+(data <- tibble(
+  late_minutes = c(1, 2, 2, 3, 4, 2, 5, 3, 3)
+))
+
+
+```
+
+. . . 
+
+We can sort the values with `arrange` to get a quick sense of the data 
+```{r}
+#| echo: true
+#| output-location: column
+
+data %>% 
+  arrange(late_minutes) 
+
+
+```
+
+## Summarize with descriptive statistics {.smaller}
+
+Recall tha twe can summarize (or describe) a set of data with `descriptive statistics` (aka summary statistics). There are three we typically use: 
+
+| Measure | Stats  | Describes | 
+| --- | --- | --- |
+| Central tendency | mean, median, mode | a central or typical value | 
+| Variability | variance, standard deviation, range, IQR | dispersion or spread of values |
+| Frequency  distribution | count | how frequently different values occur 
+
+## Frequency distribution {.smaller}
+
+We can create a visual summary of our dataset with a histogram, which plots the `frequency distribution` of the data. 
+
+```{r}
+#| echo: true
+#| output-location: column
+
+data %>%
+  ggplot(aes(x = late_minutes)) + 
+  geom_histogram() 
+
+```
+
+. . . 
+
+We can also get a count with `group_by()` and `tally()`
+
+```{r}
+#| echo: true
+#| output-location: column
+
+data %>% 
+  group_by(late_minutes) %>%
+  tally() 
+
+```
+
+## Central tendency {.smaller}
+
+Measure of central tendency describe where a central or typical value might fall 
+
+```{r}
+#| echo: true
+#| output-location: column
+
+data %>%
+  ggplot(aes(x = late_minutes)) + 
+  geom_histogram() 
+
+```
+
+. . . 
+
+We can get these with `group_by()` and `summarise()`
+
+```{r}
+#| echo: true
+#| output-location: column
+
+data %>% 
+  summarise(
+    n = n(), 
+    mean = mean(late_minutes), 
+    median = median(late_minutes)
+    )
+
+```
+
+
+## Variability {.smaller}
+
+Measures of variability which describe the dispersion or spread of values
+
+```{r}
+#| echo: true
+#| output-location: column
+
+data %>%
+  ggplot(aes(x = late_minutes)) + 
+  geom_histogram() 
+
+```
+
+. . . 
+
+We can also get these with `group_by()` and `summarise()`
+
+```{r}
+#| echo: true
+#| output-location: column
+
+data %>% 
+  summarise(
+    n = n(), 
+    sd = sd(late_minutes), 
+    min = min(late_minutes), 
+    max = max(late_minutes), 
+    lower = quantile(late_minutes, 0.25),
+    upper = quantile(late_minutes, 0.75) 
+    )
+
+```
+
+## Parametric descriptive statistics {.smaller}
+
+Some statistics are considered `parametric` because they make assumptions about the distribution of the data (we can compute them theoretically from parameters)
+
+## Mean {.smaller}
+
+The mean is one example of a parametric descriptive statistic, where $x_{i}$ is the $i$-th data point and $n$ is the total number of data points
+
+$mean(x) = \bar{x} = \frac{\sum_{i=i}^{n} x_{i}}{n}$
+
+. . . 
+
+```{r}
+#| echo: true
+#| output-location: column
+
+mean(data$late_minutes)
+
+
+```
+
+. . . 
+
+We can compute this equation by hand to see that the results are the same. 
+```{r}
+#| echo: true
+#| output-location: column
+
+sum(data$late_minutes)/length(data$late_minutes)
+
+
+```
+
+## Standard deviation {.smaller}
+
+Standard deviation is another paramteric descriptive statistic where $x_{i}$ is the $i$-th data point, $n$ is the total number of data points, and $\bar{x}$ is the mean. 
+
+. . . 
+
+$sd(x) = \sqrt{\frac{\sum_{i=1}^n (x_i - \bar{x})^2}{n-1}}$
+
+
+```{r}
+#| echo: true
+#| output-location: column
+
+sd(data$late_minutes)
+
+
+```
+
+. . . 
+
+We can compute this by hand as well, to see how it happens under the hood of `sd()`
+
+```{r}
+#| echo: true
+#| output-location: column
+
+mean_late <- mean(data$late_minutes)
+(sd_by_hand <- data %>% 
+  mutate(dev = late_minutes - mean_late) %>%
+  mutate(sq_dev = dev^2))
+
+```
+
+. . . 
+
+```{r}
+#| echo: true
+#| output-location: column
+
+sd_by_hand %>% 
+  summarise(
+    n = n(), 
+    n_minus_1 = n-1, 
+    sum_sq_dev = sum(sq_dev), 
+    by_hand_sd = sqrt(sum_sq_dev/n_minus_1))
+
+```
+
+## Visualize the mean and sd {.smaller}
+
+How do we visualize the mean and sd on our histogram? 
+
+. . . 
+
+First get the summary statistics with `summarise()` 
+
+```{r}
+#| echo: true
+#| output-location: column
+
+(sum_stats <- data %>%
+  summarise(
+    n = n(), 
+    mean = mean(late_minutes), 
+    sd = sd(late_minutes), 
+    lower_sd = mean - sd, 
+    upper_sd = mean + sd
+  ))
+
+
+```
+
+. . . 
+
+Then use those values to plot with `geom_vline()`. 
+
+```{r}
+#| echo: true
+#| output-location: column
+
+data %>%
+  ggplot(aes(x = late_minutes)) + 
+  geom_histogram() +
+  geom_vline(
+    xintercept = sum_stats$mean, 
+    color = "blue"
+    ) + 
+  geom_vline(
+    xintercept = sum_stats$lower_sd,
+    color = "red"
+    ) +
+  geom_vline(
+    xintercept = sum_stats$upper_sd, 
+    color = "red"
+    )
+
+```
+
+
+
+## Nonparametric descriptive statistics {.smaller}
+
+Other statistics are considered `nonparametric`, because thy make minimal assumptions about the distribution of the data (we can compute them theoretically from parameters)
+
+## Median {.smaller}
+
+The mean is the value below which 50% of the data fall. 
+
+. . . 
+
+
+```{r}
+#| echo: true
+#| output-location: column
+
+median(data$late_minutes) 
+
+
+```
+
+. . . 
+
+We can check whether this is accurate by sorting our data 
+
+```{r}
+#| echo: true
+#| output-location: column
+
+data %>% 
+  arrange(late_minutes) 
+
+
+```
+
+
+
+## Inter-quartile range (IQR) {.smaller}
+
+The difference between the 25th and 75th percentiles. We can compute these values with the `quantile()` function. 
+
+
+```{r}
+#| echo: true
+#| output-location: column
+
+data %>%
+  summarise(
+    iqr_lower = quantile(late_minutes, 0.25), 
+    iqr_upper = quantile(late_minutes, 0.75)
+  )
+
+
+```
+
+. . . 
+
+
+Again, we can check whether this is accurate by sorting our data 
+
+```{r}
+#| echo: true
+#| output-location: column
+
+data %>% 
+  arrange(late_minutes) 
+
+
+```
+
+
+## Coverage intervals {.smaller}
+
+The IQR is also called the 50% coverage interval (because 50% of the data fall in this range). We can calculate any artibrary coverage interval with `quantile()`
+
+. . . 
+
+```{r}
+#| echo: true
+#| output-location: column
+
+data %>%
+  summarise(
+    iqr_lower = quantile(late_minutes, 0.025), 
+    iqr_upper = quantile(late_minutes, 0.975)
+  )
+
+
+```
+
+. . . 
+
+Again, we can check whether this is accurate by sorting our data 
+
+```{r}
+#| echo: true
+#| output-location: column
+
+data %>% 
+  arrange(late_minutes) 
+
+
+```
+
+## Visualize the median and coverage intervals {.smaller}
+
+We can visualize these statistics on our histograms in the same way we did mean and sd:
+
+. . . 
+
+First get the summary statistics with `summarise()` 
+
+```{r}
+#| echo: true
+#| output-location: column
+
+(sum_stats <- data %>%
+  summarise(
+    n = n(), 
+    median = median(late_minutes), 
+      ci_lower = quantile(late_minutes, 0.025), 
+    ci_upper = quantile(late_minutes, 0.975)
+  ))
+
+
+```
+
+. . . 
+
+Then use those values to plot with `geom_vline()`. 
+
+```{r}
+#| echo: true
+#| output-location: column
+
+data %>%
+  ggplot(aes(x = late_minutes)) + 
+  geom_histogram() +
+  geom_vline(
+    xintercept = sum_stats$mean, 
+    color = "blue"
+    ) + 
+  geom_vline(
+    xintercept = sum_stats$ci_lower,
+    color = "red"
+    ) +
+  geom_vline(
+    xintercept = sum_stats$ci_upper, 
+    color = "red"
+    )
+
+```
+
+
+# Probability distributions 
+
+A probability distribution is a mathematical function of one (or more) variables that describes the likelihood of observing any specific set of values for the variables. 
+
+## R's functions for parametric probability distributions {.smaller}
+
+| function | params | returns | 
+| - | -- | ----- | 
+| `d*()` | depends on * | height of the probability density function at the given values | 
+| `p*()` | depends on * | **cumulative density function** (probability that a random number from the distribution will be less than the given values) | 
+| `q*()` | depends on * | value whose cumulative distribution matches the probaiblity (**inverse of p**) |
+| `r*()` | depends on * | returns n **random numbers** generated from the distribution
+
+## Uniform distribution {.smaller}
+
+The uniform distribution is the simplest probability distribution, where all values are equally likely. The probability density function for the uniform distribution is given by this equation (with two parameters:  `min` and `max`). 
+
+$p(x) = \frac{1}{max-min}$
+
+```{r}
+#| echo: false
+
+uniform_sample <- tibble(
+  y = rep(1:10, each=100)
+)
+
+# plot uniform with histogram 
+ggplot(uniform_sample, aes(x = y)) +
+  geom_histogram(aes(y = after_stat(density)), color = "black", fill = "gray", bins = 10, alpha = 0.5)  +
+  geom_density(color = "red", size = 2) +
+  coord_cartesian(ylim = c(0, 1))
+```
+
+
+## R's functions for Gaussian distribution {.smaller}
+
+We just use `norm` (normal) to stand in for the `*`
+
+| function | params | returns | 
+| - | -- | ----- | 
+| `dnorm()` |x,  mean, sd | height of the probability density function at the given values | 
+| `pnorm()` | q, mean, sd | **cumulative density function** (probability that a random number from the distribution will be less than the given values) | 
+| `qnorm()` | p, mean, sd | value whose cumulative distribution matches the probaiblity (**inverse of p**) |
+| `rnorm()` | n, mean, sd | returns n **random numbers** generated from the distribution
+
+
+## `rnorm()` to sample from the distribution {.smaller}
+
+ `rnorm(n, mean, sd)`: returns n **random numbers** generated from the distribution
+
+```{r}
+#| echo: true
+#| output-location: column
+
+(normy <- tibble(
+  x = rnorm(1000, mean = 0, sd = 1)
+))
+```
+
+
+## `dnorm(x, mean, sd)`  {.smaller}
+
+Returns the height of the probability density function at the given values 
+
+```{r}
+#| echo: true
+#| output-location: column
+
+ggplot(normy, aes(x = x )) +
+  geom_density()
+
+```
+
+. . . 
+
+```{r}
+#| echo: true
+#| output-location: column
+
+dnorm(2, mean = 0, sd = 1)
+
+```
+
+
+## `pnorm(q, mean, sd)`  {.smaller}
+
+Returns the **cumulative density function** (probability that a random number from the distribution will be less than the given values) 
+
+```{r}
+#| echo: true
+#| output-location: column
+
+ggplot(normy, aes(x = x )) +
+  geom_density()
+
+```
+
+. . . 
+
+```{r}
+#| echo: true
+#| output-location: column
+
+pnorm(3, mean = 0, sd = 1)
+```
+
+
+```{r}
+#| echo: true
+#| output-location: column
+
+pnorm(-2, mean = 0, sd = 1)
+```
+
+
+## `qnorm(p, mean, sd)` {.smaller}
+
+Returns the value whose cumulative distribution matches the probability 
+
+```{r}
+#| echo: true
+#| output-location: column
+
+ggplot(normy, aes(x = x )) +
+  geom_density()
+
+```
+
+. . . 
+
+```{r}
+#| echo: true
+#| output-location: column
+
+qnorm(0.99, mean = 0, sd = 1)
+```
+
+
+```{r}
+#| echo: true
+#| output-location: column
+
+qnorm(0.02, mean = 0, sd = 1)
+```
+
+
+## Using other distributions {.smaller}
+
+Change the function's suffix (the * in `r*()`) to another distribution and pass the parameters that define that distribution. 
+
+. . . 
+
+ `runif(n, min, max)`: returns n **random numbers** generated from the distribution
+
+```{r}
+#| echo: true
+#| output-location: column
+
+(uni<- tibble(
+  x = runif(1000, min= 0, max = 1)
+))
+```
+
+. . . 
+
+But remember, this only works for **paramteric** probability distributions (those defined by particular paramters)
+
+# Sampling distribution and bootstrapping
+
+Let's do a walk through from start to finish 
+
+## The parameter {.smaller}
+
+Generate data for the brain volume of the 28201 grad and undergrad students at UPenn and compute the parameter of interest (mean brain volume)
+
+```{r}
+#| echo: true
+#| output-location: column
+
+(population <- tibble(
+  subject_id = 1:28201, 
+  volume = rnorm(28201, mean = 1200, sd = 100)
+))
+
+```
+
+
+## The parameter estimate {.smaller}
+
+Now take a realistic sample of 100 students and compute the paramter estimate (mean brain volume on our sample)
+
+```{r}
+#| echo: true
+#| output-location: column
+
+(sample <- population %>%
+  sample_n(100))
+
+```
+
+
+## But our parameter estimate is noisy {.smaller}
+
+- When measuring a quantity, the measurement will be different each time. We attribute this variability to *noise*, any factor that contributes variability in measurement. 
+- Any statistic (e.g. mean) that we compute on a random sample is subject to variability as well; we need to distrust (to some degree) this statistic. 
+- To indicate our uncertainty on our parameter estimate, we can use 
+  - standard error (the standard deviation of the sampling distribution; parametric)
+  - confidence intervals (the nonparametric approach to quantify spread)
+
+
+## Bootstrap the sampling distribution {.smaller}
+
+Use `infer` to construct the probability distribution of the values our parameter estimate can take on (the sampling distribution). 
+
+```{r}
+#| echo: true
+#| output-location: column
+
+(bootstrap_distribution <- sample  %>% 
+  specify(response = volume) %>% 
+  generate(reps = 1000, type = "bootstrap") %>% 
+  calculate(stat = "mean"))
+
+```
+
+
+
+## Standard error {.smaller}
+
+Recall that standard error is the standard deviation of the sampling distribution. It indicaes about how far away the true population might be. 
+
+```{r}
+#| echo: true
+#| output-location: column
+
+(se_bootstrap <- bootstrap_distribution %>% 
+  get_confidence_interval(
+    type = "se",
+    point_estimate = mean(sample$volume)
+  ))
+
+```
+
+
+```{r}
+#| echo: true
+#| output-location: column
+
+bootstrap_distribution %>% 
+  visualize() +
+  shade_confidence_interval(
+    endpoints = se_bootstrap
+  )
+
+```
+
+
+
+## Confidence interval {.smaller}
+
+Confidence intervals are the nonparameteric approach to the standard error: if the distribution is Gaussian, +/- 1 standard error gives the 68% confidence internval and +/- 2 gives the 95% confidence interval. 
+
+```{r}
+#| echo: true
+#| output-location: column
+
+(ci_bootstrap <- bootstrap_distribution %>% 
+  get_confidence_interval(
+    type = "percentile",
+   level = 0.68
+  ))
+
+```
+
+
+```{r}
+#| echo: true
+#| output-location: column
+
+bootstrap_distribution %>% 
+  visualize() +
+  shade_confidence_interval(
+    endpoints = ci_bootstrap
+  )
+
+```
+
+
+## Interpreting confidence intervals {.smaller}
+
+```{r}
+#| echo: true
+#| output-location: column
+
+bootstrap_distribution %>% 
+  visualize() +
+  shade_confidence_interval(
+    endpoints = ci_bootstrap
+  )
+
+```
+
+- **technical interpretation**: if we repeated our experiment, we can expect the X% of the time, the true population parameter will be contained within the X% confidence interval. 
+- **looser interpretation**: we can use the confidence interval as an indicator of our uncertainty in our parameter estimate. 
+

@@ -1,0 +1,44 @@
+project:
+  type: website
+  output-dir: docs
+website:
+  title: DataSci for Lang & Mind
+  sidebar:
+    style: docked
+    search: true
+    type: dark
+    contents:
+    - text: Syllabus
+      href: index.qmd
+    - text: Resources
+      href: index.qmd#resources
+    - section: Materials
+      href: index.qmd#materials
+      contents:
+      - text: Study guides
+        href: index.qmd#study-guides
+      - text: Problem sets
+        href: index.qmd#problem-sets
+      - text: Exams
+        href: index.qmd#exams
+      - text: Lab exercises
+        href: index.qmd#lab-exercises
+    - text: Schedule
+      href: index.qmd#schedule
+format:
+  html:
+    toc: true
+    number-sections: true
+    toc-location: right
+    theme: cosmo
+    fontsize: 1em
+    grid:
+      sidebar-width: 350px
+    css: include/webex.css
+    include-after-body: include/webex.js
+  pdf:
+    documentclass: scrartcl
+    papersize: letter
+    toc: false
+    number-sections: true
+    highlight-style: github

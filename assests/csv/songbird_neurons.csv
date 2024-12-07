@@ -1,0 +1,101 @@
+Subject,Age_Group,Brain_Region,Neuron_Density (neurons/mm³),Song_Complexity (syllables)
+1,Juvenile,Area X,159467,18
+2,Adult,RA,189723,46
+3,Juvenile,RA,143931,25
+4,Juvenile,RA,133627,18
+5,Juvenile,RA,155939,17
+6,Adult,RA,176157,44
+7,Juvenile,RA,140173,17
+8,Juvenile,Area X,151834,29
+9,Juvenile,Area X,148047,17
+10,Adult,RA,186105,38
+11,Juvenile,Area X,140230,21
+12,Juvenile,HVC,145707,18
+13,Juvenile,RA,151976,23
+14,Juvenile,HVC,141494,15
+15,Adult,HVC,186813,42
+16,Juvenile,RA,153776,21
+17,Adult,Area X,161306,36
+18,Adult,HVC,188605,42
+19,Adult,RA,166776,35
+20,Juvenile,HVC,157251,25
+21,Adult,HVC,189644,46
+22,Juvenile,HVC,152248,23
+23,Adult,HVC,169474,43
+24,Adult,Area X,167526,36
+25,Adult,HVC,185285,41
+26,Adult,HVC,181959,49
+27,Adult,HVC,165530,48
+28,Adult,Area X,189320,44
+29,Adult,HVC,180797,37
+30,Adult,HVC,163748,41
+31,Juvenile,Area X,143545,26
+32,Juvenile,Area X,159355,24
+33,Adult,Area X,160663,43
+34,Adult,HVC,161998,38
+35,Adult,Area X,167994,46
+36,Juvenile,Area X,158021,15
+37,Adult,HVC,188319,36
+38,Juvenile,Area X,147879,15
+39,Juvenile,HVC,133304,28
+40,Juvenile,RA,150147,26
+41,Juvenile,Area X,151616,19
+42,Juvenile,RA,148237,19
+43,Adult,HVC,173808,45
+44,Adult,Area X,166585,41
+45,Adult,HVC,189235,43
+46,Adult,RA,177675,43
+47,Adult,HVC,179965,37
+48,Juvenile,Area X,141649,17
+49,Adult,Area X,183938,37
+50,Adult,RA,183664,38
+51,Juvenile,HVC,131636,22
+52,Adult,Area X,180080,40
+53,Juvenile,RA,157575,22
+54,Adult,Area X,187728,35
+55,Juvenile,Area X,147082,22
+56,Adult,HVC,186736,38
+57,Adult,Area X,188673,45
+58,Juvenile,HVC,134737,15
+59,Juvenile,Area X,144555,22
+60,Juvenile,RA,143877,18
+61,Juvenile,Area X,130854,20
+62,Juvenile,HVC,154548,22
+63,Juvenile,HVC,135855,18
+64,Juvenile,RA,137392,28
+65,Juvenile,Area X,152912,17
+66,Adult,Area X,188050,48
+67,Adult,RA,173949,43
+68,Juvenile,Area X,151633,17
+69,Adult,Area X,181556,43
+70,Adult,HVC,178091,47
+71,Adult,Area X,187353,36
+72,Adult,Area X,165791,48
+73,Juvenile,RA,156309,16
+74,Adult,RA,181919,36
+75,Juvenile,HVC,134931,20
+76,Adult,Area X,179894,37
+77,Adult,Area X,160202,47
+78,Adult,Area X,171447,43
+79,Juvenile,HVC,150602,18
+80,Adult,HVC,172688,35
+81,Juvenile,RA,155342,18
+82,Adult,HVC,164389,35
+83,Juvenile,Area X,132327,28
+84,Adult,Area X,168004,39
+85,Juvenile,HVC,149315,18
+86,Juvenile,Area X,137777,22
+87,Adult,Area X,160197,42
+88,Juvenile,HVC,153509,21
+89,Adult,HVC,161930,37
+90,Adult,Area X,171774,35
+91,Adult,Area X,175087,35
+92,Adult,Area X,182671,46
+93,Adult,RA,185184,45
+94,Adult,RA,187848,37
+95,Adult,RA,169339,40
+96,Adult,HVC,180666,41
+97,Adult,RA,171589,40
+98,Adult,HVC,178895,48
+99,Adult,HVC,175708,48
+100,Juvenile,RA,156370,20

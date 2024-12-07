@@ -1,0 +1,353 @@
+---
+title:  "Lab 6: Model specification"
+subtitle: "Not graded, just practice"
+date:   2024-10-10
+author: Katie Schuler
+---
+
+Practice your new *modeling* skills with these practice exam questions! Best to open a fresh Google Colab notebook and test things out! Refer to the study guide to find answers as well. 
+
+
+
+```{r}
+#| echo: false
+#| message: false
+
+library(webexercises)
+library(tidyverse)
+```
+
+
+## Types of models 
+
+(a) Which of the following best describes the goal of a regression model?
+
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <-c(
+    "To classify observations into distinct categories",
+    answer="To predict continuous outcomes",
+    "To find the median of the dataset",
+    "To determine the probability of each class"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+(b) In classification tasks, the output variable (label) is typically:
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <-c(
+    "Continuous",
+    answer = "Discrete",
+    "Ordinal",
+    "A linear function"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+(c) Which of the following is an example of a regression problem?
+
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <-  c(
+    "Predicting whether an email is spam or not",
+    answer = "Predicting the price of a house based on its features",
+    "Identifying the species of a flower",
+    "Grouping customers into clusters based on purchasing behavior"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+(d) What is the primary difference between regression and classification?
+
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+   choices <- c(
+  answer = "Regression predicts a continuous value, while classification predicts a category",
+  "Regression is a type of unsupervised learning, while classification is supervised",
+  "Classification uses linear relationships, while regression uses non-linear relationships",
+  "Classification focuses on finding patterns in data, while regression doesn’t"
+)
+
+    cat(longmcq(choices))
+    ```
+
+(d) Which of the following tasks is a classification problem?
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <-  c(
+  "Estimating a person’s height based on their age",
+  answer="Predicting if a student will pass or fail a course",
+  "Predicting the temperature next week",
+  "Estimating the number of sales for the next quarter"
+)
+
+    cat(longmcq(choices))
+    ```
+
+(f) True or false, supervised learning requires labeled data to train the model.
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+       answer = "True", 
+        "False"
+    )
+
+
+    cat(longmcq(choices))
+    ``` 
+
+(g) True or false, in unsupervised learning, the model attempts to identify patterns or structures in data without any specific target variable.
+
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+       answer = "True", 
+        "False"
+    )
+
+
+    cat(longmcq(choices))
+    ``` 
+
+## Model specification 
+
+(a) Which of the following is the first step in model specification?
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+   choices <- c(
+  "Fitting the model",
+  answer = "Defining the response variable",
+  "Calculating residuals",
+  "Transforming variables"
+)
+
+    cat(longmcq(choices))
+    ```
+
+(b) What does model specification involve?
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+ choices <- c(
+  "Estimating the parameters",
+  answer = "Defining the functional form of the model",
+  "Calculating prediction accuracy",
+  "Testing the model’s reliability"
+)
+    cat(longmcq(choices))
+    ```
+
+(c) Which of the following is NOT part of model specification?
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+choices <- c(
+  "Choosing which variables to include",
+  "Defining the relationship between predictors and response",
+  answer = "Assessing the goodness-of-fit",
+  "Determining if interaction terms are necessary"
+)
+
+    cat(longmcq(choices))
+    ```
+
+(d) Which of the following describes a correctly specified model?
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+ choices <- c(
+  "A model that includes irrelevant variables",
+  "A model that excludes important variables",
+  answer = "A model that represents the true relationship between predictors and response",
+  "A model that overfits the training data"
+)
+
+    cat(longmcq(choices))
+    ```
+
+(e) True or false, Adding interaction terms between predictors is part of the model specification process.
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+       answer = "True", 
+        "False"
+    )
+
+
+    cat(longmcq(choices))
+    ``` 
+
+(f) Model specification is the final step in the model-building process.
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+       "True", 
+        answer = "False"
+    )
+
+
+    cat(longmcq(choices))
+    ``` 
+
+## Functional form of linear models 
+
+::: {.panel-tabset}
+## Question
+
+(a) Write the equation that expresses the response variable as a weighted sum of regressors (our favorite). 
+
+## Answer
+
+$y=\sum_{i=1}^{n}w_ix_i$ 
+
+:::
+
+(b) In the linear regression equation $y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \dots + \beta_n x_n + \epsilon$ , what do the $\beta$’s represent?
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+   choices <- c(
+    "The predicted values",
+    "The error terms",
+    answer = "The weights for each regressor",
+    "The intercept"
+    )
+
+
+    cat(longmcq(choices))
+    ``` 
+
+
+::: {.panel-tabset}
+## Question
+
+(c) Write the linear model equation in matrix notation. 
+
+## Answer
+
+$y = Xβ + ε$
+
+or similar
+
+:::
+
+(d) In matrix notation, what is $\mathbf{X}$? 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+  choices <- c(
+  "A vector of error terms",
+  answer = "A matrix of predictors (explanatory variables)",
+  "A vector of residuals",
+  "The coefficients of the model"
+)
+
+
+    cat(longmcq(choices))
+    ``` 
+
+
+
+(e) Suppose our `SwimRecords` data includes the year, sex, record time, swimsuit type, and swim cap type. Which of the following variables is most likely to be irrelevant for predicting swim times?
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+  choices <- c(
+  answer = "suit type", 
+  "year", 
+  "sex", 
+  answer = "swim cap type"
+)
+
+
+    cat(longmcq(choices))
+    ``` 
+
+(f) What is the potential issue of including too many irrelevant variables in your model?
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+ choices <- c(
+  "It will improve model accuracy.",
+  answer = "It can lead to overfitting and increased model complexity.",
+  "It will simplify the interpretation of results.",
+  "It has no effect on the model."
+)
+
+
+    cat(longmcq(choices))
+    ``` 
+
+
+## Finished? 
+
+Work together with support from TAs on **problem set 3, questions 5**: 
+
+Suppose your roommate is keeping a bunch of plants in your apartment. You notice that the plants exposed to more light seem to be taller, and — as an emerging data scientist — you record these data in a csv file: [polynomial_plants.csv](/assests/csv/polynomial_plants.csv). Explore the relationship between light_exposure and plant_height across different plant species by plotting the data using an appropriate geom. Then, specify, fit, and plot  polynomial models of increasing degrees (linear, quadratic, and cubic) to the data. Start by specifying and fitting a simple linear model. Next, specify and fit second- and third-degree polynomial models, and visualize each in ggplot. Which best captures the relationship between light_exposure and plant_height? For each model, make sure you specify as a mathematical expression first in LaTex, then use `infer` to specify and fit the model.  
+
+

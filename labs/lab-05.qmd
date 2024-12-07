@@ -1,0 +1,263 @@
+---
+title:  "Lab 5: Hypothesis testing"
+subtitle: "Not graded, just practice"
+date:   2024-09-26
+author: Katie Schuler
+---
+
+Practice your new stats skills with these practice exam questions! Best to open a fresh Google Colab notebook and test things out! Refer to the study guide to find answers as well. 
+
+::: {.callout-tip title="Tip"}
+More than one answer may be correct!  
+:::
+
+
+```{r}
+#| echo: false
+#| message: false
+
+library(webexercises)
+library(tidyverse)
+```
+
+If you would like to practice with a set of data, you can import the following dataset with `read_csv`. Note that females are coded as NA in this dataset! 
+
+```r
+# brain volumes simulated from Ritchie et al
+"http://kathrynschuler.com/datasets/brain_volume.csv"
+```
+
+
+## Visualize a categorical variable
+
+(a) Which of the following is the best choice to visualize a categorical variable? Choose one.
+
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+    "`geom_rug()`", "`geom_histogram()`", answer="`geom_boxplot()`", "`geom_point()`", "`geom_smooth()`"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+(b) Which of the following figures shows a box plot? 
+
+    ```{r}
+    #| echo: false
+    #| layout-ncol: 2
+    theme_set(theme_minimal(base_size = 15))
+    data <- read_csv('http://kathrynschuler.com/datasets/brain_volume.csv') %>%
+        mutate(sex = ifelse(sex == "male", sex, "female")) 
+
+    ggplot(data, aes(x = sex, y = volume, color =sex)) +
+        geom_boxplot() 
+    ggplot(data, aes(x = sex, y = volume, color = sex)) +
+        geom_bar(stat = "identity") 
+    ```
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+    answer = "left", 
+    "right", 
+    "both the left and right", 
+    "neither the left and right"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+(c) True or false, the difference in means between male and female participants in our sample is subject to sampling variability? 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+    answer ="True", 
+    "False"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+## Hypothesis testing framework 
+
+(a) Fill in the blanks about the 3-step hypothesis testing framework: (1) First we pose a  `r fitb("null hypothesis", width = 10)`, (2) then we ask if true, how likly is our observed pattern of results? This likelihood is quanitfied with a (`r fitb("p-value", width = 10)`), and (3) finally if the liklihood is leass than some thershold, we (`r fitb("reject", width = 10)`) the null hypothesis. 
+
+
+(b) What is the practical reason we pose a null hypothesis? 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c("It is the hypothesis most likely to be true.",
+                "It allows us to generate predictions based on prior beliefs.",
+                answer = "It is the hypothesis for which we can simulate data.",
+                "It ensures that the alternative hypothesis is proven false.")
+
+
+    cat(longmcq(choices))
+    ``` 
+
+(c) True or false, Randomization simulates a world in which there is no relationship between brain volume and sex. 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        answer = "True", 
+        "False"
+    )
+
+
+    cat(longmcq(choices))
+    ``` 
+
+(d) Which of the following would compute a p-value? 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        answer = "Count the number of values in our null distribution that are more extreme than our observed value.", 
+        answer = "Call `get_p_value()` on an infer object in which we have constructed a null distribution.",
+        "p-values are not computed.", 
+        "Add up all of the differences in means"
+        ) 
+        
+
+
+    cat(longmcq(choices))
+    ``` 
+
+(e) A large p-value means our observed value is very  `r fitb("likely", width = 10)` under the null hypothesis. A small p-value means our observed value is very `r fitb("unlikely", width = 10)` under the null hypothesis. 
+
+(f) True or false, a p-value of less than 0.05 indicates obtaining our observed value under the null is *impossible*
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        "True", 
+        answer = "False"
+    )
+
+
+    cat(longmcq(choices))
+    ``` 
+
+(g) A type I error is also known as a `r fitb("false positive", width = 10)`(wrongly thinking that the effect is present); a type II error is also known as a `r fitb("false negative", width = 10)` (wrongly thikning the effect is absent)
+
+## There is only one test 
+
+(a) There are two ways we can construct a sampling distribution: (1)  `r fitb("nonparametrically", width = 10)`, via brute computational force; and  (2) `r fitb("parametrically", width = 10)`, by assuming the data were sampled from a known probability distribution. 
+
+(b) True or false, we can use the `t.test()` function or `assume(distribution = "t")` with an infer object to calcuate a p-value for a t-test. 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+       answer = "True", 
+        "False"
+    )
+
+
+    cat(longmcq(choices))
+    ``` 
+
+## Correlation 
+
+(a) We can explore the relationship between two quantities visually with a scatter plot. Which geom is best suited for this? 
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        "`geom_histogram()`", 
+        "`geom_boxplot()`", 
+        answer ="`geom_point()`", 
+        "`geom_dotplot()`",
+        "`geom_density()`"
+    )
+
+
+    cat(longmcq(choices))
+    ``` 
+
+(b) If there is no relationship between variables, we say they are `r fitb("independent", width = 10)`
+
+(c) One way to quantify `r fitb("linear", width = 10)` relationships is with correlation. 
+
+(d) Correlation ranges from -1 to 1, where: 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        "-1 means mostly negative and 1 means mostly positive",
+        answer = "-1 means perfectly negative and 1 means pefectly positive",
+        "-1 means low correlation and 1 means high correlation"
+    )
+
+
+    cat(longmcq(choices))
+    ``` 
+
+(e) True or false, on an infer object, we can calcuate the correlation with `calcuate(stat = "correlation")`
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+    answer = "True", 
+        "False"
+    )
+
+
+    cat(longmcq(choices))
+    ``` 
+
+
+(f) Suppose we quantify how likely our observed correlation is under the null hypothesis and our p-value is 0.68. Should we reject the null hypothesis? 
+
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+    "Yes", 
+    answer = "No"
+    )
+
+
+    cat(longmcq(choices))
+    ``` 
+

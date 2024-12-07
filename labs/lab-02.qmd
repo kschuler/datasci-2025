@@ -1,0 +1,578 @@
+---
+title:  "Lab 2: Data visualization"
+subtitle: "Not graded, just practice"
+date:   2024-09-05
+author: Katie Schuler
+---
+
+Practice your new ggplot skills with these practice exam questions! Best to open a fresh Google Colab notebook and test things out! Refer to the study guide to find answers as well. 
+
+::: {.callout-tip title="Tip"}
+More than one answer may be correct!  
+:::
+
+# Materials from lab {.unnumbered}
+
+- [Brittany's materials](/assests/pdfs/lab-02-brittany.pdf) 
+- [Wesley's materials](/assests/pdfs/lab-02-wesley.pdf)
+
+# Setup
+
+We will continue working with the `ratings` dataset from the visualization lecture (part of the `languageR` package). 
+
+```{r}
+#| echo: true
+library(ggplot2)
+library(languageR)
+```
+
+It contains the following variables: 
+
+```{r}
+#| echo: true
+str(ratings)
+```
+
+# Data viz day 1
+
+1. Fill in the blanks below with one of the following words: `data`, `aesthetics`, `geom`. 
+
+    > The basic ggplot involves: (1) using your `r fitb("data", width = 10)`, (2) defining how variables are mapped to visual properties (`r fitb("aesthetics", width = 10)`), and (3) determining the geometrical object that a plot uses to represent data (`r fitb("geom", width = 10)`)
+
+1. When ggplot2 maps a categorical variable to an aesthetic, it automatically assigns a unique value of the aesthetic to each level of the variable. What is this process called?
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        "level assignment",
+        "variable aestheticization",
+        "autofill",
+        answer="scaling"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+1. The code below generated which of the following figures? 
+
+    ```r
+    ggplot(
+        data = ratings,
+        mapping = aes(x = Frequency, y = meanFamiliarity)
+    ) + 
+        geom_point(mapping = aes(color = Class)) +
+        geom_smooth(method = "lm") +
+        theme_classic(base_size=20)
+    ```
+
+    ![](/assests/images/global-v-local.png){fig-align="center" width=100%}
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        "A",
+        answer="B",
+        "C"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+1. Suppose we want to map the variable `Complex` to the color aesthetic in a scatterplot. Which of the following arguments could we pass to `geom_point()`? 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        "color = Complex",
+        answer="mapping=aes(color = Complex)",
+        "color = mapping(Complex)",
+        answer="aes(color=Complex)"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+1. To adjust the size of the font to 20pt in the complete theme `theme_minimal()`, what argument should we include?
+
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        answer ="`base_size=20`",
+        "`size=20`",
+        "`font_family_size=20`",
+        "None of the above"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+1. Which geoms are depicted in the following figure? 
+
+    ![](/assests/images/guess-geom.png){fig-align="left" width=50%}
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        "geom_histogram()",
+        answer="geom_density()",
+        "geom_bar()",
+        "geom_smooth()",
+        "geom_point()"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+
+
+1. Which geoms are depicted in the following figure? 
+
+    ![](/assests/images/guess-geom2.png){fig-align="left" width=50%}
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        answer="geom_histogram()",
+        "geom_density()",
+        "geom_bar()",
+        "geom_smooth()",
+        "geom_point()"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+
+
+# Data viz day 2
+
+## Plot 1 
+
+Given code blocks a, b, and c; and the plot below:
+
+```r
+# CODE BLOCK a ---------------------------#
+ggplot(
+    data = ratings, 
+    mapping = aes(x = Frequency, y = meanFamiliarity)
+    ) +
+    geom_point(color = "blue")
+
+# CODE BLOCK b ---------------------------#
+ggplot(
+    data = ratings, 
+    mapping = aes(x = Frequency, y = meanFamiliarity, color = "blue")
+    ) 
+
+# CODE BLOCK c ---------------------------#
+ggplot(
+    data = ratings, 
+    mapping = aes(x = Frequency, y = meanFamiliarity)
+    ) +
+    geom_point()
+```
+
+```{r}
+#| echo: false
+ggplot(
+    data = ratings, 
+    mapping = aes(x = Frequency, y = meanFamiliarity)
+    ) +
+    geom_point(color = "blue") 
+```
+
+1. Which of the code blocks above generate the plot ? 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        answer="a", "b", "c"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+1. In the plot above, is the color aesthetic mapped, set, or both? 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+    "mapped", answer="set", "both"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+1. In the plot above, which of the following aesthetics should we set to make the points more transparent?
+
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+    "color", "fill", answer="alpha", "shape"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+1. In plot A above, which of the following would change the x axis label to "FQ"?
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+    answer ='add a `labs()` layer with `x="FQ"` argument',
+    'add a `labs()` layer with `y="FQ"` argument',
+    'change the mapping argument from `x="Frequency"` to `x="FQ"`' 
+    )
+
+    cat(longmcq(choices))
+    ```
+
+## Plot 2 
+
+Given the following plot: 
+
+```{r}
+#| echo: false
+#| message: false
+ggplot(
+    data = ratings, 
+    mapping = aes(x = Frequency, y = meanFamiliarity)
+    ) +
+    geom_point(color = "red") +
+    geom_smooth(method = "lm") 
+```
+
+1. In the plot above, which geom(s) are used to represent the data? 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+    "geom_histogram()", "geom_density()", "geom_bar()", answer="geom_point()", answer="geom_smooth()"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+1. True or false, the blue line in the plot above is mapped to the Class aesthetic? 
+
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c("True", answer="False")
+
+    cat(longmcq(choices))
+    ```
+
+1. In the plot above, which of the following variables is mapped to the x aesthetic? 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        answer="Frequency", 
+        "meanFamiliarity", 
+        "FreqSingular",
+        "FreqPlural"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+1. True or false, in the plot above, the default statistical transformation in the geom responsible for the red dots is "identity".
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(answer="True", "False")
+
+    cat(longmcq(choices))
+    ```
+
+## Code block 1
+
+Suppose we run the following code. 
+
+```r
+ggplot(
+    data = ratings, 
+    mapping = aes(x = Frequency, y = meanFamiliarity, color = Class)
+    ) +
+    geom_point() +
+    geom_smooth(method = "lm", color = "red") 
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| layout-ncol: 2
+#| layout-valign: bottom
+#| cap-location: bottom
+ggplot(
+    data = ratings, 
+    mapping = aes(x = Frequency, y = meanFamiliarity, color = Class)
+    ) +
+    geom_point(color = "red") +
+    geom_smooth(method = "lm") +
+    labs(tag="A") 
+
+ggplot(
+    data = ratings, 
+    mapping = aes(x = Frequency, y = meanFamiliarity, color = Class)
+    ) +
+    geom_point() +
+    geom_smooth(method = "lm", color = "red") +
+    labs(tag="B") 
+```
+
+1. Which of the following plots will be returned? 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        "A", answer="B"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+1. Which aesthetic is mapped and which is set? 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        "Class is set to color and the smoothing line is mapped to red", 
+        answer  = "Class is mapped to color and the smoothing line is set to red",
+        "Both are mapped",
+        "Both are set"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+1. Which aesthetic is global and which is local? 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        answer = "Color is mapped to the class variable globally, and set to red locally", 
+        "Color is mapped to the class variable locally, and set to red globally",
+        "Both are global",
+        "Both are local"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+
+## Code block 2
+
+Suppose we run the following code block
+
+```r
+ggplot(
+    data = ratings, 
+    mapping = aes(x = Class, fill = Complex)
+    ) +
+    geom_bar() 
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| layout-ncol: 2
+#| layout-valign: bottom
+#| cap-location: bottom
+ggplot(
+    data = ratings, 
+    mapping = aes(x = Class, fill = Complex)
+    ) +
+    geom_bar(position = "dodge") +
+    labs(tag="A") 
+
+ggplot(
+    data = ratings, 
+    mapping = aes(x = Class, fill = Complex)
+    ) +
+    geom_bar() +
+    labs(tag="B") 
+
+ggplot(
+    data = ratings, 
+    mapping = aes(x = Complex, fill = Class)
+    ) +
+    geom_bar(position = "dodge") +
+    labs(tag="C") 
+
+ggplot(
+    data = ratings, 
+    mapping = aes(x = Complex, fill = Class)
+    ) +
+    geom_bar() +
+    labs(tag="D") 
+```
+
+1. Which plot will be returned? 
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        "A", answer ="B", "C", "D"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+1. What would happen if we added the layer `scale_fill_manual(values = c("green", "orange"))` to the following plot?
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        "error: no fill aesthetic specified",
+        answer ="complex would turn green and simplex would turn orange",
+        "simplex would turn green and complex would turn orange",
+        "No change"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+1. What argument could we add to `geom_bar()` to add a black border around the bars? 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        "fill = `black`",
+        "border_color = 'black'",
+        "linetype = 'black'",
+        answer = "color = 'black'"    )
+
+    cat(longmcq(choices))
+    ```
+
+## Plot 3 
+
+Consider the following plot
+
+```{r}
+#| echo: false
+#| message: false
+#| layout-valign: bottom
+#| cap-location: bottom
+ggplot(
+    data = ratings, 
+    mapping = aes(x = Frequency, y = meanFamiliarity)
+    ) +
+    geom_point() +
+    facet_grid(Class ~ Complex) +
+    theme_bw() 
+```
+
+1. To generate the facets in the plot above, which of the following lines of code must be included? 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        "`facet_grid(Complex ~ Class)`", 
+        answer="`facet_grid(Class ~ Complex)`", 
+        "`facet_grid(.~ Complex)`",
+        "`facet_wrap(Class~Complex, ncol = 2)`"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+1. Which of the following geoms are added to the plot above? 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        "geom_histogram()",
+        "geom_density()",
+        "geom_bar()",
+        "geom_smooth()",
+        answer = "geom_point()"
+    )
+
+    cat(longmcq(choices))
+    ```
+
+1. Which built-in theme is applied to the following plot? 
+
+    ```{r}
+    #| echo: false
+    #| results: asis
+
+    # Define the answer choices
+    choices <- c(
+        "theme_grey()",
+        "theme_classic()", 
+        "theme_void()", 
+        answer = "theme_bw()"
+    )
+
+    cat(longmcq(choices))
+    ```

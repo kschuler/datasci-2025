@@ -1,0 +1,2490 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-html/tabby.min.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-html.min.css" rel="stylesheet" data-mode="light">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.5.56">
+
+  <meta name="author" content="Katie Schuler">
+  <meta name="dcterms.date" content="2024-10-08">
+  <title>DataSci for Lang &amp; Mind – Week 07: Model Specification</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      { color: #003b4f; background-color: #f1f3f5; }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span { color: #003b4f; } /* Normal */
+    code span.al { color: #ad0000; } /* Alert */
+    code span.an { color: #5e5e5e; } /* Annotation */
+    code span.at { color: #657422; } /* Attribute */
+    code span.bn { color: #ad0000; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #003b4f; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #20794d; } /* Char */
+    code span.cn { color: #8f5902; } /* Constant */
+    code span.co { color: #5e5e5e; } /* Comment */
+    code span.cv { color: #5e5e5e; font-style: italic; } /* CommentVar */
+    code span.do { color: #5e5e5e; font-style: italic; } /* Documentation */
+    code span.dt { color: #ad0000; } /* DataType */
+    code span.dv { color: #ad0000; } /* DecVal */
+    code span.er { color: #ad0000; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #ad0000; } /* Float */
+    code span.fu { color: #4758ab; } /* Function */
+    code span.im { color: #00769e; } /* Import */
+    code span.in { color: #5e5e5e; } /* Information */
+    code span.kw { color: #003b4f; font-weight: bold; } /* Keyword */
+    code span.op { color: #5e5e5e; } /* Operator */
+    code span.ot { color: #003b4f; } /* Other */
+    code span.pp { color: #ad0000; } /* Preprocessor */
+    code span.sc { color: #5e5e5e; } /* SpecialChar */
+    code span.ss { color: #20794d; } /* SpecialString */
+    code span.st { color: #20794d; } /* String */
+    code span.va { color: #111111; } /* Variable */
+    code span.vs { color: #20794d; } /* VerbatimString */
+    code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="../site_libs/revealjs/dist/theme/quarto.css">
+  <link href="../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/reveal-chalkboard/font-awesome/css/all.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/reveal-chalkboard/style.css" rel="stylesheet">
+  <link href="../site_libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+
+  .callout {
+    margin-top: 1em;
+    margin-bottom: 1em;  
+    border-radius: .25rem;
+  }
+
+  .callout.callout-style-simple { 
+    padding: 0em 0.5em;
+    border-left: solid #acacac .3rem;
+    border-right: solid 1px silver;
+    border-top: solid 1px silver;
+    border-bottom: solid 1px silver;
+    display: flex;
+  }
+
+  .callout.callout-style-default {
+    border-left: solid #acacac .3rem;
+    border-right: solid 1px silver;
+    border-top: solid 1px silver;
+    border-bottom: solid 1px silver;
+  }
+
+  .callout .callout-body-container {
+    flex-grow: 1;
+  }
+
+  .callout.callout-style-simple .callout-body {
+    font-size: 1rem;
+    font-weight: 400;
+  }
+
+  .callout.callout-style-default .callout-body {
+    font-size: 0.9rem;
+    font-weight: 400;
+  }
+
+  .callout.callout-titled.callout-style-simple .callout-body {
+    margin-top: 0.2em;
+  }
+
+  .callout:not(.callout-titled) .callout-body {
+      display: flex;
+  }
+
+  .callout:not(.no-icon).callout-titled.callout-style-simple .callout-content {
+    padding-left: 1.6em;
+  }
+
+  .callout.callout-titled .callout-header {
+    padding-top: 0.2em;
+    margin-bottom: -0.2em;
+  }
+
+  .callout.callout-titled .callout-title  p {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+  }
+    
+  .callout.callout-titled.callout-style-simple .callout-content  p {
+    margin-top: 0;
+  }
+
+  .callout.callout-titled.callout-style-default .callout-content  p {
+    margin-top: 0.7em;
+  }
+
+  .callout.callout-style-simple div.callout-title {
+    border-bottom: none;
+    font-size: .9rem;
+    font-weight: 600;
+    opacity: 75%;
+  }
+
+  .callout.callout-style-default  div.callout-title {
+    border-bottom: none;
+    font-weight: 600;
+    opacity: 85%;
+    font-size: 0.9rem;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+  }
+
+  .callout.callout-style-default div.callout-content {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+  }
+
+  .callout.callout-style-simple .callout-icon::before {
+    height: 1rem;
+    width: 1rem;
+    display: inline-block;
+    content: "";
+    background-repeat: no-repeat;
+    background-size: 1rem 1rem;
+  }
+
+  .callout.callout-style-default .callout-icon::before {
+    height: 0.9rem;
+    width: 0.9rem;
+    display: inline-block;
+    content: "";
+    background-repeat: no-repeat;
+    background-size: 0.9rem 0.9rem;
+  }
+
+  .callout-title {
+    display: flex
+  }
+    
+  .callout-icon::before {
+    margin-top: 1rem;
+    padding-right: .5rem;
+  }
+
+  .callout.no-icon::before {
+    display: none !important;
+  }
+
+  .callout.callout-titled .callout-body > .callout-content > :last-child {
+    padding-bottom: 0.5rem;
+    margin-bottom: 0;
+  }
+
+  .callout.callout-titled .callout-icon::before {
+    margin-top: .5rem;
+    padding-right: .5rem;
+  }
+
+  .callout:not(.callout-titled) .callout-icon::before {
+    margin-top: 1rem;
+    padding-right: .5rem;
+  }
+
+  /* Callout Types */
+
+  div.callout-note {
+    border-left-color: #4582ec !important;
+  }
+
+  div.callout-note .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAAEU0lEQVRYCcVXTWhcVRQ+586kSUMMxkyaElstCto2SIhitS5Ek8xUKV2poatCcVHtUlFQk8mbaaziwpWgglJwVaquitBOfhQXFlqlzSJpFSpIYyXNjBNiTCck7x2/8/LeNDOZxDuEkgOXe++553zfefee+/OYLOXFk3+1LLrRdiO81yNqZ6K9cG0P3MeFaMIQjXssE8Z1JzLO9ls20MBZX7oG8w9GxB0goaPrW5aNMp1yOZIa7Wv6o2ykpLtmAPs/vrG14Z+6d4jpbSKuhdcSyq9wGMPXjonwmESXrriLzFGOdDBLB8Y6MNYBu0dRokSygMA/mrun8MGFN3behm6VVAwg4WR3i6FvYK1T7MHo9BK7ydH+1uurECoouk5MPRyVSBrBHMYwVobG2aOXM07sWrn5qgB60rc6mcwIDJtQrnrEr44kmy+UO9r0u9O5/YbkS9juQckLed3DyW2XV/qWBBB3ptvI8EUY3I9p/67OW+g967TNr3Sotn3IuVlfMLVnsBwH4fsnebJvyGm5GeIUA3jljERmrv49SizPYuq+z7c2H/jlGC+Ghhupn/hcapqmcudB9jwJ/3jvnvu6vu5lVzF1fXyZuZZ7U8nRmVzytvT+H3kilYvH09mLWrQdwFSsFEsxFVs5fK7A0g8gMZjbif4ACpKbjv7gNGaD8bUrlk8x+KRflttr22JEMRUbTUwwDQScyzPgedQHZT0xnx7ujw2jfVfExwYHwOsDTjLdJ2ebmeQIlJ7neo41s/DrsL3kl+W2lWvAga0tR3zueGr6GL78M3ifH0rGXrBC2aAR8uYcIA5gwV8zIE8onoh8u0Fca/ciF7j1uOzEnqcIm59sEXoGc0+z6+H45V1CvAvHcD7THztu669cnp+L0okAeIc6zjbM/24LgGM1gZk7jnRu1aQWoU9sfUOuhrmtaPIO3YY1KLLWZaEO5TKUbMY5zx8W9UJ6elpLwKXbsaZ4EFl7B4bMtDv0iRipKoDQT2sNQI9b1utXFdYisi+wzZ/ri/1m7QfDgEuvgUUEIJPq3DhX/5DWNqIXDOweC2wvIR90Oq3lDpdMIgD2r0dXvGdsEW5H6x6HLRJYU7C69VefO1x8Gde1ZFSJLfWS1jbCnhtOPxmpfv2LXOA2Xk2tvnwKKPFuZ/oRmwBwqRQDcKNeVQkYcOjtWVBuM/JuYw5b6isojIkYxyYAFn5K7ZBF10fea52y8QltAg6jnMqNHFBmGkQ1j+U43HMi2xMar1Nv0zGsf1s8nUsmUtPOOrbFIR8bHFDMB5zL13Gmr/kGlCkUzedTzzmzsaJXhYawnA3UmARpiYj5ooJZiUoxFRtK3X6pgNPv+IZVPcnwbOl6f+aBaO1CNvPW9n9LmCp01nuSaTRF2YxHqZ8DYQT6WsXT+RD6eUztwYLZ8rM+rcPxamv1VQzFUkzFXvkiVrySGQgJNvXHJAxiU3/NwiC03rSf05VBaPtu/Z7/B8Yn/w7eguloAAAAAElFTkSuQmCC');
+  }
+
+  div.callout-note.callout-style-default .callout-title {
+    background-color: #dae6fb
+  }
+
+  div.callout-important {
+    border-left-color: #d9534f !important;
+  }
+
+  div.callout-important .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAAEKklEQVRYCcVXTWhcVRS+575MJym48A+hSRFr00ySRQhURRfd2HYjk2SSTokuBCkU2o0LoSKKraKIBTcuFCoidGFD08nkBzdREbpQ1EDNIv8qSGMFUboImMSZd4/f9zJv8ibJMC8xJQfO3HPPPef7zrvvvnvviIkpC9nsw0UttFunbUhpFzFtarSd6WJkStVMw5xyVqYTvkwfzuf/5FgtkVoB0729j1rjXwThS7Vio+Mo6DNnvLfahoZ+i/o32lULuJ3NNiz7q6+pyAUkJaFF6JwaM2lUJlV0MlnQn5aTRbEu0SEqHUa0A4AdiGuB1kFXRfVyg5d87+Dg4DL6m2TLAub60ilj7A1Ec4odSAc8X95sHh7+ZRPCFo6Fnp7HfU/fBng/hi10CjCnWnJjsxvDNxWw0NfV6Rv5GgP3I3jGWXumdTD/3cbEOP2ZbOZp69yniG3FQ9z1jD7bnBu9Fc2tKGC2q+uAJOQHBDRiZX1x36o7fWBs7J9ownbtO+n0/qWkvW7UPIfc37WgT6ZGR++EOJyeQDSb9UB+DZ1G6DdLDzyS+b/kBCYGsYgJbSQHuThGKRcw5xdeQf8YdNHsc6ePXrlSYMBuSIAFTGAtQo+VuALo4BX83N190NWZWbynBjhOHsmNfFWLeL6v+ynsA58zDvvAC8j5PkbOcXCMg2PZFk3q8MjI7WAG/Dp9AwP7jdGBOOQkAvlFUB+irtm16I1Zw9YBcpGTGXYmk3kQIC/Cds55l+iMI3jqhjAuaoe+am2Jw5GT3Nbz3CkE12NavmzN5+erJW7046n/CH1RO/RVa8lBLozXk9uqykkGAyRXLWlLv5jyp4RFsG5vGVzpDLnIjTWgnRy2Rr+tDKvRc7Y8AyZq10jj8DqXdnIRNtFZb+t/ZRtXcDiVnzpqx8mPcDWxgARUqx0W1QB9MeUZiNrV4qP+Ehc+BpNgATsTX8ozYKL2NtFYAHc84fG7ndxUPr+AR/iQSns7uSUufAymwDOb2+NjK27lEFocm/EE2WpyIy/Hi66MWuMKJn8RvxIcj87IM5Vh9663ziW36kR0HNenXuxmfaD8JC7tfKbrhFr7LiZCrMjrzTeGx+PmkosrkNzW94ObzwocJ7A1HokLolY+AvkTiD/q1H0cN48c5EL8Crkttsa/AXQVDmutfyku0E7jShx49XqV3MFK8IryDhYVbj7Sj2P2eBxwcXoe8T8idsKKPRcnZw1b+slFTubwUwhktrfnAt7J++jwQtLZcm3sr9LQrjRzz6cfMv9aLvgmnAGvpoaGLxM4mAEaLV7iAzQ3oU0IvD5x9ix3yF2RAAuYAOO2f7PEFWCXZ4C9Pb2UsgDeVnFSpbFK7/IWu7TPTvBqzbGdCHOJQSxiEjt6IyZmxQyEJHv6xyQsYk//moVFsN2zP6fRImjfq7/n/wFDguUQFNEwugAAAABJRU5ErkJggg==');
+  }
+
+  div.callout-important.callout-style-default .callout-title {
+    background-color: #f7dddc
+  }
+
+  div.callout-warning {
+    border-left-color: #f0ad4e !important;
+  }
+
+  div.callout-warning .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAAETklEQVRYCeVWW2gcVRg+58yaTUnizqbipZeX4uWhBEniBaoUX1Ioze52t7sRq6APio9V9MEaoWlVsFasRq0gltaAPuxms8lu0gcviE/FFOstVbSIxgcv6SU7EZqmdc7v9+9mJtNks51NTUH84ed889/PP+cmxP+d5FIbMJmNbpREu4WUkiTtCicKny0l1pIKmBzovF2S+hIJHX8iEu3hZJ5lNZGqyRrGSIQpq15AzF28jgpeY6yk6GVdrfFqdrD6Iw+QlB8g0YS2g7dyQmXM/IDhBhT0UCiRf59lfqmmDvzRt6kByV/m4JjtzuaujMUM2c5Z2d6JdKrRb3K2q6mA+oYVz8JnDdKPmmNthzkAk/lN63sYPgevrguc72aZX/L9C6x09GYyxBgCX4NlvyGUHOKELlm5rXeR1kchuChJt4SSwyddZRXgvwMGvYo4QSlk3/zkHD8UHxwVJA6zjZZqP8v8kK8OWLnIZtLyCAJagYC4rTGW/9Pqj92N/c+LUaAj27movwbi19tk/whRCIE7Q9vyI6yvRpftAKVTdUjOW40X3h5OXsKCdmFcx0xlLJoSuQngnrJe7Kcjm4OMq9FlC7CMmScQANuNvjfP3PjGXDBaUQmbp296S5L4DrpbrHN1T87ZVEZVCzg1FF0Ft+dKrlLukI+/c9ENo+TvlTDbYFvuKPtQ9+l052rXrgKoWkDAFnvh0wTOmYn8R5f4k/jN/fZiCM1tQx9jQQ4ANhqG4hiL0qIFTGViG9DKB7GYzgubnpofgYRwO+DFjh0Zin2m4b/97EDkXkc+f6xYAPX0KK2I/7fUQuwzuwo/L3AkcjugPNixC8cHf0FyPjWlItmLxWw4Ou9YsQCr5fijMGoD/zpdRy95HRysyXA74MWOnscpO4j2y3HAVisw85hX5+AFBRSHt4ShfLFkIMXTqyKFc46xdzQM6XbAi702a7sy04J0+feReMFKp5q9esYLCqAZYw/k14E/xcLLsFElaornTuJB0svMuJINy8xkIYuL+xPAlWRceH6+HX7THJ0djLUom46zREu7tTkxwmf/FdOZ/sh6Q8qvEAiHpm4PJ4a/doJe0gH1t+aHRgCzOvBvJedEK5OFE5jpm4AGP2a8Dxe3gGJ/pAutug9Gp6he92CsSsWBaEcxGx0FHytmIpuqGkOpldqNYQK8cSoXvd+xLxXADw0kf6UkJNFtdo5MOgaLjiQOQHcn+A6h5NuL2s0qsC2LOM75PcF3yr5STuBSAcGG+meA14K/CI21HcS4LBT6tv0QAh8Dr5l93AhZzG5ZJ4VxAqdZUEl9z7WJ4aN+svMvwHHL21UKTd1mqvChH7/Za5xzXBBKrUcB0TQ+Ulgkfbi/H/YT5EptrGzsEK7tR1B7ln9BBwckYfMiuSqklSznIuoIIOM42MQO+QnduCoFCI0bpkzjCjddHPN/F+2Yu+sd9bKNpVwHhbS3LluK/0zgfwD0xYI5dXuzlQAAAABJRU5ErkJggg==');
+  }
+
+  div.callout-warning.callout-style-default .callout-title {
+    background-color: #fcefdc
+  }
+
+  div.callout-tip {
+    border-left-color: #02b875 !important;
+  }
+
+  div.callout-tip .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAADr0lEQVRYCe1XTWgTQRj9ZjZV8a9SPIkKgj8I1bMHsUWrqYLVg4Ue6v9BwZOxSYsIerFao7UiUryIqJcqgtpimhbBXoSCVxUFe9CTiogUrUp2Pt+3aUI2u5vdNh4dmMzOzHvvezuz8xNFM0mjnbXaNu1MvFWRXkXEyE6aYOYJpdW4IXuA4r0fo8qqSMDBU0v1HJUgVieAXxzCsdE/YJTdFcVIZQNMyhruOMJKXYFoLfIfIvVIMWdsrd+Rpd86ZmyzzjJmLStqRn0v8lzkb4rVIXvnpScOJuAn2ACC65FkPzEdEy4TPWRLJ2h7z4cArXzzaOdKlbOvKKX25Wl00jSnrwVxAg3o4dRxhO13RBSdNvH0xSARv3adTXbBdTf64IWO2vH0LT+cv4GR1DJt+DUItaQogeBX/chhbTBxEiZ6gftlDNXTrvT7co4ub5A6gp9HIcHvzTa46OS5fBeP87Qm0fQkr4FsYgVQ7Qg+ZayaDg9jhg1GkWj8RG6lkeSacrrHgDaxdoBiZPg+NXV/KifMuB6//JmYH4CntVEHy/keA6x4h4CU5oFy8GzrBS18cLJMXcljAKB6INjWsRcuZBWVaS3GDrqB7rdapVIeA+isQ57Eev9eCqzqOa81CY05VLd6SamW2wA2H3SiTbnbSxmzfp7WtKZkqy4mdyAlGx7ennghYf8voqp9cLSgKdqNfa6RdRsAAkPwRuJZNbpByn+RrJi1RXTwdi8RQF6ymDwGMAtZ6TVE+4uoKh+MYkcLsT0Hk8eAienbiGdjJHZTpmNjlbFJNKDVAp2fJlYju6IreQxQ08UJDNYdoLSl6AadO+fFuCQqVMB1NJwPm69T04Wv5WhfcWyfXQB+wXRs1pt+nCknRa0LVzSA/2B+a9+zQJadb7IyyV24YAxKp2Jqs3emZTuNnKxsah+uabKbMk7CbTgJx/zIgQYErIeTKRQ9yD9wxVof5YolPHqaWo7TD6tJlh7jQnK5z2n3+fGdggIOx2kaa2YI9QWarc5Ce1ipNWMKeSG4DysFF52KBmTNMmn5HqCFkwy34rDg05gDwgH3bBi+sgFhN/e8QvRn8kbamCOhgrZ9GJhFDgfcMHzFb6BAtjKpFhzTjwv1KCVuxHvCbsSiEz4CANnj84cwHdFXAbAOJ4LTSAawGWFn5tDhLMYz6nWeU2wJfIhmIJBefcd/A5FWQWGgrWzyORZ3Q6HuV+Jf0Bj+BTX69fm1zWgK7By1YTXchFDORywnfQ7GpzOo6S+qECrsx2ifVQAAAABJRU5ErkJggg==');
+  }
+
+  div.callout-tip.callout-style-default .callout-title {
+    background-color: #ccf1e3
+  }
+
+  div.callout-caution {
+    border-left-color: #fd7e14 !important;
+  }
+
+  div.callout-caution .callout-icon::before {
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAACshmLzAAACV0lEQVRYCdVWzWoUQRCuqp2ICBLJXgITZL1EfQDBW/bkzUMUD7klD+ATSHBEfAIfQO+iXsWDxJsHL96EHAwhgzlkg8nBg25XWb0zIb0zs9muYYWkoKeru+vn664fBqElyZNuyh167NXJ8Ut8McjbmEraKHkd7uAnAFku+VWdb3reSmRV8PKSLfZ0Gjn3a6Xlcq9YGb6tADjn+lUfTXtVmaZ1KwBIvFI11rRXlWlatwIAAv2asaa9mlB9wwygiDX26qaw1yYPzFXg2N1GgG0FMF8Oj+VIx7E/03lHx8UhvYyNZLN7BwSPgekXXLribw7w5/c8EF+DBK5idvDVYtEEwMeYefjjLAdEyQ3M9nfOkgnPTEkYU+sxMq0BxNR6jExrAI31H1rzvLEfRIdgcv1XEdj6QTQAS2wtstEALLG1yEZ3QhH6oDX7ExBSFEkFINXH98NTrme5IOaaA7kIfiu2L8A3qhH9zRbukdCqdsA98TdElyeMe5BI8Rs2xHRIsoTSSVFfCFCWGPn9XHb4cdobRIWABNf0add9jakDjQJpJ1bTXOJXnnRXHRf+dNL1ZV1MBRCXhMbaHqGI1JkKIL7+i8uffuP6wVQAzO7+qVEbF6NbS0LJureYcWXUUhH66nLR5rYmva+2tjRFtojkM2aD76HEGAD3tPtKM309FJg5j/K682ywcWJ3PASCcycH/22u+Bh7Aa0ehM2Fu4z0SAE81HF9RkB21c5bEn4Dzw+/qNOyXr3DCTQDMBOdhi4nAgiFDGCinIa2owCEChUwD8qzd03PG+qdW/4fDzjUMcE1ZpIAAAAASUVORK5CYII=');
+  }
+
+  div.callout-caution.callout-style-default .callout-title {
+    background-color: #ffe5d0
+  }
+
+  </style>
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" class="quarto-title-block center">
+  <h1 class="title">Week 07: Model Specification</h1>
+  <p class="subtitle">Data Science for Studying Language and the Mind</p>
+
+<div class="quarto-title-authors">
+<div class="quarto-title-author">
+<div class="quarto-title-author-name">
+Katie Schuler 
+</div>
+</div>
+</div>
+
+  <p class="date">2024-10-08</p>
+</section>
+<section>
+<section id="tuesday" class="title-slide slide level1 center">
+<h1>Tuesday</h1>
+
+</section>
+<section id="announcements" class="slide level2 smaller">
+<h2>Announcements</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<p><img data-src="../assests/images/exam-1-scores.png"></p>
+</div><div class="column" style="width:50%;">
+<ul>
+<li class="fragment">You did great on the exam!</li>
+<li class="fragment">You can replace your lowest exam score with the optional final</li>
+<li class="fragment">The final exam is cumulative: another opportunity to show mastery of the material.</li>
+</ul>
+</div></div>
+</section>
+<section id="thanks-for-your-feedback" class="slide level2 smaller">
+<h2>Thanks for your feedback</h2>
+<div class="fragment">
+<div class="columns">
+<div class="column" style="width:50%;">
+<h3 id="adding">Adding</h3>
+<ol type="1">
+<li class="fragment"><strong>Demos more accessible</strong></li>
+</ol>
+<ul>
+<li class="fragment">Posted before class</li>
+<li class="fragment">Make font bigger</li>
+<li class="fragment">Not so fast, please 😅</li>
+</ul>
+<ol start="2" type="1">
+<li class="fragment"><strong>In-class exercises</strong> (not graded)</li>
+</ol>
+<ul>
+<li class="fragment">Slightly more interactive</li>
+</ul>
+<ol start="3" type="1">
+<li class="fragment"><strong>Challenge questions</strong></li>
+</ol>
+<ul>
+<li class="fragment">On labs or homework (optional)</li>
+</ul>
+</div><div class="column" style="width:50%;">
+<h3 id="not-adding">Not adding</h3>
+<ol start="4" type="1">
+<li class="fragment"><strong>Projects</strong> instead of exams</li>
+<li class="fragment"><strong>R Studio</strong> instead of Google Colab</li>
+</ol>
+</div></div>
+</div>
+</section>
+<section id="you-are-here" class="slide level2 smaller">
+<h2>You are <code>here</code></h2>
+<div class="columns">
+<div class="column" style="width:33%;">
+<h5 id="data-science-with-r">Data science with R</h5>
+<div>
+<ul>
+<li>R basics</li>
+<li>Data visualization</li>
+<li>Data wrangling</li>
+</ul>
+</div>
+</div><div class="column" style="width:33%;">
+<h5 id="stats-model-building">Stats &amp; Model building</h5>
+<div>
+<ul>
+<li>Sampling distribution</li>
+<li>Hypothesis testing</li>
+<li><code>Model specification</code></li>
+<li>Model fitting</li>
+<li>Model accuracy</li>
+<li>Model reliability</li>
+</ul>
+</div>
+</div><div class="column" style="width:33%;">
+<h5 id="more-advanced">More advanced</h5>
+<div>
+<ul>
+<li>Classification</li>
+<li>Inference for regression</li>
+<li>Mixed-effect models</li>
+</ul>
+</div>
+</div></div>
+</section></section>
+<section>
+<section id="review" class="title-slide slide level1 center">
+<h1>Review</h1>
+<p>Sampling distribution and hypothesis testing with Correlation!</p>
+</section>
+<section id="exploring-relationships" class="slide level2 smaller">
+<h2>Exploring relationships</h2>
+<p>To review what we learned before break, let’s explore the relationship between Frequency and meanFamiliarity in the <code>ratings</code> dataset of the <code>languageR</code> package.</p>
+<div class="fragment">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="model-specification_files/figure-revealjs/unnamed-chunk-2-1.png" width="480"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="is-there-a-relationship" class="slide level2 smaller">
+<h2>Is there a relationship?</h2>
+<p>If there was no relationship, we’d say there are <strong>independent</strong>: knowing the value of one provides no information about about the other. But that’s not the case here.</p>
+<div class="fragment">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="model-specification_files/figure-revealjs/unnamed-chunk-3-1.png" width="480"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="yes-a-linear-relationship" class="slide level2 smaller">
+<h2>Yes, a linear relationship</h2>
+<p>In a linear relationship, when one variable goes up the other goes up (positive); or when one goes up the other goes down (negative).</p>
+<div class="fragment">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="model-specification_files/figure-revealjs/unnamed-chunk-4-1.png" width="480"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="quantify-with-correlation" class="slide level2 smaller">
+<h2>Quantify with correlation</h2>
+<p>One way to quantify linear relationships is with <strong>correlation</strong> (<span class="math inline">\(r\)</span>). Correlation expresses the linear relationship as a range from -1 (perfectly negative) to 1 (perfectly positive).</p>
+
+<img data-src="../assests/images/correlation.jpeg" class="r-stretch"></section>
+<section id="computing-correlation-in-r" class="slide level2 smaller">
+<h2>Computing correlation in R</h2>
+<p>We can compute a correlation with R’s built in <code>cor(x,y)</code> function</p>
+<div class="fragment">
+<div class="cell columns column-output-location">
+<div class="column">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a></a><span class="fu">cor</span>(</span>
+<span id="cb1-2"><a></a>  <span class="at">x =</span> ratings<span class="sc">$</span>Frequency, </span>
+<span id="cb1-3"><a></a>  <span class="at">y =</span> ratings<span class="sc">$</span>meanFamiliarity</span>
+<span id="cb1-4"><a></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div><div class="column">
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.4820286</code></pre>
+</div>
+</div></div>
+</div>
+<div class="fragment">
+<p>Or via the <code>infer</code> pacakge.</p>
+</div>
+<div class="fragment">
+<div class="cell columns column-output-location">
+<div class="column">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a></a>(obs_corr <span class="ot">&lt;-</span> ratings <span class="sc">%&gt;%</span></span>
+<span id="cb3-2"><a></a>  <span class="fu">specify</span>(</span>
+<span id="cb3-3"><a></a>    <span class="at">response =</span> meanFamiliarity, </span>
+<span id="cb3-4"><a></a>    <span class="at">explanatory =</span> Frequency</span>
+<span id="cb3-5"><a></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb3-6"><a></a>  <span class="fu">calculate</span>(<span class="at">stat =</span> <span class="st">"correlation"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div><div class="column">
+<div class="cell-output cell-output-stdout">
+<pre><code>Response: meanFamiliarity (numeric)
+Explanatory: Frequency (numeric)
+# A tibble: 1 × 1
+   stat
+  &lt;dbl&gt;
+1 0.482</code></pre>
+</div>
+</div></div>
+</div>
+</section>
+<section id="correlation-uncertainty" class="slide level2 smaller">
+<h2>Correlation uncertainty</h2>
+<p>Just like the mean — and all other test statistics! — <span class="math inline">\(r\)</span> is subject to sampling variability. We can indicate our uncertainty around the correlation the same way we always have:</p>
+<div class="fragment">
+<p>Construct the sampling distribution for the correlation:</p>
+</div>
+<div class="fragment">
+<div class="cell columns column-output-location">
+<div class="column">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a></a>sampling_distribution <span class="ot">&lt;-</span> ratings <span class="sc">%&gt;%</span></span>
+<span id="cb5-2"><a></a>  <span class="fu">specify</span>(</span>
+<span id="cb5-3"><a></a>    <span class="at">response =</span> meanFamiliarity, </span>
+<span id="cb5-4"><a></a>    <span class="at">explanatory =</span> Frequency</span>
+<span id="cb5-5"><a></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb5-6"><a></a>  <span class="fu">generate</span>(<span class="at">reps =</span> <span class="dv">1000</span>, <span class="at">type =</span> <span class="st">"bootstrap"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb5-7"><a></a>  <span class="fu">calculate</span>(<span class="at">stat =</span> <span class="st">"correlation"</span>)</span>
+<span id="cb5-8"><a></a></span>
+<span id="cb5-9"><a></a><span class="fu">head</span>(sampling_distribution)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div><div class="column">
+<div class="cell-output cell-output-stdout">
+<pre><code>Response: meanFamiliarity (numeric)
+Explanatory: Frequency (numeric)
+# A tibble: 6 × 2
+  replicate  stat
+      &lt;int&gt; &lt;dbl&gt;
+1         1 0.444
+2         2 0.595
+3         3 0.533
+4         4 0.565
+5         5 0.573
+6         6 0.579</code></pre>
+</div>
+</div></div>
+</div>
+<div class="fragment">
+<p>Compute a confidence interval</p>
+</div>
+<div class="fragment">
+<div class="cell columns column-output-location">
+<div class="column">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a></a>ci <span class="ot">&lt;-</span> sampling_distribution <span class="sc">%&gt;%</span> </span>
+<span id="cb7-2"><a></a>  <span class="fu">get_ci</span>(<span class="at">level =</span> <span class="fl">0.95</span>, <span class="at">type =</span> <span class="st">"percentile"</span>)</span>
+<span id="cb7-3"><a></a></span>
+<span id="cb7-4"><a></a>ci</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div><div class="column">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 2
+  lower_ci upper_ci
+     &lt;dbl&gt;    &lt;dbl&gt;
+1    0.305    0.635</code></pre>
+</div>
+</div></div>
+</div>
+</section>
+<section id="in-class-exercise-7.1" class="slide level2 smaller">
+<h2>💪 In-class Exercise 7.1</h2>
+<p><em>Take a few minutes to try this yourself!</em></p>
+<p>Use the <code>infer</code> way to visualize the sampling distribution and shade the confidence interval we just computed. Change the x-axis label to <strong>stat (correlation)</strong> as pictured below.</p>
+<div class="fragment">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="model-specification_files/figure-revealjs/unnamed-chunk-9-1.png" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="hypothesis-testing-our-correlation" class="slide level2 smaller">
+<h2>Hypothesis testing our correlation</h2>
+<p>How do we test whether the correlation we observed is significantly different from zero? Hypothesis test!</p>
+<div class="fragment">
+<p>Step 1: Construct the null distribution, the sampling distribution of the null hypothesis</p>
+</div>
+<div class="fragment">
+<div class="cell columns column-output-location">
+<div class="column">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a></a>null_distribution_corr <span class="ot">&lt;-</span> ratings <span class="sc">%&gt;%</span> </span>
+<span id="cb9-2"><a></a>  <span class="fu">specify</span>(</span>
+<span id="cb9-3"><a></a>    <span class="at">response =</span> meanFamiliarity, </span>
+<span id="cb9-4"><a></a>    <span class="at">explanatory =</span> Frequency</span>
+<span id="cb9-5"><a></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb9-6"><a></a>  <span class="fu">hypothesize</span>(<span class="at">null =</span> <span class="st">"independence"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb9-7"><a></a>  <span class="fu">generate</span>(<span class="at">reps =</span> <span class="dv">1000</span>, <span class="at">type =</span> <span class="st">"permute"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb9-8"><a></a>  <span class="fu">calculate</span>(<span class="at">stat =</span> <span class="st">"correlation"</span>) </span>
+<span id="cb9-9"><a></a></span>
+<span id="cb9-10"><a></a>null_distribution_corr <span class="sc">%&gt;%</span> head</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div><div class="column">
+<div class="cell-output cell-output-stdout">
+<pre><code>Response: meanFamiliarity (numeric)
+Explanatory: Frequency (numeric)
+Null Hypothesis: independence
+# A tibble: 6 × 2
+  replicate    stat
+      &lt;int&gt;   &lt;dbl&gt;
+1         1 -0.189 
+2         2  0.0233
+3         3 -0.0523
+4         4 -0.0187
+5         5 -0.0674
+6         6 -0.0242</code></pre>
+</div>
+</div></div>
+</div>
+<div class="fragment">
+<p>Step 2: How likley is our observed value under the null? Get a p-value.</p>
+</div>
+<div class="fragment">
+<div class="cell columns column-output-location">
+<div class="column">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a></a>p <span class="ot">&lt;-</span> null_distribution_corr <span class="sc">%&gt;%</span></span>
+<span id="cb11-2"><a></a>  <span class="fu">get_p_value</span>(</span>
+<span id="cb11-3"><a></a>    <span class="at">obs_stat =</span> obs_corr, </span>
+<span id="cb11-4"><a></a>    <span class="at">direction =</span> <span class="st">"both"</span>)</span>
+<span id="cb11-5"><a></a>p</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div><div class="column">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 1
+  p_value
+    &lt;dbl&gt;
+1       0</code></pre>
+</div>
+</div></div>
+</div>
+</section>
+<section id="hypothesis-testing-our-correlation-1" class="slide level2 smaller">
+<h2>Hypothesis testing our correlation</h2>
+<p>How do we test whether the correlation we observed is significantly different from zero? Hypothesis test!</p>
+<div class="fragment">
+<p>Step 3: Decide whether to reject the null!</p>
+</div>
+<div class="fragment">
+<div class="cell columns column-output-location">
+<div class="column">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a></a>null_distribution_corr <span class="sc">%&gt;%</span> </span>
+<span id="cb13-2"><a></a>  <span class="fu">visualize</span>() <span class="sc">+</span> </span>
+<span id="cb13-3"><a></a>  <span class="fu">shade_p_value</span>(</span>
+<span id="cb13-4"><a></a>    <span class="at">obs_stat =</span> obs_corr, </span>
+<span id="cb13-5"><a></a>    <span class="at">direction =</span> <span class="st">"two-sided"</span></span>
+<span id="cb13-6"><a></a>  ) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div><div class="column">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="model-specification_files/figure-revealjs/unnamed-chunk-12-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div></div>
+</div>
+<div class="fragment">
+<p>Interpret our p-value. Should we reject the null hypothesis?</p>
+</div>
+</section></section>
+<section>
+<section id="model-building" class="title-slide slide level1 center">
+<h1>Model building</h1>
+<p>Big picture overview of the model building process and the types of models we might encounter in our research.</p>
+</section>
+<section id="correlation-is-model-building" class="slide level2 smaller">
+<h2>Correlation is model building</h2>
+<p>Correlation is a simple case of model building, in which we use one value (<span class="math inline">\(x\)</span>) to predict another (<span class="math inline">\(y\)</span>).</p>
+<div class="fragment">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="model-specification_files/figure-revealjs/unnamed-chunk-13-1.png" width="480"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="correlation-is-model-building-1" class="slide level2 smaller">
+<h2>Correlation is model building</h2>
+<p>Even more specifically — formally, the <strong>model specification</strong> — we are fitting the linear model <span class="math inline">\(y = ax+b\)</span>, where <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> are free parameters.</p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="model-specification_files/figure-revealjs/unnamed-chunk-14-1.png" width="480"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<ul>
+<li class="fragment">Model specification: <span class="math inline">\(y = ax + b\)</span></li>
+<li class="fragment">Estimate free parameters: <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span></li>
+<li class="fragment">Fitted model: <span class="math inline">\(y = 0.39x + 2.02\)</span></li>
+</ul>
+</div></div>
+</section>
+<section id="how-do-we-get-r-0.48" class="slide level2 smaller">
+<h2>How do we get <span class="math inline">\(r = 0.48\)</span> ?</h2>
+<p>The link between correlation and linear models is understood when we normalize our variables with a z-score.</p>
+<div class="cell columns column-output-location">
+<div class="column">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a></a>z_ratings <span class="ot">&lt;-</span> ratings <span class="sc">%&gt;%</span></span>
+<span id="cb14-2"><a></a>  <span class="fu">select</span>(Frequency, meanFamiliarity) <span class="sc">%&gt;%</span></span>
+<span id="cb14-3"><a></a>  <span class="fu">mutate</span>(</span>
+<span id="cb14-4"><a></a>    <span class="at">z_Freq =</span> <span class="fu">scale</span>(Frequency), </span>
+<span id="cb14-5"><a></a>    <span class="at">z_meanFamil =</span> <span class="fu">scale</span>(meanFamiliarity)</span>
+<span id="cb14-6"><a></a>  )</span>
+<span id="cb14-7"><a></a></span>
+<span id="cb14-8"><a></a>z_ratings <span class="sc">%&gt;%</span> head</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div><div class="column">
+<div class="cell-output cell-output-stdout">
+<pre><code>  Frequency meanFamiliarity     z_Freq z_meanFamil
+1  4.204693            3.72 -0.4387602  -0.1573220
+2  5.347108            3.60  0.4619516  -0.2742310
+3  6.304449            5.84  1.2167459   1.9080703
+4  3.828641            4.40 -0.7352500   0.5051623
+5  3.663562            3.68 -0.8654029  -0.1962917
+6  3.433987            4.12 -1.0464062   0.2323747</code></pre>
+</div>
+</div></div>
+<ul>
+<li class="fragment">A z-score gets the number of standard deviations a data point is from the mean.</li>
+</ul>
+</section>
+<section id="correlation-is-the-slope-of-the-model" class="slide level2 smaller">
+<h2>Correlation is the slope of the model</h2>
+<p>Correlation is the slope of the line that best predicts <span class="math inline">\(y\)</span> from <span class="math inline">\(x\)</span> (after z-scoring)</p>
+<div>
+
+</div>
+<div class="cell quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img data-src="model-specification_files/figure-revealjs/unnamed-chunk-16-1.png" width="960"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img data-src="model-specification_files/figure-revealjs/unnamed-chunk-16-2.png" width="960"></p>
+</div>
+</div>
+</div>
+</section>
+<section id="model-building-overview" class="slide level2">
+<h2>Model building overview</h2>
+<ul>
+<li class="fragment"><code>Model specification</code> (this week): specify the functional form of the model.</li>
+<li class="fragment"><code>Model fitting</code>: you have the form, how do you estimate the free parameters?</li>
+<li class="fragment"><code>Model accuracy</code>: you’ve estimated the parameters, how well does that model describe your data?</li>
+<li class="fragment"><code>Model reliability</code>: when you estimate the parameters, you want to quantify your uncertainty on your estimates</li>
+</ul>
+</section>
+<section id="types-of-models" class="slide level2 smaller">
+<h2>Types of models</h2>
+<div class="fragment">
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+<svg width="960" height="480" viewbox="0.00 0.00 390.44 116.00" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none; display: block; margin: auto auto auto auto">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 112)">
+<title>G</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-112 386.44,-112 386.44,4 -4,4"></polygon>
+<!-- models -->
+<g id="node1" class="node">
+<title>models</title>
+<ellipse fill="none" stroke="black" cx="186.39" cy="-90" rx="38.86" ry="18"></ellipse>
+<text text-anchor="middle" x="186.39" y="-85.8" font-family="Times,serif" font-size="14.00">models</text>
+</g>
+<!-- supervised learning -->
+<g id="node2" class="node">
+<title>supervised learning</title>
+<ellipse fill="lightgrey" stroke="black" cx="86.39" cy="-18" rx="86.28" ry="18"></ellipse>
+<text text-anchor="middle" x="86.39" y="-13.8" font-family="Times,serif" font-size="14.00">supervised learning</text>
+</g>
+<!-- models&#45;&gt;supervised learning -->
+<g id="edge1" class="edge">
+<title>models-&gt;supervised learning</title>
+<path fill="none" stroke="black" d="M165.67,-74.5C151.96,-64.9 133.72,-52.13 118.19,-41.26"></path>
+<polygon fill="black" stroke="black" points="120.09,-38.32 109.89,-35.45 116.07,-44.05 120.09,-38.32"></polygon>
+</g>
+<!-- unsupervised learning -->
+<g id="node3" class="node">
+<title>unsupervised learning</title>
+<ellipse fill="none" stroke="black" cx="286.39" cy="-18" rx="96.1" ry="18"></ellipse>
+<text text-anchor="middle" x="286.39" y="-13.8" font-family="Times,serif" font-size="14.00">unsupervised learning</text>
+</g>
+<!-- models&#45;&gt;unsupervised learning -->
+<g id="edge2" class="edge">
+<title>models-&gt;unsupervised learning</title>
+<path fill="none" stroke="black" d="M207.11,-74.5C220.72,-64.97 238.81,-52.31 254.26,-41.49"></path>
+<polygon fill="black" stroke="black" points="256.35,-44.3 262.54,-35.7 252.34,-38.57 256.35,-44.3"></polygon>
+</g>
+</g>
+</svg>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="in-class-exercise-7.2" class="slide level2 smaller">
+<h2>💪 In-class Exercise 7.2</h2>
+<p><em>Take a few minutes to try this yourself!</em></p>
+<p>Ask ChatGPT what type of model it is made with?</p>
+<div class="fragment">
+<p><img data-src="../assests/images/chatgpt-exercise.png"></p>
+</div>
+</section>
+<section id="supervised-learning" class="slide level2 smaller">
+<h2>Supervised learning</h2>
+<div class="fragment">
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+<svg width="960" height="480" viewbox="0.00 0.00 296.00 260.00" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none; display: block; margin: auto auto auto auto">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 256)">
+<title>G</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-256 292,-256 292,4 -4,4"></polygon>
+<!-- x1 -->
+<g id="node1" class="node">
+<title>x1</title>
+<ellipse fill="none" stroke="black" cx="27" cy="-234" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="27" y="-229.8" font-family="Times,serif" font-size="14.00">x1</text>
+</g>
+<!-- model -->
+<g id="node4" class="node">
+<title>model</title>
+<polygon fill="lightgrey" stroke="black" points="198,-162 90,-162 90,-90 198,-90 198,-162"></polygon>
+<text text-anchor="middle" x="144" y="-121.8" font-family="Times,serif" font-size="14.00">Model</text>
+</g>
+<!-- x1&#45;&gt;model -->
+<!-- x2 -->
+<g id="node2" class="node">
+<title>x2</title>
+<ellipse fill="none" stroke="black" cx="27" cy="-180" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="27" y="-175.8" font-family="Times,serif" font-size="14.00">x2</text>
+</g>
+<!-- x2&#45;&gt;model -->
+<!-- x3 -->
+<g id="node3" class="node">
+<title>x3</title>
+<ellipse fill="none" stroke="black" cx="27" cy="-126" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="27" y="-121.8" font-family="Times,serif" font-size="14.00">x3</text>
+</g>
+<!-- x3&#45;&gt;model -->
+<!-- y -->
+<g id="node5" class="node">
+<title>y</title>
+<ellipse fill="none" stroke="black" cx="261" cy="-126" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="261" y="-121.8" font-family="Times,serif" font-size="14.00">y</text>
+</g>
+<!-- model&#45;&gt;y -->
+<!-- x4 -->
+<g id="node6" class="node">
+<title>x4</title>
+<ellipse fill="none" stroke="black" cx="27" cy="-72" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="27" y="-67.8" font-family="Times,serif" font-size="14.00">x4</text>
+</g>
+<!-- x4&#45;&gt;model -->
+<!-- x5 -->
+<g id="node7" class="node">
+<title>x5</title>
+<ellipse fill="none" stroke="black" cx="27" cy="-18" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="27" y="-13.8" font-family="Times,serif" font-size="14.00">x5</text>
+</g>
+<!-- x5&#45;&gt;model -->
+</g>
+</svg>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="supervised-learning-1" class="slide level2 smaller">
+<h2>Supervised learning</h2>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+<svg width="960" height="480" viewbox="0.00 0.00 296.00 260.00" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none; display: block; margin: auto auto auto auto">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 256)">
+<title>G</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-256 292,-256 292,4 -4,4"></polygon>
+<!-- x1 -->
+<g id="node1" class="node">
+<title>x1</title>
+<ellipse fill="none" stroke="black" cx="27" cy="-234" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="27" y="-229.8" font-family="Times,serif" font-size="14.00">x1</text>
+</g>
+<!-- model -->
+<g id="node4" class="node">
+<title>model</title>
+<polygon fill="lightgrey" stroke="black" points="198,-162 90,-162 90,-90 198,-90 198,-162"></polygon>
+<text text-anchor="middle" x="144" y="-121.8" font-family="Times,serif" font-size="14.00">Model</text>
+</g>
+<!-- x1&#45;&gt;model -->
+<g id="edge1" class="edge">
+<title>x1-&gt;model</title>
+<path fill="none" stroke="black" d="M43.51,-219.43C57.26,-206.52 78.05,-187 97.07,-169.13"></path>
+<polygon fill="black" stroke="black" points="99.64,-171.52 104.53,-162.12 94.85,-166.42 99.64,-171.52"></polygon>
+</g>
+<!-- x2 -->
+<g id="node2" class="node">
+<title>x2</title>
+<ellipse fill="none" stroke="black" cx="27" cy="-180" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="27" y="-175.8" font-family="Times,serif" font-size="14.00">x2</text>
+</g>
+<!-- x2&#45;&gt;model -->
+<g id="edge2" class="edge">
+<title>x2-&gt;model</title>
+<path fill="none" stroke="black" d="M49.63,-169.84C58.58,-165.64 69.45,-160.54 80.57,-155.31"></path>
+<polygon fill="black" stroke="black" points="82.38,-158.33 89.94,-150.92 79.4,-152 82.38,-158.33"></polygon>
+</g>
+<!-- x3 -->
+<g id="node3" class="node">
+<title>x3</title>
+<ellipse fill="none" stroke="black" cx="27" cy="-126" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="27" y="-121.8" font-family="Times,serif" font-size="14.00">x3</text>
+</g>
+<!-- x3&#45;&gt;model -->
+<g id="edge3" class="edge">
+<title>x3-&gt;model</title>
+<path fill="none" stroke="black" d="M54.1,-126C61.8,-126 70.59,-126 79.57,-126"></path>
+<polygon fill="black" stroke="black" points="79.75,-129.5 89.75,-126 79.75,-122.5 79.75,-129.5"></polygon>
+</g>
+<!-- y -->
+<g id="node5" class="node">
+<title>y</title>
+<ellipse fill="none" stroke="black" cx="261" cy="-126" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="261" y="-121.8" font-family="Times,serif" font-size="14.00">y</text>
+</g>
+<!-- model&#45;&gt;y -->
+<!-- x4 -->
+<g id="node6" class="node">
+<title>x4</title>
+<ellipse fill="none" stroke="black" cx="27" cy="-72" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="27" y="-67.8" font-family="Times,serif" font-size="14.00">x4</text>
+</g>
+<!-- x4&#45;&gt;model -->
+<g id="edge4" class="edge">
+<title>x4-&gt;model</title>
+<path fill="none" stroke="black" d="M49.63,-82.16C58.58,-86.36 69.45,-91.46 80.57,-96.69"></path>
+<polygon fill="black" stroke="black" points="79.4,-100 89.94,-101.08 82.38,-93.67 79.4,-100"></polygon>
+</g>
+<!-- x5 -->
+<g id="node7" class="node">
+<title>x5</title>
+<ellipse fill="none" stroke="black" cx="27" cy="-18" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="27" y="-13.8" font-family="Times,serif" font-size="14.00">x5</text>
+</g>
+<!-- x5&#45;&gt;model -->
+<g id="edge5" class="edge">
+<title>x5-&gt;model</title>
+<path fill="none" stroke="black" d="M43.51,-32.57C57.26,-45.48 78.05,-65 97.07,-82.87"></path>
+<polygon fill="black" stroke="black" points="94.85,-85.58 104.53,-89.88 99.64,-80.48 94.85,-85.58"></polygon>
+</g>
+</g>
+</svg>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</section>
+<section id="supervised-learning-2" class="slide level2 smaller">
+<h2>Supervised learning</h2>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+<svg width="960" height="480" viewbox="0.00 0.00 296.00 260.00" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none; display: block; margin: auto auto auto auto">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 256)">
+<title>G</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-256 292,-256 292,4 -4,4"></polygon>
+<!-- x1 -->
+<g id="node1" class="node">
+<title>x1</title>
+<ellipse fill="none" stroke="black" cx="27" cy="-234" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="27" y="-229.8" font-family="Times,serif" font-size="14.00">x1</text>
+</g>
+<!-- model -->
+<g id="node4" class="node">
+<title>model</title>
+<polygon fill="lightgrey" stroke="black" points="198,-162 90,-162 90,-90 198,-90 198,-162"></polygon>
+<text text-anchor="middle" x="144" y="-121.8" font-family="Times,serif" font-size="14.00">Model</text>
+</g>
+<!-- x1&#45;&gt;model -->
+<g id="edge1" class="edge">
+<title>x1-&gt;model</title>
+<path fill="none" stroke="black" d="M43.51,-219.43C57.26,-206.52 78.05,-187 97.07,-169.13"></path>
+<polygon fill="black" stroke="black" points="99.64,-171.52 104.53,-162.12 94.85,-166.42 99.64,-171.52"></polygon>
+</g>
+<!-- x2 -->
+<g id="node2" class="node">
+<title>x2</title>
+<ellipse fill="none" stroke="black" cx="27" cy="-180" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="27" y="-175.8" font-family="Times,serif" font-size="14.00">x2</text>
+</g>
+<!-- x2&#45;&gt;model -->
+<g id="edge2" class="edge">
+<title>x2-&gt;model</title>
+<path fill="none" stroke="black" d="M49.63,-169.84C58.58,-165.64 69.45,-160.54 80.57,-155.31"></path>
+<polygon fill="black" stroke="black" points="82.38,-158.33 89.94,-150.92 79.4,-152 82.38,-158.33"></polygon>
+</g>
+<!-- x3 -->
+<g id="node3" class="node">
+<title>x3</title>
+<ellipse fill="none" stroke="black" cx="27" cy="-126" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="27" y="-121.8" font-family="Times,serif" font-size="14.00">x3</text>
+</g>
+<!-- x3&#45;&gt;model -->
+<g id="edge3" class="edge">
+<title>x3-&gt;model</title>
+<path fill="none" stroke="black" d="M54.1,-126C61.8,-126 70.59,-126 79.57,-126"></path>
+<polygon fill="black" stroke="black" points="79.75,-129.5 89.75,-126 79.75,-122.5 79.75,-129.5"></polygon>
+</g>
+<!-- y -->
+<g id="node5" class="node">
+<title>y</title>
+<ellipse fill="none" stroke="black" cx="261" cy="-126" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="261" y="-121.8" font-family="Times,serif" font-size="14.00">y</text>
+</g>
+<!-- model&#45;&gt;y -->
+<g id="edge6" class="edge">
+<title>model-&gt;y</title>
+<path fill="none" stroke="black" d="M198.12,-126C206.72,-126 215.44,-126 223.52,-126"></path>
+<polygon fill="black" stroke="black" points="223.71,-129.5 233.71,-126 223.71,-122.5 223.71,-129.5"></polygon>
+</g>
+<!-- x4 -->
+<g id="node6" class="node">
+<title>x4</title>
+<ellipse fill="none" stroke="black" cx="27" cy="-72" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="27" y="-67.8" font-family="Times,serif" font-size="14.00">x4</text>
+</g>
+<!-- x4&#45;&gt;model -->
+<g id="edge4" class="edge">
+<title>x4-&gt;model</title>
+<path fill="none" stroke="black" d="M49.63,-82.16C58.58,-86.36 69.45,-91.46 80.57,-96.69"></path>
+<polygon fill="black" stroke="black" points="79.4,-100 89.94,-101.08 82.38,-93.67 79.4,-100"></polygon>
+</g>
+<!-- x5 -->
+<g id="node7" class="node">
+<title>x5</title>
+<ellipse fill="none" stroke="black" cx="27" cy="-18" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="27" y="-13.8" font-family="Times,serif" font-size="14.00">x5</text>
+</g>
+<!-- x5&#45;&gt;model -->
+<g id="edge5" class="edge">
+<title>x5-&gt;model</title>
+<path fill="none" stroke="black" d="M43.51,-32.57C57.26,-45.48 78.05,-65 97.07,-82.87"></path>
+<polygon fill="black" stroke="black" points="94.85,-85.58 104.53,-89.88 99.64,-80.48 94.85,-85.58"></polygon>
+</g>
+</g>
+</svg>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</section>
+<section id="types-of-models-1" class="slide level2">
+<h2>Types of models</h2>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+<svg width="960" height="480" viewbox="0.00 0.00 419.77 188.00" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none; display: block; margin: auto auto auto auto">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 184)">
+<title>G</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-184 415.77,-184 415.77,4 -4,4"></polygon>
+<!-- models -->
+<g id="node1" class="node">
+<title>models</title>
+<ellipse fill="none" stroke="black" cx="215.73" cy="-162" rx="38.86" ry="18"></ellipse>
+<text text-anchor="middle" x="215.73" y="-157.8" font-family="Times,serif" font-size="14.00">models</text>
+</g>
+<!-- supervised learning -->
+<g id="node2" class="node">
+<title>supervised learning</title>
+<ellipse fill="none" stroke="black" cx="115.73" cy="-90" rx="86.28" ry="18"></ellipse>
+<text text-anchor="middle" x="115.73" y="-85.8" font-family="Times,serif" font-size="14.00">supervised learning</text>
+</g>
+<!-- models&#45;&gt;supervised learning -->
+<g id="edge1" class="edge">
+<title>models-&gt;supervised learning</title>
+<path fill="none" stroke="black" d="M195.01,-146.5C181.3,-136.9 163.05,-124.13 147.52,-113.26"></path>
+<polygon fill="black" stroke="black" points="149.42,-110.32 139.22,-107.45 145.41,-116.05 149.42,-110.32"></polygon>
+</g>
+<!-- unsupervised learning -->
+<g id="node3" class="node">
+<title>unsupervised learning</title>
+<ellipse fill="none" stroke="black" cx="315.73" cy="-90" rx="96.1" ry="18"></ellipse>
+<text text-anchor="middle" x="315.73" y="-85.8" font-family="Times,serif" font-size="14.00">unsupervised learning</text>
+</g>
+<!-- models&#45;&gt;unsupervised learning -->
+<g id="edge2" class="edge">
+<title>models-&gt;unsupervised learning</title>
+<path fill="none" stroke="black" d="M236.45,-146.5C250.06,-136.97 268.14,-124.31 283.6,-113.49"></path>
+<polygon fill="black" stroke="black" points="285.68,-116.3 291.87,-107.7 281.67,-110.57 285.68,-116.3"></polygon>
+</g>
+<!-- regression -->
+<g id="node4" class="node">
+<title>regression</title>
+<ellipse fill="lightgrey" stroke="black" cx="50.73" cy="-18" rx="50.95" ry="18"></ellipse>
+<text text-anchor="middle" x="50.73" y="-13.8" font-family="Times,serif" font-size="14.00">regression</text>
+</g>
+<!-- supervised learning&#45;&gt;regression -->
+<g id="edge3" class="edge">
+<title>supervised learning-&gt;regression</title>
+<path fill="none" stroke="black" d="M99.99,-72.05C91.81,-63.24 81.67,-52.33 72.73,-42.69"></path>
+<polygon fill="black" stroke="black" points="75.24,-40.25 65.87,-35.31 70.11,-45.02 75.24,-40.25"></polygon>
+</g>
+<!-- classification -->
+<g id="node5" class="node">
+<title>classification</title>
+<ellipse fill="none" stroke="black" cx="181.73" cy="-18" rx="61.97" ry="18"></ellipse>
+<text text-anchor="middle" x="181.73" y="-13.8" font-family="Times,serif" font-size="14.00">classification</text>
+</g>
+<!-- supervised learning&#45;&gt;classification -->
+<g id="edge4" class="edge">
+<title>supervised learning-&gt;classification</title>
+<path fill="none" stroke="black" d="M131.7,-72.05C139.89,-63.37 150,-52.64 158.99,-43.11"></path>
+<polygon fill="black" stroke="black" points="161.58,-45.47 165.9,-35.79 156.49,-40.66 161.58,-45.47"></polygon>
+</g>
+</g>
+</svg>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</section>
+<section id="regression-v-classification" class="slide level2 smaller">
+<h2>Regression v classification</h2>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+<svg width="960" height="480" viewbox="0.00 0.00 524.89 260.00" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none; display: block; margin: auto auto auto auto">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 256)">
+<title>G</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-256 520.89,-256 520.89,4 -4,4"></polygon>
+<!-- x1 -->
+<g id="node1" class="node">
+<title>x1</title>
+<ellipse fill="none" stroke="black" cx="27" cy="-234" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="27" y="-229.8" font-family="Times,serif" font-size="14.00">x1</text>
+</g>
+<!-- model -->
+<g id="node4" class="node">
+<title>model</title>
+<polygon fill="lightgrey" stroke="black" points="198,-162 90,-162 90,-90 198,-90 198,-162"></polygon>
+<text text-anchor="middle" x="144" y="-121.8" font-family="Times,serif" font-size="14.00">Model</text>
+</g>
+<!-- x1&#45;&gt;model -->
+<g id="edge1" class="edge">
+<title>x1-&gt;model</title>
+<path fill="none" stroke="black" d="M43.51,-219.43C57.26,-206.52 78.05,-187 97.07,-169.13"></path>
+<polygon fill="black" stroke="black" points="99.64,-171.52 104.53,-162.12 94.85,-166.42 99.64,-171.52"></polygon>
+</g>
+<!-- x2 -->
+<g id="node2" class="node">
+<title>x2</title>
+<ellipse fill="none" stroke="black" cx="27" cy="-180" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="27" y="-175.8" font-family="Times,serif" font-size="14.00">x2</text>
+</g>
+<!-- x2&#45;&gt;model -->
+<g id="edge2" class="edge">
+<title>x2-&gt;model</title>
+<path fill="none" stroke="black" d="M49.63,-169.84C58.58,-165.64 69.45,-160.54 80.57,-155.31"></path>
+<polygon fill="black" stroke="black" points="82.38,-158.33 89.94,-150.92 79.4,-152 82.38,-158.33"></polygon>
+</g>
+<!-- x3 -->
+<g id="node3" class="node">
+<title>x3</title>
+<ellipse fill="none" stroke="black" cx="27" cy="-126" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="27" y="-121.8" font-family="Times,serif" font-size="14.00">x3</text>
+</g>
+<!-- x3&#45;&gt;model -->
+<g id="edge3" class="edge">
+<title>x3-&gt;model</title>
+<path fill="none" stroke="black" d="M54.1,-126C61.8,-126 70.59,-126 79.57,-126"></path>
+<polygon fill="black" stroke="black" points="79.75,-129.5 89.75,-126 79.75,-122.5 79.75,-129.5"></polygon>
+</g>
+<!-- y -->
+<g id="node5" class="node">
+<title>y</title>
+<ellipse fill="none" stroke="black" cx="261" cy="-126" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="261" y="-121.8" font-family="Times,serif" font-size="14.00">y</text>
+</g>
+<!-- model&#45;&gt;y -->
+<g id="edge6" class="edge">
+<title>model-&gt;y</title>
+<path fill="none" stroke="black" d="M198.12,-126C206.72,-126 215.44,-126 223.52,-126"></path>
+<polygon fill="black" stroke="black" points="223.71,-129.5 233.71,-126 223.71,-122.5 223.71,-129.5"></polygon>
+</g>
+<!-- r -->
+<g id="node6" class="node">
+<title>r</title>
+<polygon fill="none" stroke="black" points="510.26,-176.6 330.63,-176.6 330.63,-135.4 510.26,-135.4 510.26,-176.6"></polygon>
+<text text-anchor="middle" x="420.44" y="-160.2" font-family="Times,serif" font-size="14.00">Regression (y is continuous) </text>
+<text text-anchor="middle" x="420.44" y="-143.4" font-family="Times,serif" font-size="14.00"> 1 3 4 2 3 4</text>
+</g>
+<!-- y&#45;&gt;r -->
+<g id="edge7" class="edge">
+<title>y-&gt;r</title>
+<path fill="none" stroke="black" d="M287.3,-130.82C296.83,-132.64 308.34,-134.83 320.55,-137.16"></path>
+<polygon fill="black" stroke="black" points="319.99,-140.61 330.46,-139.05 321.3,-133.74 319.99,-140.61"></polygon>
+</g>
+<!-- c -->
+<g id="node7" class="node">
+<title>c</title>
+<polygon fill="none" stroke="black" points="516.83,-116.6 324.06,-116.6 324.06,-75.4 516.83,-75.4 516.83,-116.6"></polygon>
+<text text-anchor="middle" x="420.44" y="-100.2" font-family="Times,serif" font-size="14.00">Classification (y is discrete) </text>
+<text text-anchor="middle" x="420.44" y="-83.4" font-family="Times,serif" font-size="14.00"> yes/no, male/female/nonbinary</text>
+</g>
+<!-- y&#45;&gt;c -->
+<g id="edge8" class="edge">
+<title>y-&gt;c</title>
+<path fill="none" stroke="black" d="M287.3,-121.18C295.12,-119.69 304.28,-117.94 314.05,-116.08"></path>
+<polygon fill="black" stroke="black" points="314.85,-119.49 324.01,-114.18 313.54,-112.62 314.85,-119.49"></polygon>
+</g>
+<!-- x4 -->
+<g id="node8" class="node">
+<title>x4</title>
+<ellipse fill="none" stroke="black" cx="27" cy="-72" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="27" y="-67.8" font-family="Times,serif" font-size="14.00">x4</text>
+</g>
+<!-- x4&#45;&gt;model -->
+<g id="edge4" class="edge">
+<title>x4-&gt;model</title>
+<path fill="none" stroke="black" d="M49.63,-82.16C58.58,-86.36 69.45,-91.46 80.57,-96.69"></path>
+<polygon fill="black" stroke="black" points="79.4,-100 89.94,-101.08 82.38,-93.67 79.4,-100"></polygon>
+</g>
+<!-- x5 -->
+<g id="node9" class="node">
+<title>x5</title>
+<ellipse fill="none" stroke="black" cx="27" cy="-18" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="27" y="-13.8" font-family="Times,serif" font-size="14.00">x5</text>
+</g>
+<!-- x5&#45;&gt;model -->
+<g id="edge5" class="edge">
+<title>x5-&gt;model</title>
+<path fill="none" stroke="black" d="M43.51,-32.57C57.26,-45.48 78.05,-65 97.07,-82.87"></path>
+<polygon fill="black" stroke="black" points="94.85,-85.58 104.53,-89.88 99.64,-80.48 94.85,-85.58"></polygon>
+</g>
+</g>
+</svg>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</section>
+<section id="types-of-models-2" class="slide level2">
+<h2>Types of models</h2>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+<svg width="960" height="480" viewbox="0.00 0.00 511.38 260.00" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none; display: block; margin: auto auto auto auto">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 256)">
+<title>G</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-256 507.38,-256 507.38,4 -4,4"></polygon>
+<!-- models -->
+<g id="node1" class="node">
+<title>models</title>
+<ellipse fill="none" stroke="black" cx="307.33" cy="-234" rx="38.86" ry="18"></ellipse>
+<text text-anchor="middle" x="307.33" y="-229.8" font-family="Times,serif" font-size="14.00">models</text>
+</g>
+<!-- supervised learning -->
+<g id="node2" class="node">
+<title>supervised learning</title>
+<ellipse fill="none" stroke="black" cx="207.33" cy="-162" rx="86.28" ry="18"></ellipse>
+<text text-anchor="middle" x="207.33" y="-157.8" font-family="Times,serif" font-size="14.00">supervised learning</text>
+</g>
+<!-- models&#45;&gt;supervised learning -->
+<g id="edge1" class="edge">
+<title>models-&gt;supervised learning</title>
+<path fill="none" stroke="black" d="M286.61,-218.5C272.9,-208.9 254.66,-196.13 239.13,-185.26"></path>
+<polygon fill="black" stroke="black" points="241.03,-182.32 230.83,-179.45 237.01,-188.05 241.03,-182.32"></polygon>
+</g>
+<!-- unsupervised learning -->
+<g id="node3" class="node">
+<title>unsupervised learning</title>
+<ellipse fill="none" stroke="black" cx="407.33" cy="-162" rx="96.1" ry="18"></ellipse>
+<text text-anchor="middle" x="407.33" y="-157.8" font-family="Times,serif" font-size="14.00">unsupervised learning</text>
+</g>
+<!-- models&#45;&gt;unsupervised learning -->
+<g id="edge2" class="edge">
+<title>models-&gt;unsupervised learning</title>
+<path fill="none" stroke="black" d="M328.05,-218.5C341.66,-208.97 359.74,-196.31 375.2,-185.49"></path>
+<polygon fill="black" stroke="black" points="377.29,-188.3 383.47,-179.7 373.27,-182.57 377.29,-188.3"></polygon>
+</g>
+<!-- regression -->
+<g id="node4" class="node">
+<title>regression</title>
+<ellipse fill="none" stroke="black" cx="142.33" cy="-90" rx="50.95" ry="18"></ellipse>
+<text text-anchor="middle" x="142.33" y="-85.8" font-family="Times,serif" font-size="14.00">regression</text>
+</g>
+<!-- supervised learning&#45;&gt;regression -->
+<g id="edge3" class="edge">
+<title>supervised learning-&gt;regression</title>
+<path fill="none" stroke="black" d="M191.59,-144.05C183.41,-135.24 173.28,-124.33 164.33,-114.69"></path>
+<polygon fill="black" stroke="black" points="166.84,-112.25 157.47,-107.31 161.71,-117.02 166.84,-112.25"></polygon>
+</g>
+<!-- classification -->
+<g id="node5" class="node">
+<title>classification</title>
+<ellipse fill="none" stroke="black" cx="273.33" cy="-90" rx="61.97" ry="18"></ellipse>
+<text text-anchor="middle" x="273.33" y="-85.8" font-family="Times,serif" font-size="14.00">classification</text>
+</g>
+<!-- supervised learning&#45;&gt;classification -->
+<g id="edge4" class="edge">
+<title>supervised learning-&gt;classification</title>
+<path fill="none" stroke="black" d="M223.31,-144.05C231.49,-135.37 241.61,-124.64 250.59,-115.11"></path>
+<polygon fill="black" stroke="black" points="253.19,-117.47 257.5,-107.79 248.09,-112.66 253.19,-117.47"></polygon>
+</g>
+<!-- linear models -->
+<g id="node6" class="node">
+<title>linear models</title>
+<ellipse fill="lightgrey" stroke="black" cx="63.33" cy="-18" rx="63.16" ry="18"></ellipse>
+<text text-anchor="middle" x="63.33" y="-13.8" font-family="Times,serif" font-size="14.00">linear models</text>
+</g>
+<!-- regression&#45;&gt;linear models -->
+<g id="edge5" class="edge">
+<title>regression-&gt;linear models</title>
+<path fill="none" stroke="black" d="M124.4,-73.12C114.05,-63.94 100.84,-52.23 89.35,-42.06"></path>
+<polygon fill="black" stroke="black" points="91.54,-39.32 81.73,-35.31 86.9,-44.56 91.54,-39.32"></polygon>
+</g>
+<!-- nonlinear models -->
+<g id="node7" class="node">
+<title>nonlinear models</title>
+<ellipse fill="none" stroke="black" cx="222.33" cy="-18" rx="77.63" ry="18"></ellipse>
+<text text-anchor="middle" x="222.33" y="-13.8" font-family="Times,serif" font-size="14.00">nonlinear models</text>
+</g>
+<!-- regression&#45;&gt;nonlinear models -->
+<g id="edge6" class="edge">
+<title>regression-&gt;nonlinear models</title>
+<path fill="none" stroke="black" d="M160.48,-73.12C170.9,-64 184.16,-52.4 195.73,-42.28"></path>
+<polygon fill="black" stroke="black" points="198.19,-44.77 203.41,-35.55 193.58,-39.5 198.19,-44.77"></polygon>
+</g>
+</g>
+</svg>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</section>
+<section id="linear-models" class="slide level2">
+<h2>Linear models</h2>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="model-specification_files/figure-revealjs/unnamed-chunk-24-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<ul>
+<li class="fragment"><strong>Linear models</strong> are models in which the output (y) is a weighted sum of the inputs</li>
+<li class="fragment">Easy to understand and fit</li>
+<li class="fragment"><span class="math inline">\(y=\sum_{i=1}^{n}w_ix_i\)</span></li>
+<li class="fragment"><span class="math inline">\(y = ax + b\)</span> is this!</li>
+</ul>
+</div></div>
+</section>
+<section id="linear-model-equation" class="slide level2">
+<h2>Linear model equation</h2>
+<p><span class="math inline">\(y = ax + b\)</span> <em>can be expressed</em> <span class="math inline">\(y=\sum_{i=1}^{n}w_ix_i\)</span></p>
+<ul>
+<li class="fragment">implicit constant: <span class="math inline">\(y=ax+b\mathbf{1}\)</span><br>
+</li>
+<li class="fragment">let <span class="math inline">\(x_1=x\)</span> and <span class="math inline">\(x_2=\mathbf{1}\)</span></li>
+<li class="fragment">we have <span class="math inline">\(y=ax_1 + bx_2\)</span></li>
+<li class="fragment">express <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> as weights: <span class="math inline">\(a=w_1\)</span> and <span class="math inline">\(b=w_2\)</span></li>
+<li class="fragment"><span class="math inline">\(y=w_1x_1 + w_2x_2\)</span> where <span class="math inline">\(w_1\)</span> and <span class="math inline">\(w_2\)</span> are free parameters</li>
+</ul>
+</section>
+<section id="types-of-models-3" class="slide level2">
+<h2>Types of models</h2>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+<svg width="960" height="480" viewbox="0.00 0.00 511.38 260.00" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none; display: block; margin: auto auto auto auto">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 256)">
+<title>G</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-256 507.38,-256 507.38,4 -4,4"></polygon>
+<!-- models -->
+<g id="node1" class="node">
+<title>models</title>
+<ellipse fill="none" stroke="black" cx="307.33" cy="-234" rx="38.86" ry="18"></ellipse>
+<text text-anchor="middle" x="307.33" y="-229.8" font-family="Times,serif" font-size="14.00">models</text>
+</g>
+<!-- supervised learning -->
+<g id="node2" class="node">
+<title>supervised learning</title>
+<ellipse fill="none" stroke="black" cx="207.33" cy="-162" rx="86.28" ry="18"></ellipse>
+<text text-anchor="middle" x="207.33" y="-157.8" font-family="Times,serif" font-size="14.00">supervised learning</text>
+</g>
+<!-- models&#45;&gt;supervised learning -->
+<g id="edge1" class="edge">
+<title>models-&gt;supervised learning</title>
+<path fill="none" stroke="black" d="M286.61,-218.5C272.9,-208.9 254.66,-196.13 239.13,-185.26"></path>
+<polygon fill="black" stroke="black" points="241.03,-182.32 230.83,-179.45 237.01,-188.05 241.03,-182.32"></polygon>
+</g>
+<!-- unsupervised learning -->
+<g id="node3" class="node">
+<title>unsupervised learning</title>
+<ellipse fill="none" stroke="black" cx="407.33" cy="-162" rx="96.1" ry="18"></ellipse>
+<text text-anchor="middle" x="407.33" y="-157.8" font-family="Times,serif" font-size="14.00">unsupervised learning</text>
+</g>
+<!-- models&#45;&gt;unsupervised learning -->
+<g id="edge2" class="edge">
+<title>models-&gt;unsupervised learning</title>
+<path fill="none" stroke="black" d="M328.05,-218.5C341.66,-208.97 359.74,-196.31 375.2,-185.49"></path>
+<polygon fill="black" stroke="black" points="377.29,-188.3 383.47,-179.7 373.27,-182.57 377.29,-188.3"></polygon>
+</g>
+<!-- regression -->
+<g id="node4" class="node">
+<title>regression</title>
+<ellipse fill="none" stroke="black" cx="142.33" cy="-90" rx="50.95" ry="18"></ellipse>
+<text text-anchor="middle" x="142.33" y="-85.8" font-family="Times,serif" font-size="14.00">regression</text>
+</g>
+<!-- supervised learning&#45;&gt;regression -->
+<g id="edge3" class="edge">
+<title>supervised learning-&gt;regression</title>
+<path fill="none" stroke="black" d="M191.59,-144.05C183.41,-135.24 173.28,-124.33 164.33,-114.69"></path>
+<polygon fill="black" stroke="black" points="166.84,-112.25 157.47,-107.31 161.71,-117.02 166.84,-112.25"></polygon>
+</g>
+<!-- classification -->
+<g id="node5" class="node">
+<title>classification</title>
+<ellipse fill="none" stroke="black" cx="273.33" cy="-90" rx="61.97" ry="18"></ellipse>
+<text text-anchor="middle" x="273.33" y="-85.8" font-family="Times,serif" font-size="14.00">classification</text>
+</g>
+<!-- supervised learning&#45;&gt;classification -->
+<g id="edge4" class="edge">
+<title>supervised learning-&gt;classification</title>
+<path fill="none" stroke="black" d="M223.31,-144.05C231.49,-135.37 241.61,-124.64 250.59,-115.11"></path>
+<polygon fill="black" stroke="black" points="253.19,-117.47 257.5,-107.79 248.09,-112.66 253.19,-117.47"></polygon>
+</g>
+<!-- linear models -->
+<g id="node6" class="node">
+<title>linear models</title>
+<ellipse fill="none" stroke="black" cx="63.33" cy="-18" rx="63.16" ry="18"></ellipse>
+<text text-anchor="middle" x="63.33" y="-13.8" font-family="Times,serif" font-size="14.00">linear models</text>
+</g>
+<!-- regression&#45;&gt;linear models -->
+<g id="edge5" class="edge">
+<title>regression-&gt;linear models</title>
+<path fill="none" stroke="black" d="M124.4,-73.12C114.05,-63.94 100.84,-52.23 89.35,-42.06"></path>
+<polygon fill="black" stroke="black" points="91.54,-39.32 81.73,-35.31 86.9,-44.56 91.54,-39.32"></polygon>
+</g>
+<!-- nonlinear models -->
+<g id="node7" class="node">
+<title>nonlinear models</title>
+<ellipse fill="lightgrey" stroke="black" cx="222.33" cy="-18" rx="77.63" ry="18"></ellipse>
+<text text-anchor="middle" x="222.33" y="-13.8" font-family="Times,serif" font-size="14.00">nonlinear models</text>
+</g>
+<!-- regression&#45;&gt;nonlinear models -->
+<g id="edge6" class="edge">
+<title>regression-&gt;nonlinear models</title>
+<path fill="none" stroke="black" d="M160.48,-73.12C170.9,-64 184.16,-52.4 195.73,-42.28"></path>
+<polygon fill="black" stroke="black" points="198.19,-44.77 203.41,-35.55 193.58,-39.5 198.19,-44.77"></polygon>
+</g>
+</g>
+</svg>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</section>
+<section id="nonlinear-models" class="slide level2 smaller">
+<h2>Nonlinear models</h2>
+<p>Output (y) cannot be expressed as a weighted sum of inputs(<span class="math inline">\(y=\sum_{i=1}^{n}w_ix_i\)</span> ); pattern is better captured by more complex functions. (But often we can linearize them!)</p>
+<div>
+
+</div>
+<div class="cell quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img data-src="model-specification_files/figure-revealjs/unnamed-chunk-26-1.png" width="960"></p>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img data-src="model-specification_files/figure-revealjs/unnamed-chunk-26-2.png" width="960"></p>
+</div>
+</div>
+</div>
+</section>
+<section id="in-class-exercise-7.3" class="slide level2 smaller">
+<h2>💪 In-class Exercise 7.3</h2>
+<p><em>Take a few minutes to try this yourself!</em></p>
+<p>Load the following data, which shows brain size and body weight for several different animals:</p>
+<div>
+<ul>
+<li><a href="../assests/csv/animal_brain_body_size.csv">animal_brain_body_size.csv</a></li>
+</ul>
+</div>
+<p>Explore the data to specify the type of model we should use to predict brain size by body weight.</p>
+<div>
+<ul>
+<li>Supervised or unsupervised?</li>
+<li>Regression or classification?</li>
+<li>Linear or nonlinear?</li>
+</ul>
+</div>
+</section></section>
+<section>
+<section id="thursday" class="title-slide slide level1 center">
+<h1>Thursday</h1>
+
+</section>
+<section id="model-specification" class="slide level2 smaller">
+<h2>Model specification</h2>
+<p>Recall that <code>model specification</code> is one aspect of the model building process in which we select the form of the model (the type of model)</p>
+<ol type="1">
+<li class="fragment"><strong>Response variable (<span class="math inline">\(y\)</span>):</strong> Specify the variable you want to predict/explain (output).</li>
+<li class="fragment"><strong>Explanatory variables(<span class="math inline">\(x_i\)</span>):</strong> Specify the variables that may explain the variation in the response (inputs).</li>
+<li class="fragment"><strong>Functional form:</strong> Specify the relationship between the response and explanatory variables. <em>For linear models, we use the linear model equation!</em></li>
+<li class="fragment"><strong>Model terms:</strong> Specify <em>how</em> to include your explanatory variables in the model (since they can be included in more than one way).</li>
+</ol>
+</section>
+<section id="model-specification-1" class="slide level2 smaller">
+<h2>Model specification</h2>
+<p>The following issues can also be considered part of the model specification process.</p>
+<ul>
+<li class="fragment"><strong>Model assumptions:</strong> Check any assumptions underlying the model you selected (e.g.&nbsp;does the model assume the relationship is linear?).</li>
+<li class="fragment"><strong>Model complexity:</strong> Simple models are easier to interpret but may not capture all complexities in the data. Complex models may suffer from overfitting the data or being difficult to interpret.</li>
+</ul>
+<div class="fragment">
+<p><em>A well-specified model should be based on a clear understanding of the data, the underlying relationships, and the research question.</em></p>
+</div>
+</section>
+<section id="specifying-the-functional-form" class="slide level2">
+<h2>Specifying the functional form</h2>
+<ul>
+<li class="fragment">Literally specifying the mathematical formula we’re going to use to represent the relationship between our response and explanatory variables.</li>
+<li class="fragment">We already know it: <strong>linear models</strong> are models in whch the response variable (<span class="math inline">\(y\)</span>) is a weighted sum of the explanatory variables (<span class="math inline">\(x_i\)</span>)</li>
+<li class="fragment"><span class="math inline">\(y=\sum_{i=1}^{n}w_ix_i\)</span></li>
+</ul>
+</section>
+<section id="aliases-of-ysum_i1nw_ix_i" class="slide level2">
+<h2>🥸 Aliases of <span class="math inline">\(y=\sum_{i=1}^{n}w_ix_i\)</span></h2>
+<p>The <strong>linear model equation</strong> can be expressed in many ways, but <em>they are all this same thing</em></p>
+<ol type="1">
+<li class="fragment">in <strong>high school algebra</strong>: <span class="math inline">\(y=ax+b\)</span>.</li>
+<li class="fragment">in <strong>machine learning</strong>: <span class="math inline">\(y = w_0 + w_1x_1 + w_2x_2 + ... + w_nx_n\)</span></li>
+<li class="fragment">in <strong>statistics</strong>: <span class="math inline">\(y = β_0 + β_1x_1 + β_2x_2 + ... + β_nx_n + ε\)</span></li>
+<li class="fragment">in <strong>matrix</strong> notation: <span class="math inline">\(y = Xβ + ε\)</span></li>
+</ol>
+</section>
+<section id="specify-our-first-model" class="slide level2">
+<h2>Specify our first model</h2>
+<p>To illustrate how this simple equation scales up to complex models, let’s start with a simple case (“toy”, “tractable”).</p>
+<div>
+
+</div>
+<div class="cell quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="cell-output cell-output-stdout quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<pre><code># A tibble: 2 × 2
+      x     y
+  &lt;dbl&gt; &lt;dbl&gt;
+1     1     3
+2     2     5</code></pre>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p><img data-src="model-specification_files/figure-revealjs/unnamed-chunk-27-1.png" width="960"></p>
+</div>
+</div>
+</div>
+</section>
+<section id="in-class-exercise-7.4" class="slide level2">
+<h2>💪 In class exercise 7.4</h2>
+<p>Specify our model!</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class=""><p></p>
+<div>
+<svg width="960" height="480" viewbox="0.00 0.00 296.00 260.00" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none; display: block; margin: auto auto auto auto">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 256)">
+<title>G</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-256 292,-256 292,4 -4,4"></polygon>
+<!-- x1 -->
+<g id="node1" class="node">
+<title>x1</title>
+<ellipse fill="none" stroke="black" cx="27" cy="-234" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="27" y="-229.8" font-family="Times,serif" font-size="14.00">x1</text>
+</g>
+<!-- model -->
+<g id="node4" class="node">
+<title>model</title>
+<polygon fill="lightgrey" stroke="black" points="198,-162 90,-162 90,-90 198,-90 198,-162"></polygon>
+<text text-anchor="middle" x="144" y="-121.8" font-family="Times,serif" font-size="14.00">Linear model</text>
+</g>
+<!-- x1&#45;&gt;model -->
+<g id="edge1" class="edge">
+<title>x1-&gt;model</title>
+<path fill="none" stroke="black" d="M43.51,-219.43C57.26,-206.52 78.05,-187 97.07,-169.13"></path>
+<polygon fill="black" stroke="black" points="99.64,-171.52 104.53,-162.12 94.85,-166.42 99.64,-171.52"></polygon>
+</g>
+<!-- x2 -->
+<g id="node2" class="node">
+<title>x2</title>
+<ellipse fill="none" stroke="black" cx="27" cy="-180" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="27" y="-175.8" font-family="Times,serif" font-size="14.00">x2</text>
+</g>
+<!-- x2&#45;&gt;model -->
+<g id="edge2" class="edge">
+<title>x2-&gt;model</title>
+<path fill="none" stroke="black" d="M49.63,-169.84C58.58,-165.64 69.45,-160.54 80.57,-155.31"></path>
+<polygon fill="black" stroke="black" points="82.38,-158.33 89.94,-150.92 79.4,-152 82.38,-158.33"></polygon>
+</g>
+<!-- x3 -->
+<g id="node3" class="node">
+<title>x3</title>
+<ellipse fill="none" stroke="black" cx="27" cy="-126" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="27" y="-121.8" font-family="Times,serif" font-size="14.00">x3</text>
+</g>
+<!-- x3&#45;&gt;model -->
+<g id="edge3" class="edge">
+<title>x3-&gt;model</title>
+<path fill="none" stroke="black" d="M54.1,-126C61.8,-126 70.59,-126 79.57,-126"></path>
+<polygon fill="black" stroke="black" points="79.75,-129.5 89.75,-126 79.75,-122.5 79.75,-129.5"></polygon>
+</g>
+<!-- y -->
+<g id="node5" class="node">
+<title>y</title>
+<ellipse fill="none" stroke="black" cx="261" cy="-126" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="261" y="-121.8" font-family="Times,serif" font-size="14.00">y</text>
+</g>
+<!-- model&#45;&gt;y -->
+<g id="edge6" class="edge">
+<title>model-&gt;y</title>
+<path fill="none" stroke="black" d="M198.12,-126C206.72,-126 215.44,-126 223.52,-126"></path>
+<polygon fill="black" stroke="black" points="223.71,-129.5 233.71,-126 223.71,-122.5 223.71,-129.5"></polygon>
+</g>
+<!-- x4 -->
+<g id="node6" class="node">
+<title>x4</title>
+<ellipse fill="none" stroke="black" cx="27" cy="-72" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="27" y="-67.8" font-family="Times,serif" font-size="14.00">x4</text>
+</g>
+<!-- x4&#45;&gt;model -->
+<g id="edge4" class="edge">
+<title>x4-&gt;model</title>
+<path fill="none" stroke="black" d="M49.63,-82.16C58.58,-86.36 69.45,-91.46 80.57,-96.69"></path>
+<polygon fill="black" stroke="black" points="79.4,-100 89.94,-101.08 82.38,-93.67 79.4,-100"></polygon>
+</g>
+<!-- x5 -->
+<g id="node7" class="node">
+<title>x5</title>
+<ellipse fill="none" stroke="black" cx="27" cy="-18" rx="27" ry="18"></ellipse>
+<text text-anchor="middle" x="27" y="-13.8" font-family="Times,serif" font-size="14.00">x5</text>
+</g>
+<!-- x5&#45;&gt;model -->
+<g id="edge5" class="edge">
+<title>x5-&gt;model</title>
+<path fill="none" stroke="black" d="M43.51,-32.57C57.26,-45.48 78.05,-65 97.07,-82.87"></path>
+<polygon fill="black" stroke="black" points="94.85,-85.58 104.53,-89.88 99.64,-80.48 94.85,-85.58"></polygon>
+</g>
+</g>
+</svg>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</section>
+<section id="system-of-equations" class="slide level2">
+<h2>System of equations</h2>
+<p>In our simple dataset, we can appreciate that we have a system of equations. We have <strong>two unknowns</strong> (free parameters) and <strong>two datapoints</strong></p>
+<ul>
+<li class="fragment">so we have 2 equations, 2 unknowns.
+<ul>
+<li class="fragment"><code>c(1, 3) -&gt;</code> <span class="math inline">\(w_11 + w_21 = 3\)</span></li>
+<li class="fragment"><code>c(2, 5) -&gt;</code> <span class="math inline">\(w_11 + w_22 = 5\)</span></li>
+</ul></li>
+<li class="fragment">which have a solution:
+<ul>
+<li class="fragment"><span class="math inline">\(w_1 = 1\)</span> and <span class="math inline">\(w_2 = 2\)</span></li>
+</ul></li>
+</ul>
+</section>
+<section id="fit-our-model-to-our-data" class="slide level2 smaller">
+<h2>🪄 Fit our model to our data</h2>
+<p>We’ll learn what is going on under the hood of model fitting next week, but for now, we can appreciate that we are solving a system of equations:</p>
+<div class="fragment">
+<p>with <code>lm()</code>:</p>
+<div class="cell columns column-output-location">
+<div class="column">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a></a><span class="fu">lm</span>(y <span class="sc">~</span> x, <span class="at">data =</span> toy)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div><div class="column">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = y ~ x, data = toy)
+
+Coefficients:
+(Intercept)            x  
+          1            2  </code></pre>
+</div>
+</div></div>
+</div>
+<div class="fragment">
+<p>with <code>infer</code>:</p>
+<div class="cell columns column-output-location">
+<div class="column">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a></a>toy <span class="sc">%&gt;%</span></span>
+<span id="cb19-2"><a></a>  <span class="fu">specify</span>(<span class="at">response =</span> y, <span class="at">explanatory =</span> x) <span class="sc">%&gt;%</span></span>
+<span id="cb19-3"><a></a>  <span class="fu">fit</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div><div class="column">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 2
+  term      estimate
+  &lt;chr&gt;        &lt;dbl&gt;
+1 intercept     1.00
+2 x             2   </code></pre>
+</div>
+</div></div>
+</div>
+</section>
+<section id="many-equations-many-unknowns" class="slide level2">
+<h2>Many equations, many unknowns</h2>
+<p>When we have multiple data points, we are essentially solving for the best line (or hyperplane, in higher dimensions) that fits the data.</p>
+<ul>
+<li class="fragment">For each data point, we create an equation based on the linear model</li>
+<li class="fragment">Which leads to a system of equations.</li>
+<li class="fragment">With 2 unknowns and 2 data points, we have 2 equations.</li>
+</ul>
+</section>
+<section id="enter-the-matrix-y-xβ-ε" class="slide level2">
+<h2>Enter the matrix <span class="math inline">\(y = Xβ + ε\)</span></h2>
+<p>When we have <strong>more equations than unknowns</strong> we cannot solve the system directly (we have an <strong>overdetermined system</strong>), but we can find a soulution with linear algebra.</p>
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="model-specification_files/figure-revealjs/unnamed-chunk-31-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<span class="math display">\[\begin{aligned}
+  \begin{bmatrix}
+  3 \\
+  5
+  \end{bmatrix}
+  =
+  \begin{bmatrix}
+  1 &amp; 1 \\
+  1 &amp; 2
+  \end{bmatrix}
+  \begin{bmatrix}
+  w_1 \\
+  w_0
+  \end{bmatrix}
+
+\end{aligned}\]</span>
+</div></div>
+</section>
+<section id="we-can-have-super-complex-models" class="slide level2">
+<h2>We can have super complex models</h2>
+<ul>
+<li class="fragment">Matrix way allows us to appreciate that we can expand this toy example to an number of data points and any number of unknowns.</li>
+</ul>
+</section>
+<section id="in-class-exercise-7.5" class="slide level2">
+<h2>💪 In class exercise 7.5</h2>
+<p>Ask chatGPT how many parameters it has.</p>
+</section></section>
+<section>
+<section id="swim-records" class="title-slide slide level1 center">
+<h1>Swim Records</h1>
+<p>Applied to a more complex problem</p>
+</section>
+<section id="specify-a-model-for-swimrecords" class="slide level2">
+<h2>Specify a model for <code>SwimRecords</code></h2>
+<p>How have world swim records in the 100m changed over time?</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a></a><span class="fu">library</span>(mosaic)</span>
+<span id="cb21-2"><a></a><span class="fu">glimpse</span>(SwimRecords)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 62
+Columns: 3
+$ year &lt;int&gt; 1905, 1908, 1910, 1912, 1918, 1920, 1922, 1924, 1934, 1935, 1936,…
+$ time &lt;dbl&gt; 65.80, 65.60, 62.80, 61.60, 61.40, 60.40, 58.60, 57.40, 56.80, 56…
+$ sex  &lt;fct&gt; M, M, M, M, M, M, M, M, M, M, M, M, M, M, M, M, M, M, M, M, M, M,…</code></pre>
+</div>
+</div>
+</section>
+<section id="in-class-exercise-7.6" class="slide level2">
+<h2>💪 In class exercise 7.6</h2>
+<p>Plot the swim records data, then use your model specification worksheet to specify the model.</p>
+</section>
+<section id="response-variable-y" class="slide level2 smaller">
+<h2>Response variable <span class="math inline">\(y\)</span></h2>
+<p>What is the thing you are trying to understand?</p>
+
+<img data-src="model-specification_files/figure-revealjs/unnamed-chunk-33-1.png" width="960" class="r-stretch"></section>
+<section id="explanatory-variables-x_i" class="slide level2 smaller">
+<h2>Explanatory variable(s) <span class="math inline">\(x_i\)</span></h2>
+<p>What could <strong>explain</strong> the variation in your response variable?</p>
+<div class="panel-tabset">
+<ul id="tabset-1" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-1-1">year</a></li><li><a href="#tabset-1-2">year + sex</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="model-specification_files/figure-revealjs/unnamed-chunk-34-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-1-2">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="model-specification_files/figure-revealjs/unnamed-chunk-35-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="functional-form" class="slide level2">
+<h2>Functional form</h2>
+<ul>
+<li class="fragment">Linear model</li>
+<li class="fragment"><span class="math inline">\(y=\sum_{i=1}^{n}w_ix_i\)</span></li>
+</ul>
+</section>
+<section id="model-terms" class="slide level2 smaller">
+<h2>Model terms</h2>
+<p>Model terms describe <em>how</em> to include our explanatory variables in our model formula — there is more than one way!</p>
+<ol type="1">
+<li class="fragment">Intercept</li>
+<li class="fragment">Main</li>
+<li class="fragment">Interaction</li>
+<li class="fragment">Transformation</li>
+</ol>
+</section>
+<section id="intercept" class="slide level2 smaller">
+<h2>Intercept</h2>
+<ul>
+<li class="fragment">in R: <code>y ~ 1</code>, in eq: <span class="math inline">\(y=w_1x_1\)</span></li>
+</ul>
+
+<img data-src="model-specification_files/figure-revealjs/unnamed-chunk-36-1.png" width="960" class="r-stretch"></section>
+<section id="main" class="slide level2 smaller">
+<h2>Main</h2>
+<div class="panel-tabset">
+<ul id="tabset-2" class="panel-tabset-tabby"><li><a data-tabby-default="" href="#tabset-2-1">year</a></li><li><a href="#tabset-2-2">sex</a></li><li><a href="#tabset-2-3">year + sex</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1">
+<ul>
+<li class="fragment">in R: <code>y ~ 1 + year</code>, in eq: <span class="math inline">\(y = w_1x_1 + w_2x_2\)</span></li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="model-specification_files/figure-revealjs/unnamed-chunk-37-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-2-2">
+<ul>
+<li class="fragment">in R: <code>y ~ 1 + sex</code>, in eq: <span class="math inline">\(y = w_1x_1 + w_2x_2\)</span></li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="model-specification_files/figure-revealjs/unnamed-chunk-38-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-2-3">
+<ul>
+<li class="fragment">in R: <code>y ~ 1 + year</code>, in eq: <span class="math inline">\(y = w_1x_1 + w_2x_2 + w_3x_3\)</span></li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure>
+<p><img data-src="model-specification_files/figure-revealjs/unnamed-chunk-39-1.png" width="960"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="interaction" class="slide level2 smaller">
+<h2>Interaction</h2>
+<ul>
+<li class="fragment">in R: <code>y ~ 1 + year + gender + year:gender</code>
+<ul>
+<li class="fragment">or the short way: <code>y ~ 1 + year * gender</code></li>
+</ul></li>
+<li class="fragment">in eq: <span class="math inline">\(y = w_1x_1 + w_2x_2 + w_3x_3 + w_4x_4\)</span> where <span class="math inline">\(x_4\)</span> is <span class="math inline">\(x_2x_3\)</span></li>
+</ul>
+
+<img data-src="model-specification_files/figure-revealjs/unnamed-chunk-40-1.png" width="960" class="r-stretch"></section>
+<section id="transformation" class="slide level2 smaller">
+<h2>Transformation</h2>
+<ul>
+<li class="fragment">in R: <code>y ~ 1 + year * sex + I(year^2)</code></li>
+<li class="fragment">in eq: <span class="math inline">\(y = w_1x_1 + w_2x_2 + w_3x_3 + w_4x_4\)</span> + <span class="math inline">\(w_5x_5\)</span>
+<ul>
+<li class="fragment">where <span class="math inline">\(x_4\)</span> is <span class="math inline">\(x_2x_3\)</span> and <span class="math inline">\(x_5\)</span> is <span class="math inline">\(x_2^2\)</span></li>
+</ul></li>
+</ul>
+
+
+<img data-src="model-specification_files/figure-revealjs/unnamed-chunk-41-1.png" width="960" class="r-stretch"><div class="quarto-auto-generated-content">
+<div class="footer footer-default">
+<p><a href="https://kathrynschuler.com/datasci/">https://kathrynschuler.com/datasci</a></p>
+</div>
+</div>
+</section></section>
+    </div>
+  </div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="../site_libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="../site_libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="../site_libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="../site_libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="../site_libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="../site_libs/revealjs/plugin/reveal-chalkboard/plugin.js"></script>
+  <script src="../site_libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="../site_libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="../site_libs/revealjs/plugin/search/search.js"></script>
+  <script src="../site_libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="../site_libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleChalkboard(event)\"><kbd>b</kbd> Toggle Chalkboard</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleNotesCanvas(event)\"><kbd>c</kbd> Toggle Notes Canvas</a></li>\n<li class=\"slide-tool-item\" data-item=\"6\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.downloadDrawings(event)\"><kbd>d</kbd> Download Drawings</a></li>\n<li class=\"slide-tool-item\" data-item=\"7\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'chalkboard': {"buttons":true},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'none',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'none',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1050,
+
+        height: 700,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0.1,
+
+        math: {
+          mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, RevealChalkboard, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    
+    <script>
+      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
+      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
+      // slide changes (different for each slide format).
+      (function () {
+        // dispatch for htmlwidgets
+        function fireSlideEnter() {
+          const event = window.document.createEvent("Event");
+          event.initEvent("slideenter", true, true);
+          window.document.dispatchEvent(event);
+        }
+
+        function fireSlideChanged(previousSlide, currentSlide) {
+          fireSlideEnter();
+
+          // dispatch for shiny
+          if (window.jQuery) {
+            if (previousSlide) {
+              window.jQuery(previousSlide).trigger("hidden");
+            }
+            if (currentSlide) {
+              window.jQuery(currentSlide).trigger("shown");
+            }
+          }
+        }
+
+        // hookup for slidy
+        if (window.w3c_slidy) {
+          window.w3c_slidy.add_observer(function (slide_num) {
+            // slide_num starts at position 1
+            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
+          });
+        }
+
+      })();
+    </script>
+
+    <script id="quarto-html-after-body" type="application/javascript">
+    window.document.addEventListener("DOMContentLoaded", function (event) {
+      const toggleBodyColorMode = (bsSheetEl) => {
+        const mode = bsSheetEl.getAttribute("data-mode");
+        const bodyEl = window.document.querySelector("body");
+        if (mode === "dark") {
+          bodyEl.classList.add("quarto-dark");
+          bodyEl.classList.remove("quarto-light");
+        } else {
+          bodyEl.classList.add("quarto-light");
+          bodyEl.classList.remove("quarto-dark");
+        }
+      }
+      const toggleBodyColorPrimary = () => {
+        const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+        if (bsSheetEl) {
+          toggleBodyColorMode(bsSheetEl);
+        }
+      }
+      toggleBodyColorPrimary();  
+      const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+      tabsets.forEach(function(tabset) {
+        const tabby = new Tabby('#' + tabset.id);
+      });
+      const isCodeAnnotation = (el) => {
+        for (const clz of el.classList) {
+          if (clz.startsWith('code-annotation-')) {                     
+            return true;
+          }
+        }
+        return false;
+      }
+      const onCopySuccess = function(e) {
+        // button target
+        const button = e.trigger;
+        // don't keep focus
+        button.blur();
+        // flash "checked"
+        button.classList.add('code-copy-button-checked');
+        var currentTitle = button.getAttribute("title");
+        button.setAttribute("title", "Copied!");
+        let tooltip;
+        if (window.bootstrap) {
+          button.setAttribute("data-bs-toggle", "tooltip");
+          button.setAttribute("data-bs-placement", "left");
+          button.setAttribute("data-bs-title", "Copied!");
+          tooltip = new bootstrap.Tooltip(button, 
+            { trigger: "manual", 
+              customClass: "code-copy-button-tooltip",
+              offset: [0, -8]});
+          tooltip.show();    
+        }
+        setTimeout(function() {
+          if (tooltip) {
+            tooltip.hide();
+            button.removeAttribute("data-bs-title");
+            button.removeAttribute("data-bs-toggle");
+            button.removeAttribute("data-bs-placement");
+          }
+          button.setAttribute("title", currentTitle);
+          button.classList.remove('code-copy-button-checked');
+        }, 1000);
+        // clear code selection
+        e.clearSelection();
+      }
+      const getTextToCopy = function(trigger) {
+          const codeEl = trigger.previousElementSibling.cloneNode(true);
+          for (const childEl of codeEl.children) {
+            if (isCodeAnnotation(childEl)) {
+              childEl.remove();
+            }
+          }
+          return codeEl.innerText;
+      }
+      const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+        text: getTextToCopy
+      });
+      clipboard.on('success', onCopySuccess);
+      if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+        // For code content inside modals, clipBoardJS needs to be initialized with a container option
+        // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+        const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+          text: getTextToCopy,
+          container: window.document.getElementById('quarto-embedded-source-code-modal')
+        });
+        clipboardModal.on('success', onCopySuccess);
+      }
+        var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+        var mailtoRegex = new RegExp(/^mailto:/);
+          var filterRegex = new RegExp('/' + window.location.host + '/');
+        var isInternal = (href) => {
+            return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+        }
+        // Inspect non-navigation links and adorn them if external
+     	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+        for (var i=0; i<links.length; i++) {
+          const link = links[i];
+          if (!isInternal(link.href)) {
+            // undo the damage that might have been done by quarto-nav.js in the case of
+            // links that we want to consider external
+            if (link.dataset.originalHref !== undefined) {
+              link.href = link.dataset.originalHref;
+            }
+          }
+        }
+      function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+        const config = {
+          allowHTML: true,
+          maxWidth: 500,
+          delay: 100,
+          arrow: false,
+          appendTo: function(el) {
+              return el.closest('section.slide') || el.parentElement;
+          },
+          interactive: true,
+          interactiveBorder: 10,
+          theme: 'light-border',
+          placement: 'bottom-start',
+        };
+        if (contentFn) {
+          config.content = contentFn;
+        }
+        if (onTriggerFn) {
+          config.onTrigger = onTriggerFn;
+        }
+        if (onUntriggerFn) {
+          config.onUntrigger = onUntriggerFn;
+        }
+          config['offset'] = [0,0];
+          config['maxWidth'] = 700;
+        window.tippy(el, config); 
+      }
+      const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+      for (var i=0; i<noterefs.length; i++) {
+        const ref = noterefs[i];
+        tippyHover(ref, function() {
+          // use id or data attribute instead here
+          let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+          try { href = new URL(href).hash; } catch {}
+          const id = href.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note) {
+            return note.innerHTML;
+          } else {
+            return "";
+          }
+        });
+      }
+      const findCites = (el) => {
+        const parentEl = el.parentElement;
+        if (parentEl) {
+          const cites = parentEl.dataset.cites;
+          if (cites) {
+            return {
+              el,
+              cites: cites.split(' ')
+            };
+          } else {
+            return findCites(el.parentElement)
+          }
+        } else {
+          return undefined;
+        }
+      };
+      var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+      for (var i=0; i<bibliorefs.length; i++) {
+        const ref = bibliorefs[i];
+        const citeInfo = findCites(ref);
+        if (citeInfo) {
+          tippyHover(citeInfo.el, function() {
+            var popup = window.document.createElement('div');
+            citeInfo.cites.forEach(function(cite) {
+              var citeDiv = window.document.createElement('div');
+              citeDiv.classList.add('hanging-indent');
+              citeDiv.classList.add('csl-entry');
+              var biblioDiv = window.document.getElementById('ref-' + cite);
+              if (biblioDiv) {
+                citeDiv.innerHTML = biblioDiv.innerHTML;
+              }
+              popup.appendChild(citeDiv);
+            });
+            return popup.innerHTML;
+          });
+        }
+      }
+    });
+    </script>
+    
+
+</body></html>

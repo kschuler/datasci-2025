@@ -1,0 +1,7 @@
+# Archive {.unnumbered}
+
+Course materials for past semesters can be found below: 
+
+- [Fall 2023](https://kathrynschuler.com/datasci-fall2023/)
+- [Spring 2023](https://childlanglab.gitbook.io/ling0700)
+

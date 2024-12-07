@@ -1,0 +1,624 @@
+---
+title: "Model Reliability"
+subtitle: "Data Science for Studying Language and the Mind"
+author: Katie Schuler
+date: 11-12-2024
+echo: true
+format: 
+    revealjs:
+        theme: white
+        slide-number: true
+        incremental: true 
+        footer: "[https://kathrynschuler.com/datasci](https://kathrynschuler.com/datasci/)"
+---
+
+```{r}
+#| echo: false
+#| message: false
+
+library(tidyverse)
+library(tidymodels)
+
+theme_set(theme_classic(base_size = 24))
+theme_update(plot.title = element_text(hjust = 0.5)) 
+
+
+
+```
+
+## Announcements {.smaller}
+
+- No pset 05 (due to off week!); pset 06 will have a few extra challenge questions in case you want them
+- pset 04 solutions posted tomorrow morning! (turn it in if you haven't!)
+- Practice exam 02 posted by Friday at midnight!
+
+## You are `here` {.smaller} 
+
+:::: {.columns}
+
+::: {.column width="33%"}
+
+##### Data science with R 
+::: {.nonincremental}
+- Hello, world!
+- R basics
+- Data visualization
+- Data wrangling 
+:::
+:::
+
+::: {.column width="33%"}
+
+##### Stats & Model buidling
+::: {.nonincremental}
+- Sampling distribution
+- Hypothesis testing
+- Model specification
+- Model fitting
+- Model accuracy
+- `Model reliability`
+:::
+:::
+
+::: {.column width="33%"}
+
+##### More advanced 
+::: {.nonincremental}
+
+- Classification
+- Inference for regression
+- Mixed-effect models
+::: 
+:::
+
+::::
+
+## Model building overview {.smaller}
+
+- **Model specification**: what is the form?
+- **Model fitting**: you have the form, how do you guess the free parameters? 
+- **Model accuracy**: you've estimated the parameters, how well does that model describe your data? 
+- `Model reliability`: when you estimate the parameters, there is some uncertainty on them
+
+# Dataset 
+
+```{r}
+data_n10 <- read_csv("http://kathrynschuler.com/datasets/model-reliability-sample10.csv") 
+data_n200 <- read_csv("http://kathrynschuler.com/datasets/model-reliability-sample200.csv") 
+```
+
+##  {.smaller}
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+#### Explore the data
+
+```{r}
+#| echo: false 
+
+ggplot(
+  data = data_n10,
+  mapping = aes(x = x, y = y)
+) +
+  geom_point(color = "red", size = 3) +
+ # geom_smooth(method = "lm", formula = "y ~ x", se = FALSE) +
+  labs(caption = "n = 10") +
+  theme_classic(base_size = 36)
+  #coord_cartesian(ylim = c(0,4), xlim = c(-3, 3)) 
+
+```
+
+:::
+
+::: {.column width="50%"}
+
+##### Specify a model 
+
+- supervised learning | regression | linear
+- `y ~ x` 
+- $y=w_0+w_1x_1$
+
+::: 
+
+::::
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+##### Fit the model 
+
+```{r}
+#| echo: false 
+
+ggplot(
+  data = data_n10,
+  mapping = aes(x = x, y = y)
+) +
+  geom_point(color = "red", size = 3) +
+ geom_smooth(method = "lm", formula = "y ~ x", se = FALSE) +
+  labs(caption = "n = 10") +
+  theme_classic(base_size = 36)
+  #coord_cartesian(ylim = c(0,4), xlim = c(-3, 3)) 
+
+```
+
+::: 
+
+::: {.column width="50%"}
+
+##### Specify and fit with `infer`
+
+```{r}
+#| echo: true
+
+data_n10 %>%
+  specify(y ~ x) %>%
+  fit()
+
+```
+
+
+::: 
+
+::::
+
+
+## Model reliability asks:   {.smaller}
+
+How certain can we be about the parameter estimates we obtained?
+
+
+
+```{r}
+#| echo: true
+#| output-location: column-fragment
+
+observed_fit <- data_n10 %>%
+  specify(y ~ x) %>%
+  fit()
+
+observed_fit
+
+```
+
+. . . 
+
+But... why is there uncertainty around the parameter estimates at all?
+
+
+
+
+## Because of sampling error {.smaller}
+
+We are interested in the model parameters that best describe the *population from which the sample was drawn* (not a given sample)
+
+
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+
+
+```{r}
+#| echo: false
+
+
+
+ggplot(
+  data = data_n10,
+  mapping = aes(x = x, y = y)
+) +
+  geom_point(color = "red", size = 3) +
+ geom_smooth(method = "lm", formula = "y ~ x", se = FALSE, linewidth =2) +
+  labs(title = "Fit the model to our sample") 
+  #coord_cartesian(ylim = c(0,4), xlim = c(-3, 3)) 
+
+```
+
+
+::: 
+
+::: {.column width="50%"}
+
+
+
+```{r}
+#| echo: false
+
+# generate some data 
+set.seed(44)
+w0 = 2
+w1 = 0.5
+
+data_another10 <- tibble(
+  x = rnorm(10, sd = 1), 
+  y = w0 + (w1*x) + rnorm(10, sd = 1)
+)
+
+ggplot(
+  data = data_another10,
+  mapping = aes(x = x, y = y)
+) +
+  geom_point(color = "red", alpha = 0.5, size = 3) +
+  geom_smooth(method = "lm", formula = "y ~ x", se = FALSE, linewidth =2, alpha = 0.5) +
+  labs(title = "Fit the same model to a different sample")
+
+
+```
+
+
+::: 
+
+::::
+
+- Due to *sampling error*, we can expect some variability in the model parameters that describe a sample of data. 
+
+## Model reliability  {.smaller}
+
+- We can think of model reliability as the *stability* of the parameters of a fitted model. 
+- The more data we collect, the more reliable the model parameters will be. 
+
+
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+
+
+```{r}
+#| echo: false
+
+
+
+ggplot(
+  data = data_n10,
+  mapping = aes(x = x, y = y)
+) +
+  geom_point(color = "red", size = 3) +
+ geom_smooth(method = "lm", formula = "y ~ x", level = 0.95, linewidth =2) +
+  labs(title = "Fit the model to 10 data points") 
+  #coord_cartesian(ylim = c(0,4), xlim = c(-3, 3)) 
+
+```
+
+
+::: 
+
+::: {.column width="50%"}
+
+
+
+```{r}
+#| echo: false
+
+ggplot(
+  data = data_n200,
+  mapping = aes(x = x, y = y)
+) +
+  geom_point(color = "red", alpha = 0.5, size = 3) +
+  geom_smooth(method = "lm", formula = "y ~ x", level = 0.95, linewidth =2, alpha = 0.5) +
+  labs(title = "Fit the model to 200 data points")
+
+
+```
+
+
+::: 
+
+::::
+
+## {.smaller}
+### Confidence intervals via bootstrapping 
+
+We can obtain confidence intervals around parameter estimates for models in the same we we did for point estimates like the mean: **bootstrapping**
+
+1. Draw bootstrap samples from the observed data
+2. Fit the model of interest to each bootstrapped sample 
+3. Construct the sampling distribution of parameter estimates across bootstraps
+
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+
+
+```{r}
+#| echo: false
+
+bootstrapped_fits <- data_n10 %>%
+  specify(y ~ x) %>%
+  generate(reps = 1000, type = "bootstrap") %>%
+  fit()
+
+bootstrapped_fits_wide <- bootstrapped_fits %>%
+  spread(term, estimate)
+
+ggplot(
+  data = data_n10,
+  mapping = aes(x = x, y = y)
+) +
+  geom_point(color = "red", size = 3) +
+  geom_abline(data = bootstrapped_fits_wide,
+     aes(slope =  x, intercept = intercept, group = replicate), alpha = 0.05)  +
+  #geom_smooth(method = "lm", formula = "y ~ x", se = FALSE, linewidth = 2) +
+  labs(caption = "n = 10", title = "Bootstrapped model fits")
+
+```
+
+
+::: 
+
+::: {.column width="50%"}
+
+
+
+```{r}
+#| echo: false
+
+ci <- bootstrapped_fits %>%
+  get_confidence_interval(
+    point_estimate = observed_fit, level = 0.95
+  )
+
+  bootstrapped_fits %>% visualize()
+     
+
+
+```
+
+
+::: 
+
+::::
+
+
+
+## {.smaller}
+### The more data we collect, the more reliable
+ 
+:::: {.columns}
+
+::: {.column width="50%"}
+
+
+```{r}
+#| echo: false
+
+bootstrapped_fits_10 <- data_n10 %>%
+  specify(y ~ x) %>%
+  generate(reps = 1000, type = "bootstrap") %>%
+  fit()
+
+bootstrapped_fits_wide_10 <- bootstrapped_fits_10 %>%
+  spread(term, estimate)
+
+ggplot(
+  data = data_n10,
+  mapping = aes(x = x, y = y)
+) +
+  geom_point(color = "red", size = 3) +
+  geom_abline(data = bootstrapped_fits_wide_10,
+     aes(slope =  x, intercept = intercept, group = replicate), alpha = 0.05)  +
+  #geom_smooth(method = "lm", formula = "y ~ x", se = FALSE, linewidth = 2) +
+  labs(title = "Bootstrapped model fits (n=10)")
+
+```
+
+
+::: 
+
+::: {.column width="50%"}
+
+
+
+```{r}
+#| echo: false
+
+ci <- bootstrapped_fits_10 %>%
+  get_confidence_interval(
+    point_estimate = observed_fit, level = 0.95
+  )
+
+  bootstrapped_fits_10 %>%
+  visualize() +
+  shade_ci(endpoints = ci)
+
+
+```
+
+
+::: 
+
+::::
+
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+
+```{r}
+#| echo: false
+
+bootstrapped_fits_200 <- data_n200 %>%
+  specify(y ~ x) %>%
+  generate(reps = 1000, type = "bootstrap") %>%
+  fit()
+
+bootstrapped_fits_wide_200 <- bootstrapped_fits_200 %>%
+  spread(term, estimate)
+
+ggplot(
+  data = data_n200,
+  mapping = aes(x = x, y = y)
+) +
+  geom_point(color = "red", size = 3) +
+  geom_abline(data = bootstrapped_fits_wide_200,
+     aes(slope =  x, intercept = intercept, group = replicate), alpha = 0.05)  +
+  #geom_smooth(method = "lm", formula = "y ~ x", se = FALSE, linewidth = 2) +
+  labs(title = "Bootstrapped model fits (n=200)")
+
+```
+
+
+::: 
+
+::: {.column width="50%"}
+
+
+
+```{r}
+#| echo: false
+
+observed_fit_200 <- data_n200 %>%
+  specify(y ~ x) %>%
+  fit()
+
+ci <- bootstrapped_fits_200 %>%
+  get_confidence_interval(
+    point_estimate = observed_fit_200, level = 0.95
+  )
+
+  bootstrapped_fits_200 %>%
+  visualize() +
+  shade_ci(endpoints = ci) 
+
+
+```
+
+
+::: 
+
+::::
+
+## {.smaller}
+### The more data we collect, the more reliable
+
+```{r}
+#| echo: false
+#| layout-ncol: 2
+
+bootstrapped_fits_10 %>%
+  ggplot(
+  mapping = aes(y  = term, x = estimate)
+) +
+  geom_point(alpha = 0.1, size = 2) + 
+  geom_point(data = observed_fit, mapping = aes(y = term, x = estimate), color = "blue", size = 8) +
+  labs(title = "Fit to 10 data points", x = "parameter" ) +
+  coord_cartesian(ylim = c(-0.5, 3.5))
+
+bootstrapped_fits_200 %>%
+  ggplot(
+  mapping = aes(y  = term, x = estimate)
+) +
+  geom_point(alpha = 0.1, size = 2) + 
+  geom_point(data = observed_fit_200, mapping = aes(y = term, x = estimate), color = "blue", size = 8) +
+  labs(title = "Fit to 200 data points", x = "parameter" ) +
+    coord_cartesian(ylim = c(-0.5, 3.5))
+
+
+```
+
+## {.smaller}
+### Confidence intervals with `infer`
+
+
+:::: {.columns}
+
+::: {.column width="33%"}
+
+Fit bootstraps
+
+```{r}
+#| echo: true
+boot_fits <- data_n200 %>%
+  specify(y ~ x) %>%
+  generate(
+    reps = 1000, 
+    type = "bootstrap"
+  ) %>%
+  fit()
+
+head(boot_fits)
+
+```
+
+:::
+
+::: {.column width="33%"}
+
+Get confidence interval
+
+```{r}
+#| echo: true
+ci <- boot_fits %>%
+  get_confidence_interval(
+    point_estimate = observed_fit_200, 
+    level = 0.95
+  )
+
+ci 
+
+```
+
+
+::: 
+
+::: {.column width="33%"}
+
+Visualize distribution & ci 
+
+```{r}
+#| echo: true
+bootstrapped_fits %>%
+  visualize() +
+  shade_ci(endpoints = ci) 
+
+
+```
+
+::: 
+::::  
+
+
+## Accuracy v. Reliability
+
+Model acuracy and model reliability are closely related concepts in model building, but they aren’t the same. 
+
+- **Accuracy** refers to how close a model’s predictions are to the true values we want to predict. 
+- **Reliability**, is about the model’s stability—how consistent the model’s parameters and outputs are when new data is sampled.
+
+## Accuracy v. Reliability {.smaller}
+
+![](/assests/images/accuracy-reliability.png)
+
+
+1. **Reliable and accurate**: The model is both close to the true model and stable across different samples. This is the ideal case, indicating we have enough data to produce both a precise and consistent model fit.
+
+## Accuracy v. Reliability {.smaller}
+
+![](/assests/images/accuracy-reliability.png)
+
+2. **Reliable but inaccurate**: The model parameters are stable across samples, meaning it’s reliable, but it’s far from the true model. This could happen if our model is structurally limited or misses some aspect of the data, even if we have plenty of data for stable estimates.
+
+## Accuracy v. Reliability {.smaller}
+
+![](/assests/images/accuracy-reliability.png)
+
+3. **Unreliable but accurate**: This situation is unlikely. Without enough data, the model’s predictions will fluctuate widely from sample to sample, making it hard to consistently approximate the true model. So, without reliability, achieving accuracy is improbable.
+
+## Accuracy v. Reliability {.smaller}
+
+![](/assests/images/accuracy-reliability.png)
+
+4. **Unreliable and inaccurate**: Here, the model’s estimates are unstable and far from the true model. This could be due to either insufficient data or an inappropriate model choice that doesn’t match the data’s structure. With limited data, it’s hard to tell which factor is to blame.
+
+## Accuracy v. Reliability {.smaller}
+
+![](/assests/images/accuracy-reliability.png)

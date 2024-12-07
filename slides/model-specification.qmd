@@ -1,0 +1,1219 @@
+---
+title: "Week 07: Model Specification"
+subtitle: "Data Science for Studying Language and the Mind"
+author: Katie Schuler
+date: 2024-10-08
+echo: true
+format: 
+    revealjs:
+        chalkboard: true
+        slide-number: true
+        incremental: true 
+        footer: "[https://kathrynschuler.com/datasci](https://kathrynschuler.com/datasci/)"
+---
+
+```{r}
+#| echo: false
+library(tidyverse)
+library(infer)
+library(languageR)
+theme_set(theme_classic(base_size = 20))
+set.seed(123)
+
+```
+
+# Tuesday
+
+## Announcements {.smaller}
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+![](/assests/images/exam-1-scores.png)
+:::
+
+::: {.column width="50%"}
+
+
+- You did great on the exam! 
+- You can replace your lowest exam score with the optional final
+- The final exam is cumulative: another opportunity to show mastery of the material.
+:::
+::::
+
+## Thanks for your feedback {.smaller}
+
+. . . 
+
+:::: {.columns}
+
+::: {.column width="50%"}
+### Adding
+1. **Demos more accessible**
+  - Posted before class 
+  - Make font bigger
+  - Not so fast, please 😅
+2. **In-class exercises** (not graded)
+  - Slightly more interactive 
+3. **Challenge questions** 
+  - On labs or homework (optional)
+:::
+
+::: {.column width="50%"}
+### Not adding
+4. **Projects** instead of exams
+5. **R Studio** instead of Google Colab
+:::
+::::
+
+
+## You are `here` {.smaller} 
+
+:::: {.columns}
+
+::: {.column width="33%"}
+
+##### Data science with R 
+::: {.nonincremental}
+- R basics
+- Data visualization
+- Data wrangling
+:::
+:::
+
+::: {.column width="33%"}
+
+##### Stats & Model building
+::: {.nonincremental}
+- Sampling distribution
+- Hypothesis testing
+- `Model specification`
+- Model fitting 
+- Model accuracy
+- Model reliability
+:::
+:::
+
+::: {.column width="33%"}
+
+##### More advanced 
+::: {.nonincremental}
+
+- Classification
+- Inference for regression
+- Mixed-effect models
+::: 
+:::
+
+::::
+
+
+# Review 
+
+Sampling distribution and hypothesis testing with Correlation!
+
+## Exploring relationships {.smaller}
+
+To review what we learned before break, let's explore the relationship between Frequency and meanFamiliarity in the `ratings` dataset of the `languageR` package. 
+
+. . . 
+
+```{r}
+#| echo: false 
+#| fig-width: 5
+#| fig-height: 5
+
+ratings %>% 
+  ggplot(aes(x = Frequency, y = meanFamiliarity))  +
+    geom_point()
+```
+
+## Is there a relationship?  {.smaller}
+
+If there was no relationship, we'd say there are **independent**: knowing the value of one provides no information about about the other. But that's not the case here.
+
+. . . 
+
+```{r}
+#| echo: false 
+#| fig-width: 5
+#| fig-height: 5
+
+ratings %>% 
+  ggplot(aes(x = Frequency, y = meanFamiliarity))  +
+    geom_point()
+```
+
+## Yes, a linear relationship {.smaller}
+
+In a linear relationship, when one variable goes up the other goes up (positive); or when one goes up the other goes down (negative). 
+
+. . . 
+
+```{r}
+#| echo: false 
+#| fig-width: 5
+#| fig-height: 5
+
+ratings %>% 
+  ggplot(aes(x = Frequency, y = meanFamiliarity))  +
+    geom_point() +
+    geom_smooth(color = "blue", method = "lm", se = FALSE)
+```
+
+## Quantify with correlation {.smaller}
+
+One way to quantify linear relationships is with **correlation** ($r$). Correlation expresses the linear relationship as a range from -1 (perfectly negative) to 1 (perfectly positive). 
+
+![](/assests/images/correlation.jpeg)
+
+## Computing correlation in R {.smaller}
+
+We can compute a correlation with R's built in `cor(x,y)` function
+
+. . . 
+
+```{r}
+#| output-location: column
+
+cor(
+  x = ratings$Frequency, 
+  y = ratings$meanFamiliarity
+)
+```
+
+. . . 
+
+Or via the `infer` pacakge. 
+
+. . . 
+
+```{r}
+#| output-location: column
+
+(obs_corr <- ratings %>%
+  specify(
+    response = meanFamiliarity, 
+    explanatory = Frequency
+  ) %>%
+  calculate(stat = "correlation"))
+```
+
+## Correlation uncertainty {.smaller}
+
+Just like the mean — and all other test statistics! — $r$ is subject to sampling variability. We can indicate our uncertainty around the correlation the same way we always have:
+
+. . . 
+
+Construct the sampling distribution for the correlation: 
+
+. . . 
+```{r}
+#| output-location: column
+
+sampling_distribution <- ratings %>%
+  specify(
+    response = meanFamiliarity, 
+    explanatory = Frequency
+  ) %>%
+  generate(reps = 1000, type = "bootstrap") %>%
+  calculate(stat = "correlation")
+
+head(sampling_distribution)
+```
+
+. . . 
+
+Compute a confidence interval 
+
+. . . 
+
+```{r}
+#| output-location: column
+
+ci <- sampling_distribution %>% 
+  get_ci(level = 0.95, type = "percentile")
+
+ci
+```
+
+## 💪 In-class Exercise 7.1 {.smaller}
+
+*Take a few minutes to try this yourself!*
+
+Use the `infer` way to visualize the sampling distribution and shade the confidence interval we just computed. Change the x-axis label to **stat (correlation)** as pictured below. 
+
+. . . 
+
+```{r}
+#| echo: false
+#| fig-width: 8
+#| fig-height: 5
+
+sampling_distribution %>%
+  visualize() + 
+  shade_ci(ci) +
+  labs(x = "stat (correlation)")
+```
+
+## Hypothesis testing our correlation {.smaller}
+
+How do we test whether the correlation we observed is significantly different from zero? Hypothesis test! 
+
+. . . 
+
+Step 1: Construct the null distribution, the sampling distribution of the null hypothesis
+
+. . . 
+
+```{r}
+#| output-location: column
+
+null_distribution_corr <- ratings %>% 
+  specify(
+    response = meanFamiliarity, 
+    explanatory = Frequency
+  ) %>%
+  hypothesize(null = "independence") %>%
+  generate(reps = 1000, type = "permute") %>%
+  calculate(stat = "correlation") 
+
+null_distribution_corr %>% head
+```
+
+. . . 
+
+Step 2: How likley is our observed value under the null? Get a p-value.
+
+. . . 
+
+```{r}
+#| output-location: column
+
+p <- null_distribution_corr %>%
+  get_p_value(
+    obs_stat = obs_corr, 
+    direction = "both")
+p
+```
+
+
+## Hypothesis testing our correlation {.smaller}
+
+How do we test whether the correlation we observed is significantly different from zero? Hypothesis test! 
+
+. . . 
+
+Step 3: Decide whether to reject the null! 
+
+. . . 
+
+```{r}
+#| output-location: column
+
+null_distribution_corr %>% 
+  visualize() + 
+  shade_p_value(
+    obs_stat = obs_corr, 
+    direction = "two-sided"
+  ) 
+```
+
+. . . 
+
+Interpret our p-value. Should we reject the null hypothesis?
+
+# Model building 
+
+Big picture overview of the model building process and the types of models we might encounter in our research. 
+
+## Correlation is model building {.smaller}
+
+Correlation is a simple case of model building, in which we use one value ($x$) to predict another ($y$). 
+
+. . . 
+
+```{r}
+#| echo: false 
+#| fig-width: 5
+#| fig-height: 5
+
+ggplot(ratings, aes(x = Frequency, y = meanFamiliarity)) +
+    geom_point(alpha = 1) +
+    annotate(x = 2.2, y = 6, geom = "text", label = "● Data", size = 6) + 
+    labs(x = "Frequency \n x", y = "y \n meanFamiliarity") +
+    annotate(x = 7.5, y = 2.3, geom = "text", label = expression(r == 0.482), size = 6, color = "red")
+    
+
+```
+
+
+## Correlation is model building {.smaller}
+
+Even more specifically — formally, the **model specification** — we are fitting the linear model $y = ax+b$, where $a$ and $b$ are free parameters. 
+
+:::: {.columns}
+::: {.column width="50%"}
+
+
+```{r}
+#| echo: false 
+#| fig-width: 5
+#| fig-height: 5
+
+ggplot(ratings, aes(x = Frequency, y = meanFamiliarity)) +
+    geom_point(alpha = 1) +
+    geom_smooth(color = "blue", method = "lm", se = FALSE) +
+    annotate(x = 2.2, y = 6, geom = "text", label = "● Data", size = 6) + 
+    labs(x = "Frequency \n x", y = "y \n meanFamiliarity") + 
+    annotate(x = 2.2, y = 5.5, geom = "text", label = "--- Model", size = 6, color = "blue") + 
+    annotate(x = 7.5, y = 2.3, geom = "text", label = expression(r == 0.482), size = 6, color = "red") 
+
+```
+
+::: 
+::: {.column width=50%}
+
+- Model specification: $y = ax + b$ 
+- Estimate free parameters: $a$ and $b$
+- Fitted model: $y = 0.39x + 2.02$
+
+:::
+::::
+
+## How do we get $r = 0.48$ ? {.smaller}
+
+The link between correlation and linear models is understood when we normalize our variables with a z-score. 
+
+```{r}
+#| echo: true
+#| output-location: column
+
+z_ratings <- ratings %>%
+  select(Frequency, meanFamiliarity) %>%
+  mutate(
+    z_Freq = scale(Frequency), 
+    z_meanFamil = scale(meanFamiliarity)
+  )
+
+z_ratings %>% head
+
+```
+
+- A z-score gets the number of standard deviations a data point is from the mean.
+
+## Correlation is the slope of the model {.smaller}
+
+Correlation is the slope of the line that best predicts $y$ from $x$ (after z-scoring)
+```{r}
+#| echo: false 
+#| layout-ncol: 2
+#| fig-height: 10
+
+ggplot(ratings, aes(x = Frequency, y = meanFamiliarity)) +
+    geom_point(alpha = 1) +
+    geom_smooth(color = "blue", method = "lm", se = FALSE) +
+    annotate(x = 7.5, y = 2.3, geom = "text", label = expression(r == 0.482), size = 10, color = "red") + 
+    annotate(x = 7.0, y = 2.0, geom = "text", label = expression(y == 0.39*x + 2.02), size = 10, color = "blue") +
+    labs(title = "raw data") +
+    theme_classic(base_size = 30)
+
+ggplot(z_ratings, aes(x = z_Freq, y = z_meanFamil)) +
+    geom_point(alpha = 1) +
+    geom_smooth(color = "red", method = "lm", se = FALSE) +
+    annotate(x = 2, y = -1.5, geom = "text", label = expression(r == 0.482), size = 10, color = "red") +
+    annotate(x = 1.75, y = -1.8, geom = "text", label = expression(y == 0.482*x + 0), size = 10, color = "blue") +
+    labs(title = "z scored data") +
+    theme_classic(base_size = 30)
+
+```
+
+
+
+
+## Model building overview 
+
+- `Model specification` (this week): specify the functional form of the model.
+- `Model fitting`: you have the form, how do you estimate the free parameters? 
+- `Model accuracy`: you've estimated the parameters, how well does that model describe your data? 
+- `Model reliability`: when you estimate the parameters, you want to quantify your uncertainty on your estimates 
+
+
+## Types of models {.smaller}
+
+. . . 
+
+
+```{dot}
+//| echo: false
+
+digraph G {
+    
+  "models" -> "supervised learning";
+  "models" -> "unsupervised learning";
+
+  "supervised learning" [style = filled]
+
+}
+``` 
+
+## 💪 In-class Exercise 7.2 {.smaller}
+
+*Take a few minutes to try this yourself!*
+
+Ask ChatGPT what type of model it is made with? 
+
+. . . 
+
+![](/assests/images/chatgpt-exercise.png)
+
+## Supervised learning {.smaller} 
+
+. . . 
+
+```{dot}
+//|echo: false
+
+digraph G {
+
+rankdir=LR;  // Left to Right layout
+
+  // Column 1: x values
+  x1 [label="x1"];
+  x2 [label="x2"];
+  x3 [label="x3"];
+
+  // Column 2: model
+  model [label="Model", shape=box, width=1.5, height=1, style = filled];
+
+  // Column 3: y value
+  y [label="y"];
+
+  // Keep x values in the same rank
+  { rank=same; x1; x2; x3; }
+
+  // Keep alignment using invisible edges
+  x1 -> model [style = "invis"];
+  x2 -> model [style = "invis"];
+  x3 -> model [style = "invis"];
+  x4 -> model [style = "invis"];
+  x5 -> model [style = "invis"];
+
+  model -> y [style = "invis"];  // Connect the model to y
+}
+
+```
+
+## Supervised learning {.smaller}
+
+```{dot}
+//|echo: false
+
+digraph G {
+
+rankdir=LR;  // Left to Right layout
+
+  // Column 1: x values
+  x1 [label="x1"];
+  x2 [label="x2"];
+  x3 [label="x3"];
+
+  // Column 2: model
+  model [label="Model", shape=box, width=1.5, height=1, style = filled];
+
+  // Column 3: y value
+  y [label="y"];
+
+  // Keep x values in the same rank
+  { rank=same; x1; x2; x3; }
+
+  // Keep alignment using invisible edges
+  x1 -> model;
+  x2 -> model;
+  x3 -> model;
+  x4 -> model;
+  x5 -> model;
+
+  model -> y [style = "invis"];  // Connect the model to y
+}
+
+```
+
+## Supervised learning {.smaller}
+
+```{dot}
+//|echo: false
+
+digraph G {
+
+rankdir=LR;  // Left to Right layout
+
+  // Column 1: x values
+  x1 [label="x1"];
+  x2 [label="x2"];
+  x3 [label="x3"];
+
+  // Column 2: model
+  model [label="Model", shape=box, width=1.5, height=1, style = filled];
+
+  // Column 3: y value
+  y [label="y"];
+
+  // Keep x values in the same rank
+  { rank=same; x1; x2; x3; }
+
+  // Keep alignment using invisible edges
+  x1 -> model;
+  x2 -> model;
+  x3 -> model;
+  x4 -> model;
+  x5 -> model;
+
+  model -> y;  // Connect the model to y
+}
+
+```
+
+## Types of models 
+
+```{dot}
+//| echo: false
+
+digraph G {
+    
+  "models" -> "supervised learning";
+  "models" -> "unsupervised learning";
+  "supervised learning" -> "regression";
+  "supervised learning" -> "classification";
+ 
+  
+
+  "regression" [style = filled]
+
+}
+```
+
+
+## Regression v classification {.smaller}
+
+```{dot}
+//|echo: false
+
+digraph G {
+
+rankdir=LR;  // Left to Right layout
+
+  // Column 1: x values
+  x1 [label="x1"];
+  x2 [label="x2"];
+  x3 [label="x3"];
+
+  // Column 2: model
+  model [label="Model", shape=box, width=1.5, height=1, style = filled];
+
+  // Column 3: y value
+  y [label="y"];
+
+  // Column 4: regression v classify 
+  r [label = "Regression (y is continuous) \n 1 3 4 2 3 4", shape = box];
+  c [label = "Classification (y is discrete) \n yes/no, male/female/nonbinary", shape = box]; 
+
+  // Keep x values in the same rank
+  { rank=same; x1; x2; x3; }
+
+  // Keep alignment using invisible edges
+  x1 -> model;
+  x2 -> model;
+  x3 -> model;
+  x4 -> model;
+  x5 -> model;
+
+  model -> y;  // Connect the model to y
+  y -> r; 
+  y -> c; 
+}
+
+```
+
+## Types of models 
+
+```{dot}
+//| echo: false
+
+digraph G {
+    
+  "models" -> "supervised learning";
+  "models" -> "unsupervised learning";
+  "supervised learning" -> "regression";
+  "supervised learning" -> "classification";
+  "regression" -> "linear models";
+  "regression" -> "nonlinear models";
+  
+
+  "linear models" [style = filled]
+
+}
+```
+
+## Linear models 
+
+
+
+
+:::: {.columns}
+::: {.column width="50%"}
+
+
+```{r}
+#| echo: false 
+#| fig-height: 10
+
+# Set seed for reproducibility
+set.seed(42)
+
+# Generate 500 random values for x
+x <- rnorm(500, mean = 0, sd = 1)  # You can adjust the mean and sd as needed
+
+# Calculate y based on the equation y = 2x + 3, and add noise
+noise <- rnorm(500, mean = 0, sd = 1)  # You can adjust the sd of the noise
+y <- 2 * x + 3 + noise
+
+# Combine x and y into a data frame
+data <- data.frame(x = x, y = y)
+
+ggplot(data, aes(x = x, y = y)) +
+    geom_point(alpha = 0.5, size = 4) +
+    geom_smooth(method = "lm", se = FALSE, linewidth = 3) +
+    #labs(title = "Linear model") +
+    theme_classic(base_size = 40) 
+
+```
+
+::: 
+::: {.column width=50%}
+
+- **Linear models** are models in which the output (y) is a weighted sum of the inputs 
+- Easy to understand and fit
+- $y=\sum_{i=1}^{n}w_ix_i$ 
+- $y = ax + b$ is this!
+
+
+
+:::
+::::
+
+## Linear model equation 
+
+$y = ax + b$ *can be expressed* $y=\sum_{i=1}^{n}w_ix_i$ 
+
+- implicit constant: $y=ax+b\mathbf{1}$  
+- let $x_1=x$ and $x_2=\mathbf{1}$ 
+- we have $y=ax_1 + bx_2$
+- express $a$ and $b$ as weights: $a=w_1$ and $b=w_2$
+- $y=w_1x_1 + w_2x_2$ where $w_1$ and $w_2$ are free parameters
+
+
+## Types of models 
+
+```{dot}
+//| echo: false
+
+digraph G {
+    
+  "models" -> "supervised learning";
+  "models" -> "unsupervised learning";
+  "supervised learning" -> "regression";
+  "supervised learning" -> "classification";
+  "regression" -> "linear models";
+  "regression" -> "nonlinear models";
+  
+
+  "nonlinear models" [style = filled]
+
+}
+```
+
+## Nonlinear models {.smaller}
+
+Output (y) cannot be expressed as a weighted sum of inputs($y=\sum_{i=1}^{n}w_ix_i$ ); pattern is better captured by more complex functions. (But often we can linearize them!)
+
+
+```{r}
+#| echo: false 
+#| layout-ncol: 2
+#| fig-height: 10
+
+# Set seed for reproducibility
+set.seed(42)
+
+# Generate 500 random values for x
+x <- rnorm(500, mean = 0, sd = 1)  # You can adjust the mean and sd as needed
+
+# Calculate y based on the equation y = 2x + 3, and add noise
+noise <- rnorm(500, mean = 0, sd = 1)  # You can adjust the sd of the noise
+y <- 2 * x + 3 + noise
+
+# Combine x and y into a data frame
+data <- data.frame(x = x, y = y)
+
+ggplot(data, aes(x = x, y = y)) +
+    geom_point(alpha = 0.5, size = 4) +
+    geom_smooth(method = "lm", se = FALSE, linewidth = 3) +
+    labs(title = "Linear model") +
+    theme_classic(base_size = 36) 
+
+# Generate x values (input variable) from 0 to 6 with 500 data points
+x <- rnorm(500, mean = 0, sd = 1)
+
+# Define the quadratic model y = ax^2 + bx + c with random noise
+a <- 1.2   # Coefficient for x^2
+b <- -0.5  # Coefficient for x
+c <- 3.0   # Constant term
+noise <- rnorm(length(x), mean = 0, sd = 1)  # Random noise
+
+# Calculate y values (response variable)
+y <- a * x^2 + b * x + c + noise
+
+# Create a data frame with x, "Model", and y
+data_nonlinear <- data.frame(x = x, Model = "Model", y = round(y, 2))
+
+ggplot(data_nonlinear, aes(x = x, y = y)) +
+    geom_point(alpha = 0.5, size = 4) +
+    geom_smooth(method = "lm", se = FALSE, formula = "y ~ poly(x, 2)", linewidth = 3) +
+    labs(title = "Nonlinear model") +
+    theme_classic(base_size = 36)
+
+```
+
+## 💪 In-class Exercise 7.3 {.smaller}
+
+*Take a few minutes to try this yourself!*
+
+Load the following data, which shows brain size and body weight for several different animals: 
+
+::: {.nonincremental}
+- [animal_brain_body_size.csv](/assests/csv/animal_brain_body_size.csv)
+:::
+
+Explore the data to specify the type of model we should use to predict brain size by body weight. 
+
+::: {.nonincremental}
+- Supervised or unsupervised? 
+- Regression or classification?
+- Linear or nonlinear? 
+:::
+
+
+
+
+
+# Thursday
+
+## Model specification {.smaller}
+
+Recall that `model specification` is one aspect of the model building process in which we select the form of the model (the type of model)
+
+1. **Response variable ($y$):** Specify the variable you want to predict/explain (output). 
+2. **Explanatory variables($x_i$):** Specify the variables that may explain the variation in the response (inputs). 
+3. **Functional form:** Specify the relationship between the response and explanatory variables. *For linear models, we use the linear model equation!*
+4. **Model terms:** Specify *how* to include your explanatory variables in the model (since they can be included in more than one way).
+
+## Model specification {.smaller}
+
+The following issues can also be considered part of the model specification process.
+
+- **Model assumptions:** Check any assumptions underlying the model you selected (e.g. does the model assume the relationship is linear?).
+- **Model complexity:** Simple models are easier to interpret but may not capture all complexities in the data. Complex models may suffer from overfitting the data or being difficult to interpret.
+
+. . . 
+
+*A well-specified model should be based on a clear understanding of the data, the underlying relationships, and the research question.*
+
+## Specifying the functional form 
+
+- Literally specifying the mathematical formula we're going to use to represent the relationship between our response and explanatory variables.
+- We already know it: **linear models** are models in whch the response variable ($y$) is a weighted sum of the explanatory variables ($x_i$)
+- $y=\sum_{i=1}^{n}w_ix_i$ 
+
+## 🥸 Aliases of $y=\sum_{i=1}^{n}w_ix_i$ 
+
+The **linear model equation** can be expressed in many ways, but *they are all this same thing*
+
+1. in **high school algebra**: $y=ax+b$. 
+2. in **machine learning**: $y = w_0 + w_1x_1 + w_2x_2 + ... + w_nx_n$ 
+3. in **statistics**: $y = β_0 + β_1x_1 + β_2x_2 + ... + β_nx_n + ε$
+4. in **matrix** notation: $y = Xβ + ε$
+
+## Specify our first model 
+
+To illustrate how this simple equation scales up to complex models, let's start with a simple case ("toy", "tractable"). 
+
+```{r}
+#| echo: false 
+#| layout-ncol: 2
+#| fig-height: 10
+
+toy <- tibble(
+  x = c(1, 2), 
+  y = c(3, 5))
+toy
+
+toy %>%
+ggplot(aes(x = x, y = y)) +
+  geom_point(size=6) +
+  theme_bw(base_size=45)+
+  ylim(c(0,6)) +
+  xlim(c(0,3))
+```
+
+## 💪 In class exercise 7.4
+
+Specify our model! 
+
+```{dot}
+//|echo: false
+
+digraph G {
+
+rankdir=LR;  // Left to Right layout
+
+  // Column 1: x values
+  x1 [label="x1"];
+  x2 [label="x2"];
+  x3 [label="x3"];
+
+  // Column 2: model
+  model [label="Linear model", shape=box, width=1.5, height=1, style = filled];
+
+  // Column 3: y value
+  y [label="y"];
+
+  // Keep x values in the same rank
+  { rank=same; x1; x2; x3; }
+
+  // Keep alignment using invisible edges
+  x1 -> model;
+  x2 -> model;
+  x3 -> model;
+  x4 -> model;
+  x5 -> model;
+
+  model -> y;  // Connect the model to y
+}
+
+```
+
+## System of equations 
+
+In our simple dataset, we can appreciate that we have a system of equations. We have **two unknowns** (free parameters) and **two datapoints**
+
+- so we have 2 equations, 2 unknowns. 
+  - `c(1, 3) ->` $w_11 + w_21 = 3$
+  - `c(2, 5) ->` $w_11 + w_22 = 5$
+
+- which have a solution: 
+  - $w_1 = 1$ and $w_2 = 2$
+
+##  🪄 Fit our model to our data {.smaller}
+
+We'll learn what is going on under the hood of model fitting next week, but for now, we can appreciate that we are solving a system of equations:
+
+. . . 
+
+with `lm()`:
+
+```{r}
+#| output-location: column
+lm(y ~ x, data = toy)
+```
+
+. . . 
+
+with `infer`: 
+
+```{r}
+#| output-location: column
+toy %>%
+  specify(response = y, explanatory = x) %>%
+  fit()
+```
+
+## Many equations, many unknowns 
+
+When we have multiple data points, we are essentially solving for the best line (or hyperplane, in higher dimensions) that fits the data. 
+
+- For each data point, we create an equation based on the linear model
+- Which leads to a system of equations. 
+- With 2 unknowns and 2 data points, we have 2 equations. 
+
+
+## Enter the matrix $y = Xβ + ε$
+
+When we have **more equations than unknowns** we cannot solve the system directly (we have an **overdetermined system**), but we can find a soulution with linear algebra. 
+
+
+:::: {.columns}
+::: {.column width="50%"}
+
+```{r}
+#| echo: false 
+toy %>%
+ggplot(aes(x = x, y = y)) +
+  geom_point(size=6) +
+  theme_bw(base_size=45)+
+  ylim(c(0,6)) +
+  xlim(c(0,3))
+```
+::: 
+::: {.column width="50%"}
+
+\begin{aligned}
+  \begin{bmatrix}
+  3 \\
+  5
+  \end{bmatrix}
+  =
+  \begin{bmatrix}
+  1 & 1 \\
+  1 & 2
+  \end{bmatrix}
+  \begin{bmatrix}
+  w_1 \\
+  w_0
+  \end{bmatrix}
+
+\end{aligned}
+
+:::
+::::
+
+## We can have super complex models
+
+- Matrix way allows us to appreciate that we can expand this toy example to an number of data points and any number of unknowns. 
+
+
+## 💪 In class exercise 7.5
+
+Ask chatGPT how many parameters it has. 
+
+# Swim Records 
+
+Applied to a more complex problem 
+
+## Specify a model for `SwimRecords`
+
+How have world swim records in the 100m changed over time?
+
+```{r}
+library(mosaic)
+glimpse(SwimRecords)
+```
+
+## 💪 In class exercise 7.6
+
+Plot the swim records data, then use your model specification worksheet to specify the model. 
+
+## Response variable $y$ {.smaller}
+
+What is the thing you are trying to understand?
+
+```{r}
+#| echo: false
+theme_set(theme_bw(base_size = 26))
+SwimRecords %>%
+    ggplot(aes(y = time, x = year)) +
+    geom_point() 
+
+```
+
+## Explanatory variable(s) $x_i$ {.smaller} 
+
+What could **explain** the variation in your response variable? 
+
+::: {.panel-tabset}
+
+## year 
+
+```{r}
+#| echo: false
+
+SwimRecords %>%
+    ggplot(aes(y = time, x = year)) +
+    geom_point() 
+
+```
+
+## year + sex
+
+```{r}
+#| echo: false
+
+SwimRecords %>%
+    ggplot(aes(y = time, x = year, shape= sex)) +
+    geom_point() 
+
+```
+
+:::
+
+## Functional form
+
+- Linear model
+- $y=\sum_{i=1}^{n}w_ix_i$ 
+
+
+## Model terms {.smaller}
+
+Model terms describe *how* to include our explanatory variables in our model formula — there is more than one way!
+
+1. Intercept
+2. Main 
+3. Interaction 
+4. Transformation
+
+## Intercept  {.smaller}
+
+  - in R: `y ~ 1`, in eq: $y=w_1x_1$
+
+```{r}
+#| echo: false
+
+model <- lm(time ~ 1, data = SwimRecords)
+model_data <- SwimRecords %>%
+    mutate(model_value = predict(model, SwimRecords))
+
+SwimRecords %>%
+    ggplot(aes(y = time, x = year)) +
+    geom_point(aes(shape = sex), size = 2) +
+    geom_point(
+        size = 3,
+        color = "blue",
+        data = model_data, 
+        aes(y = model_value, x = year)) 
+
+```
+
+## Main {.smaller}
+
+::: {.panel-tabset}
+
+## year
+
+- in R: `y ~ 1 + year`, in eq: $y = w_1x_1 + w_2x_2$
+
+```{r}
+#| echo: false
+
+model <- lm(time ~ 1 + year, data = SwimRecords)
+model_data <- SwimRecords %>%
+    mutate(model_value = predict(model, SwimRecords))
+
+SwimRecords %>%
+    ggplot(aes(y = time, x = year)) +
+    geom_point(aes(shape = sex), size = 2) +
+    geom_point(
+        size = 3,
+        color = "blue",
+        data = model_data, 
+        aes(y = model_value, x = year)) 
+
+```
+
+## sex 
+
+- in R: `y ~ 1 + sex`, in eq: $y = w_1x_1 + w_2x_2$
+
+
+```{r}
+#| echo: false
+
+model <- lm(time ~ sex, data = SwimRecords)
+model_data <- SwimRecords %>%
+    mutate(model_value = predict(model, SwimRecords))
+
+SwimRecords %>%
+    ggplot(aes(y = time, x = year, shape = sex)) +
+    geom_point(size = 2) +
+    geom_point(
+        size = 3,
+        color = "blue",
+        data = model_data, 
+        aes(y = model_value, x = year)) 
+
+```
+
+## year + sex
+
+- in R: `y ~ 1 + year`, in eq: $y = w_1x_1 + w_2x_2 + w_3x_3$
+
+
+```{r}
+#| echo: false
+
+model <- lm(time ~ year + sex, data = SwimRecords)
+model_data <- SwimRecords %>%
+    mutate(model_value = predict(model, SwimRecords))
+
+SwimRecords %>%
+    ggplot(aes(y = time, x = year, shape = sex)) +
+    geom_point(size = 2) +
+    geom_point(
+       size = 3,
+        color = "blue",
+        data = model_data, 
+        aes(y = model_value, x = year)) 
+
+```
+
+::: 
+
+## Interaction {.smaller}
+
+- in R: `y ~ 1 + year + gender + year:gender` 
+    - or the short way: `y ~ 1 + year * gender`
+- in eq: $y = w_1x_1 + w_2x_2 + w_3x_3 + w_4x_4$ where $x_4$ is $x_2x_3$
+
+
+```{r}
+#| echo: false
+
+model <- lm(time ~ year*sex, data = SwimRecords)
+model_data <- SwimRecords %>%
+    mutate(model_value = predict(model, SwimRecords))
+
+SwimRecords %>%
+    ggplot(aes(y = time, x = year, shape = sex)) +
+    geom_point(size = 2) +
+    geom_point(
+       size = 3,
+        color = "blue",
+        data = model_data, 
+        aes(y = model_value, x = year)) 
+
+```
+
+## Transformation {.smaller}
+
+- in R: `y ~ 1 + year * sex + I(year^2)` 
+- in eq: $y = w_1x_1 + w_2x_2 + w_3x_3 + w_4x_4$ + $w_5x_5$ 
+  - where $x_4$ is $x_2x_3$ and $x_5$ is $x_2^2$
+
+```{r}
+#| echo: false
+
+model <- lm(time ~ year * sex + I(year^2), data = SwimRecords)
+model_data <- SwimRecords %>%
+    mutate(model_value = predict(model, SwimRecords))
+
+SwimRecords %>%
+    ggplot(aes(y = time, x = year, shape = sex)) +
+    geom_point(size = 2) +
+    geom_point(
+       size = 3,
+        color = "blue",
+        data = model_data, 
+        aes(y = model_value, x = year)) 
+
+```
+

@@ -1,0 +1,651 @@
+---
+title:  "Exam 2"
+subtitle: "Data Science for Studying Language & the Mind"
+# author: 
+#     name: Katie Schuler
+#     affiliation: University of Pennsylvania
+number-sections: false
+format: 
+  pdf: default
+
+---
+
+**Instructions**
+
+The exam is worth **113 points**. You have **1 hour and 30 minutes** to complete the exam. 
+
+- The exam is closed book/note/computer/phone except for the provided reference sheets
+- If you need to use the restroom, leave your exam and phone with the TAs
+- If you finish early, you may turn in your exam and leave early
+
+<!-- For all multiple choice questions, **only one choice is correct**: 
+
+- [ ] Choose this option
+- [ ] Or this option, but not both! -->
+
+```{r}
+#| echo: false
+#| message: false
+library(tidyverse)
+library(infer)
+library(optimg)
+library(tidymodels)
+theme_set(theme_bw(base_size = 15))
+```
+
+\newcommand\answerbox{%%
+    \framebox(400,50){}}
+
+\newcommand\shorteranswerbox{%%
+    \framebox(400,20){}}
+
+\newcommand\biggeranswerbox{%%
+    \framebox(400,100){}}
+
+
+
+**(5 points) Preliminary questions**
+
+Please complete these questions *before* the exam begins. 
+
+(a) **(1 point)** What is your full name? 
+
+    \shorteranswerbox
+
+(b) **(1 point)** What is your penn ID number? 
+
+    \shorteranswerbox
+
+(c) **(1 point)** What is your lab section TA's name? 
+
+    \shorteranswerbox
+
+(d) **(1 point)** Who is sitting to your left? 
+
+    \shorteranswerbox
+
+(e) **(1 point)** Who is sitting to your right? 
+
+    \shorteranswerbox
+
+
+\clearpage
+
+
+### 1. (24 points) True or false {.unnumbered}
+
+(a) **(2 points)** The goal of a regression model is to classify observations into distinct categories. 
+
+    - [ ] True
+    - [ ] False
+
+(b) **(2 points)** Model specification involves defining the functional form of the model. 
+
+    - [ ] True
+    - [ ] False
+
+(c) **(2 points)** The equation $y = ax + b$ expresses $y$ as a weighted sum of inputs. 
+
+    - [ ] True
+    - [ ] False
+
+(d) **(2 points)** Regression is a type of supervised learning, while classification is unsupervised. 
+
+    - [ ] True
+    - [ ] False  
+
+(e) **(2 points)** In gradient descent, we search through all possible parameters in the parameter space. 
+
+    - [ ] True
+    - [ ] False
+
+(f) **(2 points)** The ordinary least squares solution is an example of an iterative optimization algorithm. 
+
+    - [ ] True
+    - [ ] False
+
+(g) **(2 points)** Adding more predictors to a regression model will always increase the  $R^2$ value.
+
+    - [ ] True
+    - [ ] False
+
+(h) **(2 points)** An overfit model performs poorly on both the sample and predicting new values. 
+
+    - [ ] True
+    - [ ] False
+
+(i) **(2 points)** A reliable model will always be a highly accurate model. 
+
+    - [ ] True
+    - [ ] False
+
+(j) **(2 points)** The error bars on our parameter estimates will become smaller as we increase our sample size. 
+
+    - [ ] True
+    - [ ] False
+
+(k) **(2 points)** Support vector machines can be used for classification problems.
+
+    - [ ] True
+    - [ ] False
+
+(l) **(2 points)** The logistic function always produces outputs between 0 and 1. 
+
+    - [ ] True
+    - [ ] False
+
+\clearpage 
+
+### 2. (12 points) Model specification
+
+Suppose we measure the reaction times (in milliseconds) of both native and non-native speakers as they process words of varying frequency in English (measured as occurrences per million words). We store these data in a tibble called `rt_by_speaker`. The first 6 rows of this tibble are printed below for your reference. 
+
+```{r}
+#| echo: false
+#| message: false
+
+rt_by_speaker <- read_csv('../assests/csv/reaction-time-by-speaker.csv')
+
+head(rt_by_speaker)
+
+```
+
+We've also included an exploratory plot of these data. 
+
+```{r}
+#| echo: false
+#| message: false
+
+ggplot(rt_by_speaker, aes(x = WordFrequency, y = ReactionTime, shape = SpeakerType)) + 
+    geom_point() 
+
+```
+
+
+Suppose we specify the following model with `lm`: 
+
+```{r}
+model <- lm(ReactionTime ~ 1 + WordFrequency + SpeakerType, data = rt_by_speaker)
+
+```
+
+
+
+(a) **(3 points)** Write the model's specification as a mathematical expression: 
+
+    \answerbox
+
+(b) **(3 points)** For each of the following, circle the option that best describes the type of model we fit. 
+
+    (i) **(1 point)** Supervised or unsupervised 
+    (ii) **(1 point)** Regression or classification 
+    (iii) **(1 point)** Linear or linearlizable nonlinear 
+
+
+(c) **(3 points)** Each of the figures below show a model's predictions for these data plotted with black lines. Circle the figure that is most likely to be the plot of the model spcified to `lm`? Choose one.
+
+```{r}
+#| echo: false
+#| message: false
+#| layout-ncol: 2
+#| layout-nrow: 2
+
+foil1 <- lm(ReactionTime ~ 1 + I(WordFrequency^2) + SpeakerType, data = rt_by_speaker)
+foil2 <- lm(ReactionTime ~ 1 + WordFrequency, data = rt_by_speaker)
+foil3 <- lm(ReactionTime ~ 1 + SpeakerType, data = rt_by_speaker)
+
+rt_by_speaker <- rt_by_speaker %>%
+    mutate(a = predict(model, rt_by_speaker)) %>%
+    mutate(b = predict(foil1, rt_by_speaker)) %>%
+    mutate(c = predict(foil2, rt_by_speaker)) %>%
+    mutate(d = predict(foil3, rt_by_speaker))
+
+
+
+rt_by_speaker %>%
+ggplot(aes(x = WordFrequency, y = ReactionTime, shape = SpeakerType)) + 
+    geom_point(alpha = 0.5)  +
+    geom_line(aes(y = a)) +
+    labs(tag = "A")
+
+rt_by_speaker %>%
+ggplot(aes(x = WordFrequency, y = ReactionTime, shape = SpeakerType)) + 
+    geom_point(alpha = 0.5)  +
+    geom_line(aes(y = b)) +
+    labs(tag = "B")
+
+rt_by_speaker %>%
+ggplot(aes(x = WordFrequency, y = ReactionTime, shape = SpeakerType)) + 
+    geom_point(alpha = 0.5)  +
+    geom_line(aes(y = c)) +
+    labs(tag = "B")
+
+rt_by_speaker %>%
+ggplot(aes(x = WordFrequency, y = ReactionTime, shape = SpeakerType)) + 
+    geom_point(alpha = 0.5)  +
+    geom_line(aes(y = d)) +
+    labs(tag = "D")
+
+```
+
+\clearpage 
+
+(d) **(3 points)** Suppose we also fit the model with `infer`, which returns the parameter estimates below. Which of the following could be the predicted reaction time for a Native speaker with a word frequency of 10? 
+
+    ```{r}
+    #| echo: false
+    rt_by_speaker %>%
+        specify(ReactionTime ~ WordFrequency + SpeakerType) %>%
+        fit()
+
+    ```
+
+    - [ ] 647.9
+    - [ ] 695.1 
+    - [ ] 887.9
+    - [ ] Not enough information to determine this
+
+    You may show your work here, if you wish:
+
+    \biggeranswerbox 
+
+\clearpage
+
+### 3. (12 points) Applied model specification
+
+Suppose we encounter the following dataset, glimpsed and plotted here. 
+
+
+```{r}
+#| echo: false
+
+# Load necessary libraries
+library(tibble)
+library(ggplot2)
+
+# Set coefficients for the cubic polynomial
+a <- 1
+b <- -2
+c <- 3
+d <- -5
+
+# Generate x values
+set.seed(123) # For reproducibility
+x <- seq(-10, 10, length.out = 100)
+
+# Compute y values with more noise
+noise <- rnorm(length(x), mean = 0, sd = 100) # Increased standard deviation for more noise
+y <- a * x^3 + b * x^2 + c * x + d + noise
+
+# Create a tibble
+data <- tibble(x = x, y = y)
+
+glimpse(data)
+
+# Plot the data
+ggplot(data, aes(x = x, y = y)) +
+  geom_point(alpha = 0.6)  +
+  stat_function(fun = function(x) a * x^3 + b * x^2 + c * x + d) 
+ 
+
+
+
+```
+
+We specify and fit these data with `lm` as below: 
+
+```{r}
+lm(y ~ poly(x, 3) , data = data)
+```
+
+\clearpage 
+
+(a) **(2 points)** What type of polynomial is included in the model specification? 
+
+- [ ] Constant
+- [ ] Linear 
+- [ ] Quadratic 
+- [ ] Cubic 
+- [ ] Quartic 
+
+
+(b) **(3 points)** Write the *fitted model* as a mathematical expression: 
+
+    \biggeranswerbox 
+
+(c) **(2 points)** In class we learned about two ways to linearlize a nonlinear model. Which option best describes what we have done here? 
+
+    - [ ] Expanding the input space by adding new terms
+    - [ ] Transforming an existing term
+
+(d) **(2 points)** Given the predicted model (shown with the black line on the figure), what does the model predict for the value of $y$ when $x=1$? 
+
+    \shorteranswerbox 
+
+(e) **(3 points)** Suppose we fit the model specification `y ~ poly(x, 100)`. Explain why this would be an overfit model.
+
+    \biggeranswerbox
+
+\clearpage
+
+### 4. (13 points) Model fitting
+
+Section 4 refers to the `rt_by_speaker` tibble from section 2. We have returned the first 6 rows of the tibble here for your reference. 
+
+```{r}
+#| echo: false
+rt_by_speaker <- rt_by_speaker %>% 
+    mutate(SpeakerTypeRecoded = ifelse(SpeakerType == 'Native', 0, 1)) 
+
+rt_by_speaker %>%
+    select(WordFrequency:SpeakerType) %>% head
+
+SSE <- function(data, par) {
+  data %>%
+    mutate(prediction = par[1] + par[2]* WordFrequency + par[3]*SpeakerTypeRecoded) %>%
+    mutate(error = prediction - ReactionTime) %>%
+    mutate(squared_error = error^2) %>%
+    with(sum(squared_error))
+}
+
+```
+
+Suppose we estimate the free parameters with `optimg` and `lm`, which return the following results: 
+
+```{r}
+
+optimg(data = rt_by_speaker, par = c(0,0, 0), fn=SSE, method = "STGD")
+```
+
+
+```{r}
+lm(ReactionTime ~ 1 + WordFrequency + SpeakerType, data = rt_by_speaker)
+```
+
+
+(a) **(2 points)** Explain why `optimg` and `lm` return slightly different parameter estimates? 
+
+    \answerbox
+
+(b) **(2 points)** What is the cost function used by `optimg`? Choose one.
+
+    - [ ] SSE 
+    - [ ] STGD 
+    - [ ] Gradient descent 
+    - [ ] $R^2$
+    - [ ] Not enough information to determine this
+
+(c) **(2 points)** How many steps did our iterative optimization algorithm take? 
+
+    \shorteranswerbox 
+
+(d) **(2 points)** What was the sum of squared error of the optimal parameters according to `optimg`? Choose one.
+
+    - [ ] $24$
+    - [ ] $0$ 
+    - [ ] $244250.2$ 
+    - [ ] $244250.2^2$ 
+    - [ ] Not enough information to determine this 
+
+(e) **(2 points)** Which approach does `lm` use to estimate the free parameters? Choose one.
+
+    - [ ] Ordinary least-squares solution 
+    - [ ] Gradient descent 
+    - [ ] Another iterative optimzation algorith 
+    - [ ] All of the above
+
+(f)  **(3 points)** Given the model specified in the code to `lm`, fill in the missing values for the first 6 rows of the input matrix $\mathbf{X}$. 
+
+$$
+\begin{aligned}
+    \begin{bmatrix}
+    773  \\
+    754  \\
+    711  \\
+    495  \\
+    851 \\
+    719  \\
+    \end{bmatrix}
+    =
+    \begin{bmatrix}
+    1 & 38.8 & \rule{1.5cm}{0.3mm} \\
+    1 & 45.4  & \rule{1.5cm}{0.3mm}  \\
+    1 & 81.2 & \rule{1.5cm}{0.3mm}  \\
+    1 & 51.4 & \rule{1.5cm}{0.3mm} \\
+    1 & 52.6 & \rule{1.5cm}{0.3mm} \\
+    1 & 84.3 & \rule{1.5cm}{0.3mm} 
+    \end{bmatrix}
+    \begin{bmatrix}
+    w_1 \\
+    w_2
+    \end{bmatrix}
+    +
+    \begin{bmatrix}
+        \epsilon_1 \\
+        \epsilon_2 \\
+        \epsilon_3 \\
+        \epsilon_4 \\
+        \epsilon_5 \\
+    \end{bmatrix}
+\end{aligned}
+$$
+
+### 5. (12 points) Model accuracy 
+
+Suppose we want to determine how accurate our model is for the `rt_by_speaker` dataset. Section 5 refers to the following code and output.
+
+First we specify and fit our model with `lm` and return the model summary. 
+
+```{r}
+model <- lm(ReactionTime ~ 1 + WordFrequency + SpeakerType, data = rt_by_speaker)
+summary(model)
+```
+
+\clearpage 
+
+Then we perform cross-validation and return the validation metrics with `collect_metrics()`
+
+```{r}
+set.seed(2) 
+splits <- vfold_cv(rt_by_speaker)
+
+model_spec <- 
+  linear_reg() %>%  
+  set_engine(engine = "lm")  
+
+our_workflow <- 
+  workflow() %>%
+  add_model(model_spec) %>%  
+  add_formula(ReactionTime ~ 1 + WordFrequency + SpeakerType) 
+
+fitted_models <- 
+  fit_resamples(
+    object = our_workflow, 
+    resamples = splits
+    ) 
+
+fitted_models %>%
+    collect_metrics()
+```
+
+
+
+(a) **(2 points)** What is the $R^2$ value for our original sample? 
+
+    \shorteranswerbox
+
+(b) **(2 points)** What is the $R^2$ estimate for the population? 
+
+    \shorteranswerbox 
+
+(c) **(2 points)** What kind of cross-validation did we perform? Choose one.
+
+    - [ ] k-fold 
+    - [ ] boostrapping 
+    - [ ] leave-one out
+    - [ ] Not enough information to determine this
+
+(d) **(2 points)** How many splits of our data does our code generate? 
+
+    - [ ] 1000
+    - [ ] 100 
+    - [ ] 10 
+    - [ ] Not enough information to determine this
+
+(e) **(3 points)** Explain the 3-step process that applies to all types of cross-validation. 
+
+    \biggeranswerbox
+
+\clearpage 
+
+### 6. (12 points) Model reliability 
+
+Section 6 refers to two datasets: `data_n10` and `data_n200` which have 10 and 200 observations respectively. Here we plot the data and the fitted model `y ~ 1 + x` for each dataset. 
+
+```{r}
+#| echo: false
+#| message: false
+
+data_n10 <- read_csv("http://kathrynschuler.com/datasets/model-reliability-sample10.csv") 
+data_n200 <- read_csv("http://kathrynschuler.com/datasets/model-reliability-sample200.csv") 
+
+ggplot(data_n10, aes(x = x, y = y)) +
+    geom_point() +
+    labs(title = "sample size = 10") +
+    geom_smooth(method = "lm", formula = "y ~ x")
+ggplot(data_n200, aes(x = x, y = y)) +
+    geom_point() +
+    labs(title = "sample size = 200") +
+    geom_smooth(method = "lm", formula = "y ~ x")
+    
+
+```
+
+Here we return the model summary for each. 
+
+```{r} 
+#| echo: false
+
+model_n10 <- lm(y ~ x, data = data_n10)
+summary(model_n10)
+model_n200 <- lm(y ~ x, data = data_n200)
+summary(model_n200)
+```
+
+\clearpage
+
+
+(a) **(2 points)** Which model is more accurate? Choose one.
+
+    - [ ] The model fitted to `data_n10` 
+    - [ ] The model fitted to `data_n200`
+    - [ ] Both models are equally accurate
+    - [ ] Not enough information to determine this
+
+(b) **(2 points)** Which model is more reliable? Choose one. 
+
+    - [ ] The model fitted to `data_n10` 
+    - [ ] The model fitted to `data_n200`
+    - [ ] Both models are equally reliable
+    - [ ] Not enough information to determine this
+
+(c) **(2 points)** Which value in the model summary quantifies the model's reliability? 
+
+    - [ ] Multiple R-squared 
+    - [ ] Adjusted R-squared
+    - [ ] Estimate 
+    - [ ] Std. Error 
+    - [ ] Pr(>|t|)
+
+    
+(d) **(3 points)** Suppose we bootstrap a 95% confidence interval for our parameter estimates for the `data_n10` dataset. What would happen if we changed the level of the confidence interval to 68%? Choose one.
+
+    - [ ] It would get smaller (narrower)
+    - [ ] It would get bigger (wider) 
+    - [ ] It would stay the same
+        
+
+(e) **(3 points)** Explain why there is uncertainy on our model parameter estimates. 
+
+    \biggeranswerbox
+
+
+### 7. (13 points) Classification 
+
+Suppose we want to predict the Fruit_Type (0 = apple, 1 = banana) based on its Weight, Color (1 = red, 2 = yellow, 3 = green), and Diameter. Our data is stored in the tibble `fruit_data`, glimpsed below. 
+
+```{r}
+#| echo: false
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Function to generate a larger dataset
+generate_fruit_data <- function(n) {
+  tibble(
+    Weight = sample(100:250, n, replace = TRUE),               # Random weights between 100 and 250 grams
+    Color = sample(1:3, n, replace = TRUE),                   # Random colors (1=Red, 2=Yellow, 3=Green)
+    Diameter = round(runif(n, min = 5, max = 25), 1),         # Random diameters between 5 and 25 cm
+    Fruit_Type = ifelse(Diameter > 10 & Color == 2, 1, 0)     # Simple logic for classification
+  )
+}
+
+# Generate a dataset with 1000 rows
+fruit_data <- generate_fruit_data(1000)
+
+fruit_data  %>%  glimpse()
+
+
+```
+
+We fit this model with `glm` and return the following output: 
+
+```{r}
+glm(Fruit_Type ~ Weight + Color + Diameter, family = "binomial", data = fruit_data)
+```
+
+\clearpage 
+
+
+(a) **(3 points)** For each of the following, circle the option that best describes the type of model we fit. 
+
+    (i) **(1 point)** Supervised or unsupervised 
+    (ii) **(1 point)** Regression or classification 
+    (iii) **(1 point)** Linear or linearlizable nonlinear 
+
+(b) **(2 points)** How many free parameters is this model estimating? 
+
+    - [ ] 1
+    - [ ] 2
+    - [ ] 3
+    - [ ] 4
+    - [ ] Not enough information to determine this 
+
+(c) **(2 points)** Which of the following parsnip specifications could specify and fit a generalized linear model? 
+
+    - [ ] `linear_reg() %>% set_engine("lm")`
+    - [ ] `logistic_reg() %>% set_engine("glm")`
+    - [ ] Both work 
+
+(d) **(2 points)** Which of the following expresses the link function for the `glm` we fit? 
+
+    - [ ] $f(a) = \frac{1}{1 + e^{-a}}$
+    - [ ] $\sum_{i=i}^{n} (d_{i} - m_{i})^2$ 
+    - [ ] $y=\sum_{i=1}^{n}w_ix_i$
+    - [ ] $R^2=100\times(1-\frac{SSE_{model}}{SSE_{reference}})$
+
+(e) **(2 points)** What do we call the type of classification we performed via our `glm`? 
+
+    - [ ] linear regression
+    - [ ] logistic regression
+    - [ ] nearest-prototype regression
+    - [ ] support vector machine
+
+(f) **(2 points)** What accuracy metric is best applied to classification models? 
+
+    - [ ] $R^2$ 
+    - [ ] RMSE - root mean squared error
+    - [ ] Percent correct 
+    - [ ] Adjusted $R^2$ 
+
+    

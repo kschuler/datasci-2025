@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.56">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Katie Schuler">
+<meta name="dcterms.date" content="2024-08-27">
+
+<title>Week 1: R basics – DataSci for Lang &amp; Mind</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../include/webex.css">
+</head>
+
+<body class="nav-sidebar docked">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">
+      DataSci for Lang &amp; Mind
+      </li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">DataSci for Lang &amp; Mind</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Syllabus</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#resources" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Resources</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../index.html#materials" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Materials</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#study-guides" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Study guides</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#problem-sets" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Problem sets</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#exams" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exams</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#lab-exercises" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab exercises</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#schedule" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Schedule</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#materials-from-lecture" id="toc-materials-from-lecture" class="nav-link active" data-scroll-target="#materials-from-lecture"><span class="header-section-number">1</span> Materials from lecture</a></li>
+  <li><a href="#hello-world" id="toc-hello-world" class="nav-link" data-scroll-target="#hello-world"><span class="header-section-number">2</span> Hello, World!</a>
+  <ul class="collapse">
+  <li><a href="#what-is-data-science" id="toc-what-is-data-science" class="nav-link" data-scroll-target="#what-is-data-science"><span class="header-section-number">2.1</span> What is data science?</a></li>
+  <li><a href="#data-science-workflow" id="toc-data-science-workflow" class="nav-link" data-scroll-target="#data-science-workflow"><span class="header-section-number">2.2</span> Data science workflow</a></li>
+  <li><a href="#overview-of-the-course" id="toc-overview-of-the-course" class="nav-link" data-scroll-target="#overview-of-the-course"><span class="header-section-number">2.3</span> Overview of the course</a></li>
+  <li><a href="#syllabus-briefly" id="toc-syllabus-briefly" class="nav-link" data-scroll-target="#syllabus-briefly"><span class="header-section-number">2.4</span> Syllabus, briefly</a></li>
+  <li><a href="#why-r" id="toc-why-r" class="nav-link" data-scroll-target="#why-r"><span class="header-section-number">2.5</span> Why R?</a></li>
+  </ul></li>
+  <li><a href="#google-colab" id="toc-google-colab" class="nav-link" data-scroll-target="#google-colab"><span class="header-section-number">3</span> Google Colab</a></li>
+  <li><a href="#r-basics" id="toc-r-basics" class="nav-link" data-scroll-target="#r-basics"><span class="header-section-number">4</span> R Basics</a>
+  <ul class="collapse">
+  <li><a href="#basics" id="toc-basics" class="nav-link" data-scroll-target="#basics"><span class="header-section-number">4.1</span> Basics</a></li>
+  <li><a href="#important-functions" id="toc-important-functions" class="nav-link" data-scroll-target="#important-functions"><span class="header-section-number">4.2</span> Important functions</a></li>
+  <li><a href="#vectors" id="toc-vectors" class="nav-link" data-scroll-target="#vectors"><span class="header-section-number">4.3</span> Vectors</a></li>
+  <li><a href="#operations" id="toc-operations" class="nav-link" data-scroll-target="#operations"><span class="header-section-number">4.4</span> Operations</a></li>
+  <li><a href="#more-complex-structures" id="toc-more-complex-structures" class="nav-link" data-scroll-target="#more-complex-structures"><span class="header-section-number">4.5</span> More complex structures</a></li>
+  <li><a href="#subsetting" id="toc-subsetting" class="nav-link" data-scroll-target="#subsetting"><span class="header-section-number">4.6</span> Subsetting</a></li>
+  <li><a href="#built-in-functions" id="toc-built-in-functions" class="nav-link" data-scroll-target="#built-in-functions"><span class="header-section-number">4.7</span> Built-in functions</a></li>
+  <li><a href="#programming-in-r" id="toc-programming-in-r" class="nav-link" data-scroll-target="#programming-in-r"><span class="header-section-number">4.8</span> Programming in R</a></li>
+  </ul></li>
+  <li><a href="#further-reading-and-references" id="toc-further-reading-and-references" class="nav-link" data-scroll-target="#further-reading-and-references"><span class="header-section-number">5</span> Further reading and references</a></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="r-basics.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Week 1: R basics</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Katie Schuler </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">August 27, 2024</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="materials-from-lecture" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Materials from lecture</h1>
+<ul>
+<li><strong>Tuesday</strong>: <a href="../slides/hello-world.html">slides</a> and <a href="https://colab.research.google.com/drive/1G0kTGOqukzko_8LYVgsdZ4yFLPQFVD03?usp=sharing">demo</a></li>
+<li><strong>Thursday</strong>: <a href="../slides/r-basics.html">slides</a> and <a href="https://colab.research.google.com/drive/1qe66EM3ABVPEv6X-m1q7jJ6Oe-yK1cW2?usp=sharing">demo</a></li>
+</ul>
+</section>
+<section id="hello-world" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Hello, World!</h1>
+<section id="what-is-data-science" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="what-is-data-science"><span class="header-section-number">2.1</span> What is data science?</h2>
+<blockquote class="blockquote">
+<p>Data are descriptions of the world around us, collected through observation and stored on computers. Computers enable us to infer properties of the world from these descriptions. Data science is the discipline of drawing conclusions from data using computation.</p>
+<p>– <em>Computational and Inferential Thinking: The Foundations of Data Science</em></p>
+</blockquote>
+<p>Data science is about making decisions based on incomplete information. This concept is not new – brains (especially human brains!) love doing this. To illustrate, what do you see in the following image?</p>
+<div id="fig-visualillusion" class="quarto-float quarto-figure quarto-figure-left anchored" data-fig-align="left">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-visualillusion-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../assests/images/visual-illusion.png" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:25.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-visualillusion-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: from Kok &amp; de Lange (2014)<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>
+</figcaption>
+</figure>
+</div>
+<p>Did you see a gray triangle on top of three circles? Most people do! But it turns out that your brain is filling in the gaps, inferring the presence of a triangle from the partial information available in the black circles <a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>.</p>
+<p>While the underlying concept is not new, the computational tools we use are <em>relatively</em> new. And we have a lot more data!</p>
+<div id="fig-dataneversleeps" class="quarto-float quarto-figure quarto-figure-left anchored" data-fig-align="left">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-dataneversleeps-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../assests/images/data-never-sleeps.png" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:80.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-dataneversleeps-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: from https://web-assets.domo.com/miyagi/images/product/product-feature-22-data-never-sleeps-10.png
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="data-science-workflow" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="data-science-workflow"><span class="header-section-number">2.2</span> Data science workflow</h2>
+<p>The folks who wrote <a href="https://r4ds.hadley.nz/">R for Data Science</a> proposed the following data science workflow:</p>
+<div id="fig-datascience" class="quarto-float quarto-figure quarto-figure-left anchored" data-fig-align="left">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-datascience-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="../assests/images/data-science-workflow.png" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:80.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-datascience-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: from R for Data Science
+</figcaption>
+</figure>
+</div>
+<p>Let’s unpack what these mean briefly:</p>
+<ol type="1">
+<li><p><strong>Import:</strong> gather data from a variety of sources, which can include structured data (like databases and spreadsheets) and unstructured data (like text, images, and videos).</p></li>
+<li><p><strong>Tidy and Transform:</strong> The raw data we import is often messy. Data scientists clean and preprocess the data, which involves removing errors, handling missing values, and transforming data into a suitable format for analysis.</p></li>
+<li><p><strong>Visualize (exploratory data analysis)</strong> visualize and summarize data to identify patterns, form hypotheses, select appropriate models, and guide further analysis.</p></li>
+<li><p><strong>Model:</strong> Using statistical methods, machine learning algorithms, and other computational techniques, data scientists build models to understand underlying patterns in the data. Models are tested using validation techniques to ensure their accuracy and reliability. Then data scientists use them to draw meaningful conclusions, like predictions about the future or inferences about populuation.</p></li>
+<li><p><strong>Communicate:</strong> Finally, a crucial part of data science is communicating findings clearly and effectively, whatever your purpose (academic, industry, or the public!)</p></li>
+<li><p><strong>Program</strong>: Surrounding all these is programming, since the computational tools are what make these possible!</p></li>
+</ol>
+<p>Data science has applications in many fields far beyond language and the mind. It allows us to make data-driven decisions, solve complex problems, and uncover hidden insights that might not be apparent through other methods.</p>
+</section>
+<section id="overview-of-the-course" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="overview-of-the-course"><span class="header-section-number">2.3</span> Overview of the course</h2>
+<p>We will spend the first few weeks getting comfortable <strong>programming in R</strong>, including some useful skills for data science:</p>
+<ul>
+<li>R basics</li>
+<li>Data visualization</li>
+<li>Data wrangling</li>
+</ul>
+<p>Then, we will spend the next several weeks building a <strong>foundation in basic statistics and model building</strong>:</p>
+<ul>
+<li>Sampling distribution</li>
+<li>Hypothesis testing</li>
+<li>Model specification</li>
+<li>Model fitting</li>
+<li>Model accuracy</li>
+<li>Model reliability</li>
+</ul>
+<p>Finally we will cover a selection of <strong>more advanced topics</strong> that are often applied in language and mind fields, with a focus on basic understanding:</p>
+<ul>
+<li>Classification</li>
+<li>Inference for regression</li>
+<li>Mixed-effect models</li>
+</ul>
+</section>
+<section id="syllabus-briefly" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="syllabus-briefly"><span class="header-section-number">2.4</span> Syllabus, briefly</h2>
+<p>Each week will include two lectures and a lab:</p>
+<ul>
+<li><strong>Lectures</strong> are on Tuesdays and Thursdays at 12pm and will be a mix of conceptual overviews and R tutorials. It is a good idea to bring your laptop so you can follow along and try stuff in R!</li>
+<li><strong>Labs</strong> are on Thursday or Friday and will consist of (ungraded) practice problems and concept review with TAs. You may attend any lab section that works for your schedule.</li>
+</ul>
+<p>There are 8 graded assessments:</p>
+<ul>
+<li><strong>6 Problem sets (40%)</strong> in which you will be asked to apply your newly aquired R programming skills.</li>
+<li><strong>2 Midterm exams (60%)</strong> in which you will be tested on your understanding of lecture concepts.</li>
+</ul>
+<p>There are a few policies to take note of:</p>
+<ul>
+<li>Missed exams cannot be made up except in cases of genuine conflict or emergency (documentation and course action notice required). You may take the optional final exam to replace a missed or low scoring exam.</li>
+<li>You may request an extension on any problem set of up to 3 days. But extensions beyond 3 days will not be granted (because delying solutions will negative impact other students).</li>
+<li>You may submit any missed quiz or problem set by the end of the semester for half-credit (50%), even after solutions are posted.</li>
+<li>We will drop your lowest pset grade, but you must turn in all 6 assignements to be eligible.</li>
+</ul>
+</section>
+<section id="why-r" class="level2" data-number="2.5">
+<h2 data-number="2.5" class="anchored" data-anchor-id="why-r"><span class="header-section-number">2.5</span> Why R?</h2>
+<p>With many programming languages available for data science (e.g.&nbsp;R, Python, Julia, MATLAB), why use R?</p>
+<ul>
+<li>Built for stats, specifically</li>
+<li>Makes nice visualizations</li>
+<li>Lots of people are doing it, especially in academia</li>
+<li>Easier for beginners to understand</li>
+<li>Free and open source (though so are Python and Julia, MATLAB costs $)</li>
+</ul>
+<p>If you are interested, here is a <a href="https://tobydriscoll.net/blog/matlab-vs.-julia-vs.-python/">math professor’s take</a> on the differences between Python, Julia, and MATLAB. Note that although they’re optimized for different things, <strong>they are all great</strong> and the technical skills and conceptual knowledge you gain in this course will transfer to other languages.</p>
+</section>
+</section>
+<section id="google-colab" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Google Colab</h1>
+<p>There are many ways to program with R. Some popular options include:</p>
+<ul>
+<li><a href="https://posit.co/products/open-source/rstudio/">R Studio</a></li>
+<li><a href="https://jupyter.org/">Jupyter</a></li>
+<li><a href="https://code.visualstudio.com/docs/languages/r">VS Code</a></li>
+<li>and even simply the <a href="http://mercury.webster.edu/aleshunas/R_learning_infrastructure/Using%20the%20R%20command%20line.html">command line/terminal</a></li>
+</ul>
+<p><strong>Google Colab</strong> is a cloud-based Jupyter notebook that allows you to write, execute, and share code like a google doc. We use Google Colab because it’s simple and accessible to everyone. You can start programming right away, no setup required! Google Colab officially supports Python and R (and secretly <a href="https://colab.research.google.com/github/ageron/julia_notebooks/blob/master/Julia_Colab_Notebook_Template.ipynb">Julia</a>, too!)</p>
+<p>New R notebook:</p>
+<ul>
+<li><a href="https://colab.research.google.com/#create=true&amp;language=r">colab (r kernel)</a> - use this link to start a new R notebook</li>
+<li><code>File &gt; New notebook</code> and then <code>Runtime</code> &gt; <code>Change runtime type</code> to R</li>
+</ul>
+<p>Cell types:</p>
+<ul>
+<li><code>+ Code</code> - write and execute code</li>
+<li><code>+ Text</code> - write text blocks in <a href="https://www.markdowntutorial.com/">markdown</a></li>
+</ul>
+<p>Left sidebar:</p>
+<ul>
+<li><code>Table of contents</code> - outline from text headings</li>
+<li><code>Find and replace</code> - find and/or replace</li>
+<li><code>Files</code> - upload files to cloud session</li>
+</ul>
+<p>Frequently used menu options:</p>
+<ul>
+<li><code>File &gt; Locate in Drive</code> - where in your Google Drive?</li>
+<li><code>File &gt; Save</code> - saves</li>
+<li><code>File &gt; Revision history</code> - history of changes you made</li>
+<li><code>File &gt; Download &gt; Download .ipynb</code> - used to submit assignments!</li>
+<li><code>File &gt; Print</code> - prints</li>
+<li><code>Runtime &gt; Run all</code> - run all cells</li>
+<li><code>Runtime &gt; Run before</code> - run all cells before current active cell</li>
+<li><code>Runtime &gt; Restart and run all</code> - restart runtime, then run all</li>
+</ul>
+<p>Frequently used keyboard shortcuts:</p>
+<ul>
+<li><code>Cmd/Ctrl+S</code> - save</li>
+<li><code>Cmd/Ctrl+Enter</code> - run focused cell</li>
+<li><code>Cmd/Ctrl+Shift+A</code> - select all cells</li>
+<li><code>Cmd/Ctrl+/</code> - comment/uncomment selection</li>
+<li><code>Cmd/Ctrl+]</code> - increase indent</li>
+<li><code>Cmd/Ctrl+[</code> - decrease indent</li>
+</ul>
+</section>
+<section id="r-basics" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> R Basics</h1>
+<section id="basics" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="basics"><span class="header-section-number">4.1</span> Basics</h2>
+<p>We begin by defining some basic concepts:</p>
+<ul>
+<li><strong>Expressions</strong> are combinations of values, variables, operators, and functions that can be evaluated to produce a result. Expressions can be as simple as a single value or more complex involving calculations, comparisons, and function calls. They are the fundamental building blocks of programming.
+<ul>
+<li><code>10</code> - a simple value expression that evaluates to <code>10</code>.</li>
+<li><code>x &lt;- 10</code> - an expression that assigns the value of <code>10</code> to <code>x</code>.</li>
+<li><code>x + 10</code> - an expression that adds the value of <code>x</code> to <code>10</code>.</li>
+<li><code>a &lt;- x + 10</code> - an expression that adds the value of <code>x</code> to <code>10</code> and assigns the result to the variable <code>a</code></li>
+</ul></li>
+<li><strong>Objects</strong> allow us to store various types of data, such as numbers, text, vectors, matrices; and more complex structures like functions and data frames. Objects are created by assigning values to variable names with the assignment operator, <code>&lt;-</code>. For example, in <code>x &lt;- 10</code>, <code>x</code> is an object assigned to the value 10.</li>
+<li><strong>Names</strong> that we assign to objects must include only letters, numbers, <code>.</code>, or <code>_</code>. Names must start with a letter (or <code>.</code> if not followed by a number).</li>
+<li><strong>Attributes</strong> allow you to attach arbitrary metadata to an object. For example, adding a <code>dim</code> (dimension) attribute to a vector allows it to behave like a matrix or n dimensional array.</li>
+<li><strong>Functions</strong> (or commands) are reusable pieces of code that take some input, preform some task or computation, and return an output. Many functions are built-in to base R (see below!), others can be part of packages or even defined by you. Functions are objects!</li>
+<li><strong>Environment</strong> is the collection of all the objects (functions, variables etc.) we defined in the current R session.</li>
+<li><strong>Packages</strong> are collections of functions, data, and documentation bundled together in R. They enhance R’s capabilities by introducing new functions and specialized data structures. Packages need to be installed and loaded before you can use their functions or data.</li>
+<li><strong>Comments</strong> are notes you leave to yourself (within code blocks in colab) to document your code; comments are not evaluated.</li>
+<li><strong>Messages</strong> are notes R leaves for you, after you run your code. Messages can be simply for-your-information, warnings that something unexpected might happen, or erros if R cannot evaluate your code.</li>
+</ul>
+<p>Ways to get help when coding in R:</p>
+<ul>
+<li><strong>Read package docs</strong> - packages usually come with extensive documentation and examples. Reading the docs is one of the best ways to figure things out. Here is an example from the <a href="https://dplyr.tidyverse.org/">dplyr package</a>.</li>
+<li><strong>Read error messages</strong> - read any error messages you receive while coding — they give clues about what is going wrong!</li>
+<li><strong>Ask R</strong> - Use R’s built-in functions to get help as you code</li>
+<li><strong>Ask on Ed</strong> - ask questions on our class discussion board!</li>
+<li><strong>Ask Google or Stack Overflow</strong> - It is a normal and important skill (not cheating) to google things while coding and learning to code! Use keywords and package names to ensure your solutions are course-relevant.</li>
+<li><strong>Ask ChatGPT</strong> - You can similarly use ChatGPT or other LLMs as a resource. But keep in mind they may provide a solution that is wrong or not relevant to what we are learning in this course.</li>
+</ul>
+</section>
+<section id="important-functions" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="important-functions"><span class="header-section-number">4.2</span> Important functions</h2>
+<p>For objects:</p>
+<ul>
+<li><code>str(x)</code> - returns summary of object’s structure</li>
+<li><code>typeof(x)</code> - returns object’s data type</li>
+<li><code>length(x)</code> - returns object’s length</li>
+<li><code>attributes(x)</code> - returns list of object’s attributes</li>
+<li><code>x</code> - returns object x</li>
+<li><code>print(x)</code> - prints object x</li>
+</ul>
+<p>For environment:</p>
+<ul>
+<li><code>ls()</code> - list all variables in environment</li>
+<li><code>rm(x)</code> - remove x variable from environment</li>
+<li><code>rm(list = ls())</code> - remove all variables from environment</li>
+</ul>
+<p>For packages:</p>
+<ul>
+<li><code>install.packages()</code> to install packages</li>
+<li><code>library()</code> to load the package into your current R session.</li>
+<li><code>data()</code> to load data from package into environment</li>
+<li><code>sessionInfo()</code> - version information for current R session and packages</li>
+</ul>
+<p>For help:</p>
+<ul>
+<li><code>?mean</code> - get help with a function</li>
+<li><code>help('mean')</code> - search help files for word or phrase</li>
+<li><code>help(package='tidyverse')</code> - find help for a package</li>
+</ul>
+</section>
+<section id="vectors" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="vectors"><span class="header-section-number">4.3</span> Vectors</h2>
+<p>One of the must fundamental data structures in R is the <strong>vector</strong>. There are two types:</p>
+<ul>
+<li><strong>atomic vector</strong> - elements of the same data type</li>
+<li><strong>list</strong> - elements refer to any object (even complex objects or other lists)</li>
+</ul>
+<p>Atomic vectors can be one of six <strong>data types</strong>:</p>
+<ul>
+<li><code>double</code> - real numbers, written in decimal (0.1234) or scientific notation (1.23e4)
+<ul>
+<li>numbers are double by default (3 is stored as 3.00)</li>
+<li>three special doubles: <code>Inf</code>, <code>-Inf</code>, and <code>NaN</code> (not a number)</li>
+</ul></li>
+<li><code>integer</code> - integers, whole numbers followed by <code>L</code> (3L or 1e3L)</li>
+<li><code>character</code> - strings with single or double quotes (‘hello world!’ or “hello world!”)</li>
+<li><code>logical</code> - boolean, written (<code>TRUE</code> or <code>FALSE</code>) or abbreviated (<code>T</code> or <code>F</code>)</li>
+<li><code>complex</code> - complex numbers, where <code>i</code> is the imaginary number (<code>5 + 3i</code>)</li>
+<li><code>raw</code> - stores raw bytes</li>
+</ul>
+<p>To create atomic vectors:</p>
+<ul>
+<li><code>c(2,4,6)</code> - <code>c()</code> function for combining elements, returns <code>2 4 6</code></li>
+<li><code>2:4</code> - <code>:</code> notation to construct a sequence of integers, returns <code>2 3 4</code></li>
+<li><code>seq(from = 2, to = 6, by=2)</code> - <code>seq()</code> function to create an evenly-spaced sequence, returns <code>2 4 6</code></li>
+</ul>
+<p>To check an object’s data type:</p>
+<ul>
+<li><code>typeof(x)</code> - returns the data type of object x</li>
+<li><code>is.*(x)</code> - test if object x is data type, returns <code>TRUE</code> or <code>FALSE</code>
+<ul>
+<li><code>is.double()</code></li>
+<li><code>is.integer()</code></li>
+<li><code>is.character()</code></li>
+<li><code>is.logical()</code></li>
+</ul></li>
+</ul>
+<p>To change an object to data type (<strong>explicit coercion</strong>):</p>
+<ul>
+<li><code>as.*(x)</code> - coerce object to data type
+<ul>
+<li><code>as.double()</code></li>
+<li><code>as.integer()</code></li>
+<li><code>as.character()</code></li>
+<li><code>as.logical()</code></li>
+</ul></li>
+</ul>
+<p>Note that atomic vectors must contain only elements of the same type. If you try to include elements of different types, R will coerce them into the same type with no warning (<strong>implicit coercion</strong>) according to the heirarchy character &gt; double &gt; integer &gt; logical.</p>
+</section>
+<section id="operations" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="operations"><span class="header-section-number">4.4</span> Operations</h2>
+<p>Arithmetic operators:</p>
+<ul>
+<li><code>+</code> - add</li>
+<li><code>-</code> - subtract</li>
+<li><code>*</code> - multiply</li>
+<li><code>/</code> - divide</li>
+<li><code>^</code> - exponent</li>
+</ul>
+<p>Comparison operators return true or false:</p>
+<ul>
+<li><code>a == b</code> - equal to</li>
+<li><code>a != b</code> - not equal to</li>
+<li><code>a &gt; b</code> - greater than</li>
+<li><code>a &lt; b</code> - less than</li>
+<li><code>a &gt;= b</code> - greater than or equal to</li>
+<li><code>a &lt;= b</code> - less than or equal to</li>
+</ul>
+<p>Logical operators combine multiple true or false statements:</p>
+<ul>
+<li><code>&amp;</code> - and</li>
+<li><code>|</code> - or</li>
+<li><code>!</code> - not</li>
+<li><code>any()</code> - returns true if any element meets condition</li>
+<li><code>all()</code> - returns true if all elements meet condition</li>
+<li><code>%in%</code> - returns true if any element is in the following vector</li>
+</ul>
+<p>Most math operations (and many functions) are <strong>vectorized</strong> in R:</p>
+<ul>
+<li>they can work on entire vectors, without the need for explicit loops or iteration.</li>
+<li>this a powerful feature that allows you to write cleaner, more efficient code</li>
+<li>To illustrate, suppose <code>x &lt;- c(1, 2, 3)</code>:
+<ul>
+<li><code>x + 100</code> returns <code>c(101, 102, 103)</code></li>
+<li><code>x == 1</code> returns <code>c(TRUE, FALSE, FALSE)</code></li>
+</ul></li>
+</ul>
+</section>
+<section id="more-complex-structures" class="level2" data-number="4.5">
+<h2 data-number="4.5" class="anchored" data-anchor-id="more-complex-structures"><span class="header-section-number">4.5</span> More complex structures</h2>
+<p>Some more complex data structures are <strong>built from atomic vectors</strong> by adding <strong>attributes</strong>:</p>
+<ul>
+<li><code>matrix</code> - a vector with a <code>dim</code> attribute representing 2 dimensions</li>
+<li><code>array</code> - a vector with a <code>dim</code> attribute representing n dimensions</li>
+<li><code>factor</code> - an integer vector with two attributes: <code>class="factor"</code> and <code>levels</code>, which defines the set of allowed values (useful for categorical data)</li>
+<li><code>date-time</code> - a double vector where the value is the number of seconds since Jan 01, 1970 and a <code>tzone</code> attribute representing the time zone</li>
+<li><code>data.frame</code> - a named list of vectors (of equal length) with attributes for <code>names</code> (column names), <code>row.names</code>, and <code>class="data.frame"</code> (used to represent datasets)</li>
+</ul>
+<p>To create more complex structures:</p>
+<ul>
+<li><code>list(x=c(1,2,3), y=c('a','b'))</code> - create a list</li>
+<li><code>matrix(x, nrow=2, ncol=2)</code> - create a matrix from a vector <code>x</code> with nrow and ncol</li>
+<li><code>array(x, dim=c(2,3,2))</code> - create an array from a vector <code>x</code> with dimensions</li>
+<li><code>factor(x, levels=unique(x))</code> - turn a vector <code>x</code> into a factor</li>
+<li><code>data.frame(x=c(1,2,3), y=c('a','b','c'))</code> - create a data frame</li>
+</ul>
+<p>Missing elements and empty vectors:</p>
+<ul>
+<li><code>NA</code>- used to represent missing or unknown elements in vectors. Note that <code>NA</code> is contageous: expressions including <code>NA</code> usually return <code>NA</code>. Check for <code>NA</code> values with <code>is.na()</code>.</li>
+<li><code>NULL</code> - used to represent an empty or absent vector of arbitrary type. <code>NULL</code> is its own special type and always has length zero and <code>NULL</code> attributes. Check for <code>NULL</code> values with <code>is.null()</code>.</li>
+</ul>
+</section>
+<section id="subsetting" class="level2" data-number="4.6">
+<h2 data-number="4.6" class="anchored" data-anchor-id="subsetting"><span class="header-section-number">4.6</span> Subsetting</h2>
+<blockquote class="blockquote">
+<p>Subsetting is a natural complement to str(). While str() shows you all the pieces of any object (its structure), subsetting allows you to pull out the pieces that you’re interested in. ~ Hadley Wickham, Advanced R</p>
+</blockquote>
+<p>There are three operators for subsetting objects:</p>
+<ul>
+<li><code>[</code> - <em>subsets</em> (one or more) elements</li>
+<li><code>[[</code> and <code>$</code> - <em>extracts</em> a single element</li>
+</ul>
+<p>There are six ways to <strong>subset multiple elements</strong> from vectors with <code>[</code>:</p>
+<ul>
+<li><code>x[c(1,2)]</code> - positive integers select elements at specified indexes</li>
+<li><code>x[-c(1,2)]</code> - negative integers select all but elements at specified indexes</li>
+<li><code>x[c("name", "name2")]</code> select elements by name, if elements are named</li>
+<li><code>x[]</code> - nothing returns the original object</li>
+<li><code>x[0]</code> - zero returns a zero-length vector</li>
+<li><code>x[c(TRUE, TRUE)]</code> - select elements where corresponding logical value is <code>TRUE</code></li>
+</ul>
+<p>These also apply when selecting multiple elements from <strong>higher dimensional objects</strong> (matrix, array, data frame), but note that:</p>
+<ul>
+<li>indexes for different dimensions are separated by commas <code>[rows, columns, ...]</code></li>
+<li>omitted dimensions return all values along that dimension</li>
+<li>the result is simplified to the lowest possible dimensions by default</li>
+<li>data frames can also be indexed like a vector (selects columns)</li>
+</ul>
+<p>There are 3 ways to <strong>extract a single element</strong> from any data structure:</p>
+<ul>
+<li><code>[[2]]</code> - a single positive integer (index)</li>
+<li><code>[['name']]</code> - a single string</li>
+<li><code>x$name</code> - the <code>$</code> operator is a useful shorthand for <code>[['name']]</code></li>
+</ul>
+<p>When extracting single elements, note that:</p>
+<ul>
+<li><code>[[</code> is preferred for atomic vectors for clarity (though<code>[</code> also works)</li>
+<li><code>$</code> does partial matching without warning; use <code>options(warnPartialMatchDollar=TRUE)</code></li>
+<li>the behavior for invalid indexes is inconsistent: sometimes you’ll get an error message, and sometimes it will return <code>NULL</code></li>
+</ul>
+</section>
+<section id="built-in-functions" class="level2" data-number="4.7">
+<h2 data-number="4.7" class="anchored" data-anchor-id="built-in-functions"><span class="header-section-number">4.7</span> Built-in functions</h2>
+<p>Note that you do not need to memorize these built-in functions to be successful on quizzes. Use this as a reference.</p>
+<p>For basic math:</p>
+<ul>
+<li><code>log(x)</code> - natural log</li>
+<li><code>exp(x)</code> - exponential</li>
+<li><code>sqrt(x)</code> - square root</li>
+<li><code>abs(x)</code> - absolute value</li>
+<li><code>max(x)</code> - largest element</li>
+<li><code>min(x)</code> - smallest element</li>
+<li><code>round(x, n)</code> - round to n decimal places</li>
+<li><code>signif(x, n)</code> - round to n significant figures</li>
+<li><code>sum(x)</code> - add all elements</li>
+</ul>
+<p>For stats:</p>
+<ul>
+<li><code>mean(x)</code> - mean</li>
+<li><code>median(x)</code> - median</li>
+<li><code>sd(x)</code> - standard deviation</li>
+<li><code>var(x)</code> - variance</li>
+<li><code>quantile(x)</code> - percentage quantiles</li>
+<li><code>rank(x)</code> - rank of elements</li>
+<li><code>cor(x, y)</code> - correlation</li>
+<li><code>lm(x ~ y, data=df)</code> - fit a linear model</li>
+<li><code>glm(x ~ y, data=df)</code> - fit a generalized linear model</li>
+<li><code>summary(x)</code> - get more detailed information from a fitted model</li>
+<li><code>aov(x)</code> - analysis of variance</li>
+</ul>
+<p>For vectors:</p>
+<ul>
+<li><code>sort(x)</code> - return sorted vector</li>
+<li><code>table(x)</code> - see counts of values in a vector</li>
+<li><code>rev(x)</code> - return reversed vector</li>
+<li><code>unique(x)</code> - return unique values in a vector</li>
+<li><code>array(x, dim)</code> - transform vector into n-dimensional array</li>
+</ul>
+<p>For matrices:</p>
+<ul>
+<li><code>t(m)</code> - transpose matrix</li>
+<li><code>m %+% n</code> - matrix multiplication</li>
+<li><code>solve(m, n)</code> - find x in m * x = n</li>
+</ul>
+<p>For data frames:</p>
+<ul>
+<li><code>view(df)</code> - see the full data frame</li>
+<li><code>head(df)</code> - see the first 6 rows of data frame</li>
+<li><code>nrow(df)</code> - number of rows in a data frame</li>
+<li><code>ncol(df)</code> - number of columns in a data frame</li>
+<li><code>dim(df)</code> - number of rows and columns in a data frame</li>
+<li><code>cbind(df1, df2)</code> - bind dataframe columns</li>
+<li><code>rbind(df1, df2)</code> - bind dataframe rows</li>
+</ul>
+<p>For strings:</p>
+<ul>
+<li><code>paste(x, y, sep=' ')</code> - join vectors together element-wise</li>
+<li><code>toupper(x)</code> - convert to uppercase</li>
+<li><code>tolower(x)</code> - convert to lowercase</li>
+<li><code>nchar(x)</code> - number of characters in a string</li>
+</ul>
+<p>For simple plotting:</p>
+<ul>
+<li><code>plot(x)</code> values of x in order</li>
+<li><code>plot(x, y)</code> - values of x against y</li>
+<li><code>hist(x)</code> - histogram of x</li>
+</ul>
+</section>
+<section id="programming-in-r" class="level2" data-number="4.8">
+<h2 data-number="4.8" class="anchored" data-anchor-id="programming-in-r"><span class="header-section-number">4.8</span> Programming in R</h2>
+<p>Writing <strong>functions</strong> and handling <strong>control flow</strong> are important aspects of learning to program in any language. For our purposes, some general conceptual knowledge on these topics is sufficient (see below). Those interested to learn more might enjoy the book <a href="https://rstudio-education.github.io/hopr/">Hands-On Programming with R</a>.</p>
+<ul>
+<li><p><strong>Functions</strong> are reusable pieces of code that take some input, perform some task or computation, and return an output.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="cf">function</span>(inputs){</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="do">## do something</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(output)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+<li><p><strong>Control flow</strong> refers to managing the order in which expressions are executed in a program:</p>
+<ul>
+<li><code>if</code>…<code>else</code> - if something is true, do this; otherwise do that</li>
+<li><code>for</code> loops - repeat code a specific number of times</li>
+<li><code>while</code> loops - repeat code as long as certain conditions are true</li>
+<li><code>break</code> - exit a loop early</li>
+<li><code>next</code> - skip to next iteration in a loop</li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section id="further-reading-and-references" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Further reading and references</h1>
+<p>Suggested further reading:</p>
+<ul>
+<li><a href="https://moderndive.com/1-getting-started.html##code">Getting started with Data in R</a> from Modern Dive textbook</li>
+<li><a href="https://bookdown.org/rdpeng/rprogdatascience/r-nuts-and-bolts.html">R Nuts and Bolts</a> in R Programming for Data Science by Roger Peng</li>
+<li><a href="https://iqss.github.io/dss-workshops/R/Rintro/base-r-cheat-sheet.pdf">Base R Cheat Sheet</a></li>
+</ul>
+<p>Other references:</p>
+<ul>
+<li><a href="https://adv-r.hadley.nz/vectors-chap.html">Vectors</a> in Advanced R by Hadley Wickham</li>
+<li><a href="https://adv-r.hadley.nz/subsetting.html">Subsetting</a> in Advanced R by Hadley Wickham</li>
+<li><a href="https://r4ds.hadley.nz/base-r">A field guide to base R</a> in R for Data Science by Hadley Wickham</li>
+</ul>
+
+
+</section>
+
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>Kok, P., &amp; de Lange, F. P. (2014). Shape perception simultaneously up-and downregulates neural activity in the primary visual cortex. Current Biology, 24(13), 1531-1535.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>https://neurosciencenews.com/neuroimaging-visual-processing-fmri-1150/<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main> <!-- /main -->
+<script>
+
+/* update total correct if #webex-total_correct exists */
+update_total_correct = function() {
+  console.log("webex: update total_correct");
+
+  var t = document.getElementsByClassName("webex-total_correct");
+  for (var i = 0; i < t.length; i++) {
+    p = t[i].parentElement;
+    var correct = p.getElementsByClassName("webex-correct").length;
+    var solvemes = p.getElementsByClassName("webex-solveme").length;
+    var radiogroups = p.getElementsByClassName("webex-radiogroup").length;
+    var selects = p.getElementsByClassName("webex-select").length;
+
+    t[i].innerHTML = correct + " of " + (solvemes + radiogroups + selects) + " correct";
+  }
+}
+
+/* webex-solution button toggling function */
+b_func = function() {
+  console.log("webex: toggle hide");
+
+  var cl = this.parentElement.classList;
+  if (cl.contains('open')) {
+    cl.remove("open");
+  } else {
+    cl.add("open");
+  }
+}
+
+/* check answers */
+check_func = function() {
+  console.log("webex: check answers");
+
+  var cl = this.parentElement.classList;
+  if (cl.contains('unchecked')) {
+    cl.remove("unchecked");
+    this.innerHTML = "Hide Answers";
+  } else {
+    cl.add("unchecked");
+    this.innerHTML = "Show Answers";
+  }
+}
+
+/* function for checking solveme answers */
+solveme_func = function(e) {
+  console.log("webex: check solveme");
+
+  var real_answers = JSON.parse(this.dataset.answer);
+  var my_answer = this.value;
+  var cl = this.classList;
+  if (cl.contains("ignorecase")) {
+    my_answer = my_answer.toLowerCase();
+  }
+  if (cl.contains("nospaces")) {
+    my_answer = my_answer.replace(/ /g, "")
+  }
+
+  if (my_answer == "") {
+    cl.remove("webex-correct");
+    cl.remove("webex-incorrect");
+  } else if (real_answers.includes(my_answer)) {
+    cl.add("webex-correct");
+    cl.remove("webex-incorrect");
+  } else {
+    cl.add("webex-incorrect");
+    cl.remove("webex-correct");
+  }
+
+  // match numeric answers within a specified tolerance
+  if(this.dataset.tol > 0){
+    var tol = JSON.parse(this.dataset.tol);
+    var matches = real_answers.map(x => Math.abs(x - my_answer) < tol)
+    if (matches.reduce((a, b) => a + b, 0) > 0) {
+      cl.add("webex-correct");
+    } else {
+      cl.remove("webex-correct");
+    }
+  }
+
+  // added regex bit
+  if (cl.contains("regex")){
+    answer_regex = RegExp(real_answers.join("|"))
+    if (answer_regex.test(my_answer)) {
+      cl.add("webex-correct");
+    }
+  }
+
+  update_total_correct();
+}
+
+/* function for checking select answers */
+select_func = function(e) {
+  console.log("webex: check select");
+
+  var cl = this.classList
+
+  /* add style */
+  cl.remove("webex-incorrect");
+  cl.remove("webex-correct");
+  if (this.value == "answer") {
+    cl.add("webex-correct");
+  } else if (this.value != "blank") {
+    cl.add("webex-incorrect");
+  }
+
+  update_total_correct();
+}
+
+/* function for checking radiogroups answers */
+radiogroups_func = function(e) {
+  console.log("webex: check radiogroups");
+
+  var checked_button = document.querySelector('input[name=' + this.id + ']:checked');
+  var cl = checked_button.parentElement.classList;
+  var labels = checked_button.parentElement.parentElement.children;
+
+  /* get rid of styles */
+  for (i = 0; i < labels.length; i++) {
+    labels[i].classList.remove("webex-incorrect");
+    labels[i].classList.remove("webex-correct");
+  }
+
+  /* add style */
+  if (checked_button.value == "answer") {
+    cl.add("webex-correct");
+  } else {
+    cl.add("webex-incorrect");
+  }
+
+  update_total_correct();
+}
+
+window.onload = function() {
+  console.log("webex onload");
+  /* set up solution buttons */
+  var buttons = document.getElementsByTagName("button");
+
+  for (var i = 0; i < buttons.length; i++) {
+    if (buttons[i].parentElement.classList.contains('webex-solution')) {
+      buttons[i].onclick = b_func;
+    }
+  }
+
+  var check_sections = document.getElementsByClassName("webex-check");
+  console.log("check:", check_sections.length);
+  for (var i = 0; i < check_sections.length; i++) {
+    check_sections[i].classList.add("unchecked");
+
+    let btn = document.createElement("button");
+    btn.innerHTML = "Show Answers";
+    btn.classList.add("webex-check-button");
+    btn.onclick = check_func;
+    check_sections[i].appendChild(btn);
+
+    let spn = document.createElement("span");
+    spn.classList.add("webex-total_correct");
+    check_sections[i].appendChild(spn);
+  }
+
+  /* set up webex-solveme inputs */
+  var solveme = document.getElementsByClassName("webex-solveme");
+
+  for (var i = 0; i < solveme.length; i++) {
+    /* make sure input boxes don't auto-anything */
+    solveme[i].setAttribute("autocomplete","off");
+    solveme[i].setAttribute("autocorrect", "off");
+    solveme[i].setAttribute("autocapitalize", "off");
+    solveme[i].setAttribute("spellcheck", "false");
+    solveme[i].value = "";
+
+    /* adjust answer for ignorecase or nospaces */
+    var cl = solveme[i].classList;
+    var real_answer = solveme[i].dataset.answer;
+    if (cl.contains("ignorecase")) {
+      real_answer = real_answer.toLowerCase();
+    }
+    if (cl.contains("nospaces")) {
+      real_answer = real_answer.replace(/ /g, "");
+    }
+    solveme[i].dataset.answer = real_answer;
+
+    /* attach checking function */
+    solveme[i].onkeyup = solveme_func;
+    solveme[i].onchange = solveme_func;
+
+    solveme[i].insertAdjacentHTML("afterend", " <span class='webex-icon'></span>")
+  }
+
+  /* set up radiogroups */
+  var radiogroups = document.getElementsByClassName("webex-radiogroup");
+  for (var i = 0; i < radiogroups.length; i++) {
+    radiogroups[i].onchange = radiogroups_func;
+  }
+
+  /* set up selects */
+  var selects = document.getElementsByClassName("webex-select");
+  for (var i = 0; i < selects.length; i++) {
+    selects[i].onchange = select_func;
+    selects[i].insertAdjacentHTML("afterend", " <span class='webex-icon'></span>")
+  }
+
+  update_total_correct();
+}
+
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

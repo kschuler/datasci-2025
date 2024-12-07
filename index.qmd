@@ -1,0 +1,50 @@
+---
+title: Data Science for studying language and the mind
+subtitle: Fall 2024
+format:
+    html: 
+        toc: false
+        number-sections: false
+    pdf: default
+---
+
+::: {.callout-note title="Announcements"}
+
+:::
+
+Welcome to Data Science for Studying Language & the Mind! The Fall 2024 course information and materials are below. Course materials from previous semesters are archived [here](archive.qmd).
+
+{{< include _syllabus.qmd >}}
+
+{{< include _resources.qmd >}}
+
+{{< include _materials.qmd >}}
+
+{{< include _schedule.qmd >}}
+
+<!-- ## Lectures
+
+Tuesdays and Thursdays from 12 - 1:29pm in TBD.
+
+- **Week 1 (Aug 27) -- R Basics**: [Notes]() / [Slides]() / [Demo]() 
+- Week 2 (Sep 3) -- Importing and tidying data: [Notes]() / [Slides]() / [Demo]() 
+- Week 3 (Sep 10) -- Data visualization: [Notes]() / [Slides]() / [Demo]() 
+- Week 4 (Sep 17)-- Sampling distribution: [Notes]() / [Slides]() / [Demo]() 
+- Week 5 (Sep 24) -- Hypothesis testing: [Notes]() / [Slides]() / [Demo]() 
+- Week 6 (Oct 1) -- Exam 1  
+- Week 7 (Oct 8) -- Model specification 
+- Week 8 (Oct 15) -- Model fitting
+- Week 9 (Oct 22) -- Model accuracy 
+- Week 10 (Oct 29) -- Model reliability 
+- Week 11 (Nov 5) -- Classification 
+- Week 12 (Nov 12) -- Exam 2
+- Week 13 (Nov 19) -- Inference 
+- Week 14 (Nov 26) -- Thanksgiving break (no class)
+- Week 15 (Dec 3) -- Multilevel models
+- Week 16 (Dec 10) -- Last day of class 
+- Week 17 (TBD) -- Final exam (optional) -->
+
+
+
+
+

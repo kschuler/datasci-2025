@@ -1,0 +1,4602 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.56">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Katie Schuler">
+<meta name="dcterms.date" content="2024-10-08">
+
+<title>Applied model specification – DataSci for Lang &amp; Mind</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../include/webex.css">
+</head>
+
+<body class="nav-sidebar docked">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item">
+      DataSci for Lang &amp; Mind
+      </li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="../">DataSci for Lang &amp; Mind</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Syllabus</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#resources" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Resources</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../index.html#materials" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Materials</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#study-guides" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Study guides</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#problem-sets" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Problem sets</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#exams" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Exams</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#lab-exercises" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lab exercises</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html#schedule" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Schedule</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#toy-data" id="toc-toy-data" class="nav-link active" data-scroll-target="#toy-data"><span class="header-section-number">1</span> “Toy” data</a></li>
+  <li><a href="#swim-records" id="toc-swim-records" class="nav-link" data-scroll-target="#swim-records"><span class="header-section-number">2</span> Swim records</a>
+  <ul class="collapse">
+  <li><a href="#one-input" id="toc-one-input" class="nav-link" data-scroll-target="#one-input"><span class="header-section-number">2.1</span> One input</a></li>
+  <li><a href="#two-inputs" id="toc-two-inputs" class="nav-link" data-scroll-target="#two-inputs"><span class="header-section-number">2.2</span> Two inputs</a></li>
+  <li><a href="#three-inputs" id="toc-three-inputs" class="nav-link" data-scroll-target="#three-inputs"><span class="header-section-number">2.3</span> Three inputs</a></li>
+  <li><a href="#interaction" id="toc-interaction" class="nav-link" data-scroll-target="#interaction"><span class="header-section-number">2.4</span> Interaction</a></li>
+  <li><a href="#transformation" id="toc-transformation" class="nav-link" data-scroll-target="#transformation"><span class="header-section-number">2.5</span> Transformation</a></li>
+  </ul></li>
+  <li><a href="#linearizing-nonlinear-models" id="toc-linearizing-nonlinear-models" class="nav-link" data-scroll-target="#linearizing-nonlinear-models"><span class="header-section-number">3</span> Linearizing nonlinear models</a></li>
+  <li><a href="#plant-heights-polynomials" id="toc-plant-heights-polynomials" class="nav-link" data-scroll-target="#plant-heights-polynomials"><span class="header-section-number">4</span> Plant heights (polynomials)</a>
+  <ul class="collapse">
+  <li><a href="#degree-1-linear" id="toc-degree-1-linear" class="nav-link" data-scroll-target="#degree-1-linear"><span class="header-section-number">4.1</span> Degree 1 (Linear)</a></li>
+  <li><a href="#degree-2-quadratic" id="toc-degree-2-quadratic" class="nav-link" data-scroll-target="#degree-2-quadratic"><span class="header-section-number">4.2</span> Degree 2 (Quadratic)</a></li>
+  <li><a href="#degree-3-cubic" id="toc-degree-3-cubic" class="nav-link" data-scroll-target="#degree-3-cubic"><span class="header-section-number">4.3</span> Degree 3 (Cubic)</a></li>
+  </ul></li>
+  <li><a href="#brain-size-log" id="toc-brain-size-log" class="nav-link" data-scroll-target="#brain-size-log"><span class="header-section-number">5</span> Brain size (log)</a>
+  <ul class="collapse">
+  <li><a href="#untransformed" id="toc-untransformed" class="nav-link" data-scroll-target="#untransformed"><span class="header-section-number">5.1</span> Untransformed</a></li>
+  <li><a href="#log-transformed" id="toc-log-transformed" class="nav-link" data-scroll-target="#log-transformed"><span class="header-section-number">5.2</span> Log transformed</a></li>
+  </ul></li>
+  <li><a href="#further-reading" id="toc-further-reading" class="nav-link" data-scroll-target="#further-reading"><span class="header-section-number">6</span> Further reading</a></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="model-specification-applied.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Applied model specification</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Katie Schuler </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">October 8, 2024</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Now that we’ve covered the terminology and concepts, let’s apply model specification to some real models.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mosaic)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="toy-data" class="level2" data-number="1">
+<h2 data-number="1" class="anchored" data-anchor-id="toy-data"><span class="header-section-number">1</span> “Toy” data</h2>
+<p>Let’s start with the simplest possible example, a dataset with two data points. Suppose you record how many days you study over the next 5 days. On day 1, you study for 2 hours. On day 2, you study for 6 hours and so on. Your dataset might look something like this.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" aria-current="page">Plot</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">Data</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false">Code</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="model-specification-applied_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="288"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div>
+
+</div>
+<div class="cell quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">x</th>
+<th style="text-align: right;">y</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">7</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">12</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">13</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-1-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-3-tab">
+<div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>toy_data <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>), </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">6</span>, <span class="dv">7</span>, <span class="dv">12</span>, <span class="dv">13</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>toy_data <span class="sc">%&gt;%</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y)) <span class="sc">+</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">14</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+<ol type="1">
+<li><strong>Specify our response variable</strong>, <span class="math inline">\(y\)</span>: the response variable (🥸 data, output, prediction) is the variable you are trying to predict or explain with your model.
+<ul>
+<li><code>y</code></li>
+</ul></li>
+<li><strong>Specify explantory variables</strong>, <span class="math inline">\(x_i\)</span>: the explanatory variables (🥸 regressors, inputs, predictors) are the predictors in your data that could help explain the response variable. Our data has only one possible:
+<ul>
+<li><code>x</code></li>
+</ul></li>
+<li><strong>Specify the functional form</strong>: the functional form describes the relationship between the response and explanatory variables with a mathematical expresson. In a linear model, we express this relationship as a weighted sum of inputs:
+<ul>
+<li><span class="math inline">\(y=\sum_{i=1}^{n}w_ix_i\)</span></li>
+</ul></li>
+<li><strong>Specify model terms</strong>: here we need to specify exactly <em>how</em> to express our explanatory variables in our functional form. The actual variables and constants that will be included in the model. There are four kinds of terms: (1) intercept, (2) main, (3) interaction, and (4) transformation. Here we have the simplest case of an intercept and one main term (no interactions or transformations necessary)
+<ul>
+<li><span class="math inline">\(y = w_1\mathbf{1} + w_2x_2\)</span></li>
+<li>in R: <code>y ~ 1 + x</code></li>
+</ul></li>
+</ol>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true">Plot</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false">Data</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-3" role="tab" aria-controls="tabset-2-3" aria-selected="false">Code</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="model-specification-applied_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="288"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<p>Model specification: <br> <span class="math inline">\(y = w_1\cdot\mathbf{1} + w_2\cdot\mathbf{x}\)</span></p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = y ~ 1 + x, data = toy_data)
+
+Coefficients:
+(Intercept)            x  
+       -0.4          2.8  </code></pre>
+</div>
+</div>
+<p>Fitted model: <br> <span class="math inline">\(y = -0.4\cdot1 + 2.8\cdot x\)</span></p>
+</div>
+</div>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<div>
+
+</div>
+<div class="cell quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">x</th>
+<th style="text-align: right;">y</th>
+<th style="text-align: right;">with_formula</th>
+<th style="text-align: right;">with_predict</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2.4</td>
+<td style="text-align: right;">2.4</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">5.2</td>
+<td style="text-align: right;">5.2</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">8.0</td>
+<td style="text-align: right;">8.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">10.8</td>
+<td style="text-align: right;">10.8</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">13</td>
+<td style="text-align: right;">13.6</td>
+<td style="text-align: right;">13.6</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-2-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-3-tab">
+<div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">lm</span>(y <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> x, <span class="at">data =</span> toy_data)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>toy_data <span class="ot">&lt;-</span> toy_data <span class="sc">%&gt;%</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">with_formula =</span> <span class="sc">-</span><span class="fl">0.4</span><span class="sc">*</span><span class="dv">1</span> <span class="sc">+</span> <span class="fl">2.8</span><span class="sc">*</span>x) <span class="sc">%&gt;%</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">with_predict=</span> <span class="fu">predict</span>(model, toy_data))</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>toy_data <span class="sc">%&gt;%</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> x, <span class="at">y =</span> y)) <span class="sc">+</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> with_predict), <span class="at">color =</span> <span class="st">"blue"</span>) <span class="sc">+</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">14</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="swim-records" class="level2" data-number="2">
+<h2 data-number="2" class="anchored" data-anchor-id="swim-records"><span class="header-section-number">2</span> Swim records</h2>
+<section id="one-input" class="level3" data-number="2.1">
+<h3 data-number="2.1" class="anchored" data-anchor-id="one-input"><span class="header-section-number">2.1</span> One input</h3>
+<p>If our model has a single input, it is likely the intercept term, a constant (not variable) capturing the typical value of the response variable when all explanatory variables are zero.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-3-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-1" role="tab" aria-controls="tabset-3-1" aria-selected="true">Plot</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-2" role="tab" aria-controls="tabset-3-2" aria-selected="false">Data</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-3-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-3-3" role="tab" aria-controls="tabset-3-3" aria-selected="false">Code</a></li></ul>
+<div class="tab-content">
+<div id="tabset-3-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-3-1-tab">
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="model-specification-applied_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="288"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<p>Model specification: <br> <span class="math inline">\(y = w_1\cdot\mathbf{1}\)</span></p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = time ~ 1, data = SwimRecords)
+
+Coefficients:
+(Intercept)  
+      59.92  </code></pre>
+</div>
+</div>
+<p>Fitted model: <br> <span class="math inline">\(y = 59.92 \cdot 1\)</span></p>
+</div>
+</div>
+</div>
+<div id="tabset-3-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-2-tab">
+<div>
+
+</div>
+<div class="cell quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">year</th>
+<th style="text-align: right;">time</th>
+<th style="text-align: left;">sex</th>
+<th style="text-align: right;">with_formula</th>
+<th style="text-align: right;">with_predict</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1905</td>
+<td style="text-align: right;">65.80</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1908</td>
+<td style="text-align: right;">65.60</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1910</td>
+<td style="text-align: right;">62.80</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1912</td>
+<td style="text-align: right;">61.60</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1918</td>
+<td style="text-align: right;">61.40</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1920</td>
+<td style="text-align: right;">60.40</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1922</td>
+<td style="text-align: right;">58.60</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1924</td>
+<td style="text-align: right;">57.40</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1934</td>
+<td style="text-align: right;">56.80</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1935</td>
+<td style="text-align: right;">56.60</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1936</td>
+<td style="text-align: right;">56.40</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1944</td>
+<td style="text-align: right;">55.90</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1947</td>
+<td style="text-align: right;">55.80</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1948</td>
+<td style="text-align: right;">55.40</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1955</td>
+<td style="text-align: right;">54.80</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1957</td>
+<td style="text-align: right;">54.60</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1961</td>
+<td style="text-align: right;">53.60</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1964</td>
+<td style="text-align: right;">52.90</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1967</td>
+<td style="text-align: right;">52.60</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1968</td>
+<td style="text-align: right;">52.20</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1970</td>
+<td style="text-align: right;">51.90</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1972</td>
+<td style="text-align: right;">51.22</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1975</td>
+<td style="text-align: right;">50.59</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1976</td>
+<td style="text-align: right;">49.44</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1981</td>
+<td style="text-align: right;">49.36</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1985</td>
+<td style="text-align: right;">49.24</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1986</td>
+<td style="text-align: right;">48.74</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1988</td>
+<td style="text-align: right;">48.42</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1994</td>
+<td style="text-align: right;">48.21</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2000</td>
+<td style="text-align: right;">48.18</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2000</td>
+<td style="text-align: right;">47.84</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1908</td>
+<td style="text-align: right;">95.00</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1910</td>
+<td style="text-align: right;">86.60</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1911</td>
+<td style="text-align: right;">84.60</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1912</td>
+<td style="text-align: right;">78.80</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1915</td>
+<td style="text-align: right;">76.20</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1920</td>
+<td style="text-align: right;">73.60</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1923</td>
+<td style="text-align: right;">72.80</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1924</td>
+<td style="text-align: right;">72.20</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1926</td>
+<td style="text-align: right;">70.00</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1929</td>
+<td style="text-align: right;">69.40</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1930</td>
+<td style="text-align: right;">68.00</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1931</td>
+<td style="text-align: right;">66.60</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1933</td>
+<td style="text-align: right;">66.00</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1934</td>
+<td style="text-align: right;">65.40</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1936</td>
+<td style="text-align: right;">64.60</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1956</td>
+<td style="text-align: right;">62.00</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1958</td>
+<td style="text-align: right;">61.20</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1960</td>
+<td style="text-align: right;">60.20</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1962</td>
+<td style="text-align: right;">59.50</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1964</td>
+<td style="text-align: right;">58.90</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1972</td>
+<td style="text-align: right;">58.50</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1973</td>
+<td style="text-align: right;">57.54</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1974</td>
+<td style="text-align: right;">56.96</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1976</td>
+<td style="text-align: right;">55.65</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1978</td>
+<td style="text-align: right;">55.41</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1980</td>
+<td style="text-align: right;">54.79</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1986</td>
+<td style="text-align: right;">54.73</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1992</td>
+<td style="text-align: right;">54.48</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1994</td>
+<td style="text-align: right;">54.01</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2000</td>
+<td style="text-align: right;">53.77</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2004</td>
+<td style="text-align: right;">53.52</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">59.92</td>
+<td style="text-align: right;">59.92419</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-3-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-3-3-tab">
+<div class="sourceCode" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">lm</span>(time <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> SwimRecords)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>SwimRecords_predict <span class="ot">&lt;-</span> SwimRecords <span class="sc">%&gt;%</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">with_formula =</span> <span class="fl">59.92</span><span class="sc">*</span><span class="dv">1</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">with_predict=</span> <span class="fu">predict</span>(model, SwimRecords))</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>SwimRecords_predict <span class="sc">%&gt;%</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> time)) <span class="sc">+</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> with_predict), <span class="at">color =</span> <span class="st">"blue"</span>) <span class="sc">+</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">14</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="two-inputs" class="level3" data-number="2.2">
+<h3 data-number="2.2" class="anchored" data-anchor-id="two-inputs"><span class="header-section-number">2.2</span> Two inputs</h3>
+<p>We can add another term to our model represnting the effect of year on record time. This is a <strong>main term</strong> or <strong>main effect</strong>, which represents the effect of each explanatory variable on the response variable directly. In other words, how does record time change as a result of changes in year, when all other explanatory variables are zero?</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true">Plot</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false">Data</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-3" role="tab" aria-controls="tabset-4-3" aria-selected="false">Code</a></li></ul>
+<div class="tab-content">
+<div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="model-specification-applied_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="288"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<p>Model specification: <br> <span class="math inline">\(y = w_1\cdot\mathbf{1} + w_2\cdot\mathbf{year}\)</span></p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = time ~ 1 + year, data = SwimRecords)
+
+Coefficients:
+(Intercept)         year  
+   567.2420      -0.2599  </code></pre>
+</div>
+</div>
+<p>Fitted model: <br> <span class="math inline">\(y = 567.2420  \cdot \mathbf{1} + -0.2599 \cdot \mathbf{year}\)</span></p>
+</div>
+</div>
+</div>
+<div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
+<div>
+
+</div>
+<div class="cell quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">year</th>
+<th style="text-align: right;">time</th>
+<th style="text-align: left;">sex</th>
+<th style="text-align: right;">with_formula</th>
+<th style="text-align: right;">with_predict</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1905</td>
+<td style="text-align: right;">65.80</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">72.1325</td>
+<td style="text-align: right;">72.17614</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1908</td>
+<td style="text-align: right;">65.60</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">71.3528</td>
+<td style="text-align: right;">71.39651</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1910</td>
+<td style="text-align: right;">62.80</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">70.8330</td>
+<td style="text-align: right;">70.87676</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1912</td>
+<td style="text-align: right;">61.60</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">70.3132</td>
+<td style="text-align: right;">70.35700</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1918</td>
+<td style="text-align: right;">61.40</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">68.7538</td>
+<td style="text-align: right;">68.79774</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1920</td>
+<td style="text-align: right;">60.40</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">68.2340</td>
+<td style="text-align: right;">68.27798</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1922</td>
+<td style="text-align: right;">58.60</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">67.7142</td>
+<td style="text-align: right;">67.75823</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1924</td>
+<td style="text-align: right;">57.40</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">67.1944</td>
+<td style="text-align: right;">67.23848</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1934</td>
+<td style="text-align: right;">56.80</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">64.5954</td>
+<td style="text-align: right;">64.63971</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1935</td>
+<td style="text-align: right;">56.60</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">64.3355</td>
+<td style="text-align: right;">64.37983</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1936</td>
+<td style="text-align: right;">56.40</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">64.0756</td>
+<td style="text-align: right;">64.11995</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1944</td>
+<td style="text-align: right;">55.90</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">61.9964</td>
+<td style="text-align: right;">62.04093</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1947</td>
+<td style="text-align: right;">55.80</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">61.2167</td>
+<td style="text-align: right;">61.26130</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1948</td>
+<td style="text-align: right;">55.40</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">60.9568</td>
+<td style="text-align: right;">61.00143</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1955</td>
+<td style="text-align: right;">54.80</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">59.1375</td>
+<td style="text-align: right;">59.18229</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1957</td>
+<td style="text-align: right;">54.60</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">58.6177</td>
+<td style="text-align: right;">58.66253</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1961</td>
+<td style="text-align: right;">53.60</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">57.5781</td>
+<td style="text-align: right;">57.62302</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1964</td>
+<td style="text-align: right;">52.90</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">56.7984</td>
+<td style="text-align: right;">56.84339</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1967</td>
+<td style="text-align: right;">52.60</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">56.0187</td>
+<td style="text-align: right;">56.06376</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1968</td>
+<td style="text-align: right;">52.20</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">55.7588</td>
+<td style="text-align: right;">55.80388</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1970</td>
+<td style="text-align: right;">51.90</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">55.2390</td>
+<td style="text-align: right;">55.28413</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1972</td>
+<td style="text-align: right;">51.22</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">54.7192</td>
+<td style="text-align: right;">54.76438</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1975</td>
+<td style="text-align: right;">50.59</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">53.9395</td>
+<td style="text-align: right;">53.98474</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1976</td>
+<td style="text-align: right;">49.44</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">53.6796</td>
+<td style="text-align: right;">53.72487</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1981</td>
+<td style="text-align: right;">49.36</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">52.3801</td>
+<td style="text-align: right;">52.42548</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1985</td>
+<td style="text-align: right;">49.24</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">51.3405</td>
+<td style="text-align: right;">51.38597</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1986</td>
+<td style="text-align: right;">48.74</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">51.0806</td>
+<td style="text-align: right;">51.12610</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1988</td>
+<td style="text-align: right;">48.42</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">50.5608</td>
+<td style="text-align: right;">50.60634</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1994</td>
+<td style="text-align: right;">48.21</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">49.0014</td>
+<td style="text-align: right;">49.04708</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2000</td>
+<td style="text-align: right;">48.18</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">47.4420</td>
+<td style="text-align: right;">47.48782</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2000</td>
+<td style="text-align: right;">47.84</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">47.4420</td>
+<td style="text-align: right;">47.48782</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1908</td>
+<td style="text-align: right;">95.00</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">71.3528</td>
+<td style="text-align: right;">71.39651</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1910</td>
+<td style="text-align: right;">86.60</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">70.8330</td>
+<td style="text-align: right;">70.87676</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1911</td>
+<td style="text-align: right;">84.60</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">70.5731</td>
+<td style="text-align: right;">70.61688</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1912</td>
+<td style="text-align: right;">78.80</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">70.3132</td>
+<td style="text-align: right;">70.35700</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1915</td>
+<td style="text-align: right;">76.20</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">69.5335</td>
+<td style="text-align: right;">69.57737</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1920</td>
+<td style="text-align: right;">73.60</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">68.2340</td>
+<td style="text-align: right;">68.27798</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1923</td>
+<td style="text-align: right;">72.80</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">67.4543</td>
+<td style="text-align: right;">67.49835</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1924</td>
+<td style="text-align: right;">72.20</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">67.1944</td>
+<td style="text-align: right;">67.23848</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1926</td>
+<td style="text-align: right;">70.00</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">66.6746</td>
+<td style="text-align: right;">66.71872</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1929</td>
+<td style="text-align: right;">69.40</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">65.8949</td>
+<td style="text-align: right;">65.93909</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1930</td>
+<td style="text-align: right;">68.00</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">65.6350</td>
+<td style="text-align: right;">65.67921</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1931</td>
+<td style="text-align: right;">66.60</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">65.3751</td>
+<td style="text-align: right;">65.41934</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1933</td>
+<td style="text-align: right;">66.00</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">64.8553</td>
+<td style="text-align: right;">64.89958</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1934</td>
+<td style="text-align: right;">65.40</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">64.5954</td>
+<td style="text-align: right;">64.63971</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1936</td>
+<td style="text-align: right;">64.60</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">64.0756</td>
+<td style="text-align: right;">64.11995</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1956</td>
+<td style="text-align: right;">62.00</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">58.8776</td>
+<td style="text-align: right;">58.92241</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1958</td>
+<td style="text-align: right;">61.20</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">58.3578</td>
+<td style="text-align: right;">58.40266</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1960</td>
+<td style="text-align: right;">60.20</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">57.8380</td>
+<td style="text-align: right;">57.88290</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1962</td>
+<td style="text-align: right;">59.50</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">57.3182</td>
+<td style="text-align: right;">57.36315</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1964</td>
+<td style="text-align: right;">58.90</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">56.7984</td>
+<td style="text-align: right;">56.84339</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1972</td>
+<td style="text-align: right;">58.50</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">54.7192</td>
+<td style="text-align: right;">54.76438</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1973</td>
+<td style="text-align: right;">57.54</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">54.4593</td>
+<td style="text-align: right;">54.50450</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1974</td>
+<td style="text-align: right;">56.96</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">54.1994</td>
+<td style="text-align: right;">54.24462</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1976</td>
+<td style="text-align: right;">55.65</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">53.6796</td>
+<td style="text-align: right;">53.72487</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1978</td>
+<td style="text-align: right;">55.41</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">53.1598</td>
+<td style="text-align: right;">53.20511</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1980</td>
+<td style="text-align: right;">54.79</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">52.6400</td>
+<td style="text-align: right;">52.68536</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1986</td>
+<td style="text-align: right;">54.73</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">51.0806</td>
+<td style="text-align: right;">51.12610</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1992</td>
+<td style="text-align: right;">54.48</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">49.5212</td>
+<td style="text-align: right;">49.56683</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1994</td>
+<td style="text-align: right;">54.01</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">49.0014</td>
+<td style="text-align: right;">49.04708</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2000</td>
+<td style="text-align: right;">53.77</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">47.4420</td>
+<td style="text-align: right;">47.48782</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2004</td>
+<td style="text-align: right;">53.52</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">46.4024</td>
+<td style="text-align: right;">46.44831</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-4-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-3-tab">
+<div class="sourceCode" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">lm</span>(time <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> year, <span class="at">data =</span> SwimRecords)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>SwimRecords_predict <span class="ot">&lt;-</span> SwimRecords <span class="sc">%&gt;%</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">with_formula =</span> <span class="fl">567.2420</span><span class="sc">*</span><span class="dv">1</span> <span class="sc">+</span> <span class="sc">-</span><span class="fl">0.2599</span><span class="sc">*</span>year) <span class="sc">%&gt;%</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">with_predict=</span> <span class="fu">predict</span>(model, SwimRecords))</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>SwimRecords_predict <span class="sc">%&gt;%</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> time)) <span class="sc">+</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> with_predict), <span class="at">color =</span> <span class="st">"blue"</span>) <span class="sc">+</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">14</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="three-inputs" class="level3" data-number="2.3">
+<h3 data-number="2.3" class="anchored" data-anchor-id="three-inputs"><span class="header-section-number">2.3</span> Three inputs</h3>
+<p>We can see that the previous model allowed us to capture the effect of year on record time, but we still have some unexplained variation. We can include sex in the model to capture the difference in record times by sex.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true">Plot</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false">Data</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-3" role="tab" aria-controls="tabset-5-3" aria-selected="false">Code</a></li></ul>
+<div class="tab-content">
+<div id="tabset-5-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-5-1-tab">
+<div class="columns">
+<div class="column" style="width:40%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="model-specification-applied_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="288"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:60%;">
+<p>Model specification: <br> <span class="math inline">\(y = w_1\cdot\mathbf{1} + w_2\cdot\mathbf{year} + w_3\cdot\mathbf{sex}\)</span></p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = time ~ 1 + year + sex, data = SwimRecords)
+
+Coefficients:
+(Intercept)         year         sexM  
+   555.7168      -0.2515      -9.7980  </code></pre>
+</div>
+</div>
+<p>Fitted model: <br> <span class="math inline">\(y = 555.7168 \cdot \mathbf{1} + -0.2515 \cdot \mathbf{year} + -9.7980 \cdot \mathbf{sex}\)</span></p>
+</div>
+</div>
+</div>
+<div id="tabset-5-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-2-tab">
+<div>
+
+</div>
+<div class="cell quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">year</th>
+<th style="text-align: right;">time</th>
+<th style="text-align: left;">sex</th>
+<th style="text-align: right;">sex_numeric</th>
+<th style="text-align: right;">with_formula</th>
+<th style="text-align: right;">with_predict</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1905</td>
+<td style="text-align: right;">65.80</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">66.8113</td>
+<td style="text-align: right;">66.88051</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1908</td>
+<td style="text-align: right;">65.60</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">66.0568</td>
+<td style="text-align: right;">66.12612</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1910</td>
+<td style="text-align: right;">62.80</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">65.5538</td>
+<td style="text-align: right;">65.62319</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1912</td>
+<td style="text-align: right;">61.60</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">65.0508</td>
+<td style="text-align: right;">65.12026</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1918</td>
+<td style="text-align: right;">61.40</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">63.5418</td>
+<td style="text-align: right;">63.61148</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1920</td>
+<td style="text-align: right;">60.40</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">63.0388</td>
+<td style="text-align: right;">63.10855</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1922</td>
+<td style="text-align: right;">58.60</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">62.5358</td>
+<td style="text-align: right;">62.60563</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1924</td>
+<td style="text-align: right;">57.40</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">62.0328</td>
+<td style="text-align: right;">62.10270</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1934</td>
+<td style="text-align: right;">56.80</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">59.5178</td>
+<td style="text-align: right;">59.58806</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1935</td>
+<td style="text-align: right;">56.60</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">59.2663</td>
+<td style="text-align: right;">59.33660</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1936</td>
+<td style="text-align: right;">56.40</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">59.0148</td>
+<td style="text-align: right;">59.08513</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1944</td>
+<td style="text-align: right;">55.90</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">57.0028</td>
+<td style="text-align: right;">57.07343</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1947</td>
+<td style="text-align: right;">55.80</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">56.2483</td>
+<td style="text-align: right;">56.31903</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1948</td>
+<td style="text-align: right;">55.40</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">55.9968</td>
+<td style="text-align: right;">56.06757</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1955</td>
+<td style="text-align: right;">54.80</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">54.2363</td>
+<td style="text-align: right;">54.30732</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1957</td>
+<td style="text-align: right;">54.60</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">53.7333</td>
+<td style="text-align: right;">53.80440</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1961</td>
+<td style="text-align: right;">53.60</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">52.7273</td>
+<td style="text-align: right;">52.79854</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1964</td>
+<td style="text-align: right;">52.90</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">51.9728</td>
+<td style="text-align: right;">52.04415</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1967</td>
+<td style="text-align: right;">52.60</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">51.2183</td>
+<td style="text-align: right;">51.28976</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1968</td>
+<td style="text-align: right;">52.20</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">50.9668</td>
+<td style="text-align: right;">51.03830</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1970</td>
+<td style="text-align: right;">51.90</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">50.4638</td>
+<td style="text-align: right;">50.53537</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1972</td>
+<td style="text-align: right;">51.22</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">49.9608</td>
+<td style="text-align: right;">50.03244</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1975</td>
+<td style="text-align: right;">50.59</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">49.2063</td>
+<td style="text-align: right;">49.27805</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1976</td>
+<td style="text-align: right;">49.44</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">48.9548</td>
+<td style="text-align: right;">49.02659</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1981</td>
+<td style="text-align: right;">49.36</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">47.6973</td>
+<td style="text-align: right;">47.76927</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1985</td>
+<td style="text-align: right;">49.24</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">46.6913</td>
+<td style="text-align: right;">46.76341</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1986</td>
+<td style="text-align: right;">48.74</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">46.4398</td>
+<td style="text-align: right;">46.51195</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1988</td>
+<td style="text-align: right;">48.42</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">45.9368</td>
+<td style="text-align: right;">46.00902</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1994</td>
+<td style="text-align: right;">48.21</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">44.4278</td>
+<td style="text-align: right;">44.50024</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2000</td>
+<td style="text-align: right;">48.18</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">42.9188</td>
+<td style="text-align: right;">42.99146</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2000</td>
+<td style="text-align: right;">47.84</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">42.9188</td>
+<td style="text-align: right;">42.99146</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1908</td>
+<td style="text-align: right;">95.00</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">75.8548</td>
+<td style="text-align: right;">75.92408</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1910</td>
+<td style="text-align: right;">86.60</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">75.3518</td>
+<td style="text-align: right;">75.42115</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1911</td>
+<td style="text-align: right;">84.60</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">75.1003</td>
+<td style="text-align: right;">75.16969</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1912</td>
+<td style="text-align: right;">78.80</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">74.8488</td>
+<td style="text-align: right;">74.91822</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1915</td>
+<td style="text-align: right;">76.20</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">74.0943</td>
+<td style="text-align: right;">74.16383</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1920</td>
+<td style="text-align: right;">73.60</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">72.8368</td>
+<td style="text-align: right;">72.90651</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1923</td>
+<td style="text-align: right;">72.80</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">72.0823</td>
+<td style="text-align: right;">72.15212</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1924</td>
+<td style="text-align: right;">72.20</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">71.8308</td>
+<td style="text-align: right;">71.90066</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1926</td>
+<td style="text-align: right;">70.00</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">71.3278</td>
+<td style="text-align: right;">71.39773</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1929</td>
+<td style="text-align: right;">69.40</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">70.5733</td>
+<td style="text-align: right;">70.64334</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1930</td>
+<td style="text-align: right;">68.00</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">70.3218</td>
+<td style="text-align: right;">70.39188</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1931</td>
+<td style="text-align: right;">66.60</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">70.0703</td>
+<td style="text-align: right;">70.14041</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1933</td>
+<td style="text-align: right;">66.00</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">69.5673</td>
+<td style="text-align: right;">69.63749</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1934</td>
+<td style="text-align: right;">65.40</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">69.3158</td>
+<td style="text-align: right;">69.38602</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1936</td>
+<td style="text-align: right;">64.60</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">68.8128</td>
+<td style="text-align: right;">68.88310</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1956</td>
+<td style="text-align: right;">62.00</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">63.7828</td>
+<td style="text-align: right;">63.85382</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1958</td>
+<td style="text-align: right;">61.20</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">63.2798</td>
+<td style="text-align: right;">63.35090</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1960</td>
+<td style="text-align: right;">60.20</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">62.7768</td>
+<td style="text-align: right;">62.84797</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1962</td>
+<td style="text-align: right;">59.50</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">62.2738</td>
+<td style="text-align: right;">62.34504</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1964</td>
+<td style="text-align: right;">58.90</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">61.7708</td>
+<td style="text-align: right;">61.84211</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1972</td>
+<td style="text-align: right;">58.50</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">59.7588</td>
+<td style="text-align: right;">59.83040</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1973</td>
+<td style="text-align: right;">57.54</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">59.5073</td>
+<td style="text-align: right;">59.57894</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1974</td>
+<td style="text-align: right;">56.96</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">59.2558</td>
+<td style="text-align: right;">59.32748</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1976</td>
+<td style="text-align: right;">55.65</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">58.7528</td>
+<td style="text-align: right;">58.82455</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1978</td>
+<td style="text-align: right;">55.41</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">58.2498</td>
+<td style="text-align: right;">58.32162</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1980</td>
+<td style="text-align: right;">54.79</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">57.7468</td>
+<td style="text-align: right;">57.81869</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1986</td>
+<td style="text-align: right;">54.73</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">56.2378</td>
+<td style="text-align: right;">56.30991</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1992</td>
+<td style="text-align: right;">54.48</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">54.7288</td>
+<td style="text-align: right;">54.80113</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1994</td>
+<td style="text-align: right;">54.01</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">54.2258</td>
+<td style="text-align: right;">54.29820</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2000</td>
+<td style="text-align: right;">53.77</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">52.7168</td>
+<td style="text-align: right;">52.78942</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2004</td>
+<td style="text-align: right;">53.52</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">51.7108</td>
+<td style="text-align: right;">51.78357</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-5-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-3-tab">
+<div class="sourceCode" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">lm</span>(time <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> year <span class="sc">+</span> sex, <span class="at">data =</span> SwimRecords)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>SwimRecords_predict <span class="ot">&lt;-</span> SwimRecords <span class="sc">%&gt;%</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">sex_numeric =</span> <span class="fu">case_when</span>(</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    sex <span class="sc">==</span> <span class="st">'M'</span> <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    sex <span class="sc">==</span> <span class="st">'F'</span> <span class="sc">~</span> <span class="dv">0</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">%&gt;%</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">with_formula =</span> <span class="fl">555.7168</span><span class="sc">*</span><span class="dv">1</span> <span class="sc">+</span> <span class="sc">-</span><span class="fl">0.2515</span><span class="sc">*</span>year <span class="sc">+</span> <span class="sc">-</span><span class="fl">9.7980</span> <span class="sc">*</span>sex_numeric) <span class="sc">%&gt;%</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">with_predict=</span> <span class="fu">predict</span>(model, SwimRecords))</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>SwimRecords_predict <span class="sc">%&gt;%</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> time, <span class="at">shape =</span> sex)) <span class="sc">+</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> with_predict), <span class="at">color =</span> <span class="st">"blue"</span>) <span class="sc">+</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">14</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="interaction" class="level3" data-number="2.4">
+<h3 data-number="2.4" class="anchored" data-anchor-id="interaction"><span class="header-section-number">2.4</span> Interaction</h3>
+<p>Notice that the previous model now gets us record times getting faster by year, and different predictions for men and women (women have slower times). But this is missing another relationship we can see in our data: that women are getting faster, faster. To express that the effect of one explanatory variable on the response variable is different at different values of another explanatory variable (e.g.&nbsp;the effect of year on record times is different for men and women), we add a term to the model in which we multiply the values of the interacting variables.</p>
+<p><em>We could say that we “expand the input space” of the model, since we add terms to capture the interaction</em></p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true">Plot</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false">Data</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-3" role="tab" aria-controls="tabset-6-3" aria-selected="false">Code</a></li></ul>
+<div class="tab-content">
+<div id="tabset-6-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-6-1-tab">
+<div class="columns">
+<div class="column" style="width:40%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="model-specification-applied_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="288"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:60%;">
+<p>Model specification: <br> <span class="math inline">\(y = w_1\cdot\mathbf{1} + w_2\cdot\mathbf{year} + w_3\cdot\mathbf{sex} + w_4\cdot\mathbf{year\times{sex}}\)</span></p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = time ~ 1 + year * sex, data = SwimRecords)
+
+Coefficients:
+(Intercept)         year         sexM    year:sexM  
+   697.3012      -0.3240    -302.4638       0.1499  </code></pre>
+</div>
+</div>
+<p>Fitted model: <br> <span class="math display">\[\begin{align}
+y = &amp;697.3012 \cdot \mathbf{1} + -0.3240 \cdot \mathbf{year} + -302.4638 \cdot \mathbf{sex}\\
+&amp;+ 0.1499 \cdot \mathbf{year\times{sex}}
+\end{align}\]</span></p>
+</div>
+</div>
+</div>
+<div id="tabset-6-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-6-2-tab">
+<div>
+
+</div>
+<div class="cell quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">year</th>
+<th style="text-align: right;">time</th>
+<th style="text-align: left;">sex</th>
+<th style="text-align: right;">with_predict</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1905</td>
+<td style="text-align: right;">65.80</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">63.12106</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1908</td>
+<td style="text-align: right;">65.60</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">62.59867</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1910</td>
+<td style="text-align: right;">62.80</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">62.25041</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1912</td>
+<td style="text-align: right;">61.60</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">61.90215</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1918</td>
+<td style="text-align: right;">61.40</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">60.85738</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1920</td>
+<td style="text-align: right;">60.40</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">60.50912</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1922</td>
+<td style="text-align: right;">58.60</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">60.16086</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1924</td>
+<td style="text-align: right;">57.40</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">59.81260</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1934</td>
+<td style="text-align: right;">56.80</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">58.07131</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1935</td>
+<td style="text-align: right;">56.60</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">57.89718</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1936</td>
+<td style="text-align: right;">56.40</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">57.72305</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1944</td>
+<td style="text-align: right;">55.90</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">56.33002</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1947</td>
+<td style="text-align: right;">55.80</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">55.80763</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1948</td>
+<td style="text-align: right;">55.40</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">55.63350</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1955</td>
+<td style="text-align: right;">54.80</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">54.41459</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1957</td>
+<td style="text-align: right;">54.60</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">54.06634</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1961</td>
+<td style="text-align: right;">53.60</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">53.36982</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1964</td>
+<td style="text-align: right;">52.90</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">52.84743</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1967</td>
+<td style="text-align: right;">52.60</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">52.32504</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1968</td>
+<td style="text-align: right;">52.20</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">52.15091</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1970</td>
+<td style="text-align: right;">51.90</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">51.80266</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1972</td>
+<td style="text-align: right;">51.22</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">51.45440</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1975</td>
+<td style="text-align: right;">50.59</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">50.93201</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1976</td>
+<td style="text-align: right;">49.44</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">50.75788</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1981</td>
+<td style="text-align: right;">49.36</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">49.88723</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1985</td>
+<td style="text-align: right;">49.24</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">49.19072</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1986</td>
+<td style="text-align: right;">48.74</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">49.01659</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1988</td>
+<td style="text-align: right;">48.42</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">48.66833</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1994</td>
+<td style="text-align: right;">48.21</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">47.62355</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2000</td>
+<td style="text-align: right;">48.18</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">46.57878</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2000</td>
+<td style="text-align: right;">47.84</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">46.57878</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1908</td>
+<td style="text-align: right;">95.00</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">79.02170</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1910</td>
+<td style="text-align: right;">86.60</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">78.37361</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1911</td>
+<td style="text-align: right;">84.60</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">78.04956</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1912</td>
+<td style="text-align: right;">78.80</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">77.72552</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1915</td>
+<td style="text-align: right;">76.20</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">76.75338</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1920</td>
+<td style="text-align: right;">73.60</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">75.13315</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1923</td>
+<td style="text-align: right;">72.80</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">74.16101</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1924</td>
+<td style="text-align: right;">72.20</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">73.83697</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1926</td>
+<td style="text-align: right;">70.00</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">73.18887</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1929</td>
+<td style="text-align: right;">69.40</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">72.21674</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1930</td>
+<td style="text-align: right;">68.00</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">71.89269</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1931</td>
+<td style="text-align: right;">66.60</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">71.56864</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1933</td>
+<td style="text-align: right;">66.00</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">70.92055</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1934</td>
+<td style="text-align: right;">65.40</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">70.59651</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1936</td>
+<td style="text-align: right;">64.60</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">69.94842</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1956</td>
+<td style="text-align: right;">62.00</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">63.46750</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1958</td>
+<td style="text-align: right;">61.20</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">62.81941</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1960</td>
+<td style="text-align: right;">60.20</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">62.17131</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1962</td>
+<td style="text-align: right;">59.50</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">61.52322</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1964</td>
+<td style="text-align: right;">58.90</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">60.87513</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1972</td>
+<td style="text-align: right;">58.50</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">58.28276</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1973</td>
+<td style="text-align: right;">57.54</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">57.95872</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1974</td>
+<td style="text-align: right;">56.96</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">57.63467</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1976</td>
+<td style="text-align: right;">55.65</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">56.98658</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1978</td>
+<td style="text-align: right;">55.41</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">56.33849</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1980</td>
+<td style="text-align: right;">54.79</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">55.69040</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1986</td>
+<td style="text-align: right;">54.73</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">53.74612</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1992</td>
+<td style="text-align: right;">54.48</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">51.80185</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1994</td>
+<td style="text-align: right;">54.01</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">51.15375</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2000</td>
+<td style="text-align: right;">53.77</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">49.20948</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2004</td>
+<td style="text-align: right;">53.52</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">47.91330</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-6-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-6-3-tab">
+<div class="sourceCode" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">lm</span>(time <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> year <span class="sc">*</span> sex, <span class="at">data =</span> SwimRecords)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>SwimRecords_predict <span class="ot">&lt;-</span> SwimRecords <span class="sc">%&gt;%</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">with_predict=</span> <span class="fu">predict</span>(model, SwimRecords))</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>SwimRecords_predict <span class="sc">%&gt;%</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> time, <span class="at">shape =</span> sex)) <span class="sc">+</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> with_predict), <span class="at">color =</span> <span class="st">"blue"</span>) <span class="sc">+</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">14</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="transformation" class="level3" data-number="2.5">
+<h3 data-number="2.5" class="anchored" data-anchor-id="transformation"><span class="header-section-number">2.5</span> Transformation</h3>
+<p>Now our model is doing a great job at predicting our data, but there may be more we want to do. For example, we can see that the model is not predicting women very well around the year 2000 (it is predicting they will be faster than they are). If we want to allow the model to have a curve shape, capturing that women gained on men for a while, but are no slowing down, we can add a term to the model in which we square the year. This allows us to capture this nonlinear curve or bend in the data (more on this for polynomials in the next section).</p>
+<p><em>but notice that the model is fitting the data well, but still behaving a bit non-sensical toward the 2000s, predicint that record times are getter slower! Impossible!)</em></p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true">Plot</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false">Data</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-3" role="tab" aria-controls="tabset-7-3" aria-selected="false">Code</a></li></ul>
+<div class="tab-content">
+<div id="tabset-7-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-7-1-tab">
+<div class="columns">
+<div class="column" style="width:40%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="model-specification-applied_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" width="288"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:60%;">
+<p>Model specification: <br> <span class="math display">\[\begin{align}
+y = &amp;w_1\cdot\mathbf{1} + w_2\cdot\mathbf{year} + w_3\cdot\mathbf{sex} \\
+&amp;+ w_4\cdot\mathbf{year\times{sex}} +w_5\cdot\mathbf{year}^2
+\end{align}\]</span></p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = time ~ 1 + year * sex + I(year^2), data = SwimRecords)
+
+Coefficients:
+(Intercept)         year         sexM    I(year^2)    year:sexM  
+  1.110e+04   -1.098e+01   -3.171e+02    2.729e-03    1.575e-01  </code></pre>
+</div>
+</div>
+<p>Fitted model: <br> <span class="math display">\[\begin{align}
+y = &amp;11100 \cdot \mathbf{1} + -10.98 \cdot \mathbf{year} + -317.1 \cdot \mathbf{sex}\\
+&amp;+ 0.1575 \cdot \mathbf{year\times{sex}} + 0.002729 \cdot \mathbf{year}^2
+\end{align}\]</span></p>
+</div>
+</div>
+</div>
+<div id="tabset-7-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-2-tab">
+<div>
+
+</div>
+<div class="cell quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">year</th>
+<th style="text-align: right;">time</th>
+<th style="text-align: left;">sex</th>
+<th style="text-align: right;">with_predict</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1905</td>
+<td style="text-align: right;">65.80</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">66.81874</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1908</td>
+<td style="text-align: right;">65.60</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">65.55576</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1910</td>
+<td style="text-align: right;">62.80</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">64.74106</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1912</td>
+<td style="text-align: right;">61.60</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">63.94819</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1918</td>
+<td style="text-align: right;">61.40</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">61.70057</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1920</td>
+<td style="text-align: right;">60.40</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">60.99502</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1922</td>
+<td style="text-align: right;">58.60</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">60.31130</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1924</td>
+<td style="text-align: right;">57.40</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">59.64941</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1934</td>
+<td style="text-align: right;">56.80</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">56.66741</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1935</td>
+<td style="text-align: right;">56.60</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">56.39922</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1936</td>
+<td style="text-align: right;">56.40</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">56.13650</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1944</td>
+<td style="text-align: right;">55.90</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">54.23115</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1947</td>
+<td style="text-align: right;">55.80</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">53.60669</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1948</td>
+<td style="text-align: right;">55.40</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">53.40946</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1955</td>
+<td style="text-align: right;">54.80</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">52.18160</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1957</td>
+<td style="text-align: right;">54.60</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">51.87991</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1961</td>
+<td style="text-align: right;">53.60</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">51.34200</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1964</td>
+<td style="text-align: right;">52.90</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">50.99587</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1967</td>
+<td style="text-align: right;">52.60</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">50.69886</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1968</td>
+<td style="text-align: right;">52.20</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">50.61078</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1970</td>
+<td style="text-align: right;">51.90</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">50.45097</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1972</td>
+<td style="text-align: right;">51.22</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">50.31300</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1975</td>
+<td style="text-align: right;">50.59</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">50.14697</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1976</td>
+<td style="text-align: right;">49.44</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">50.10254</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1981</td>
+<td style="text-align: right;">49.36</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">49.96226</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1985</td>
+<td style="text-align: right;">49.24</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">49.94827</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1986</td>
+<td style="text-align: right;">48.74</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">49.95841</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1988</td>
+<td style="text-align: right;">48.42</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">49.99508</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1994</td>
+<td style="text-align: right;">48.21</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">50.23605</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2000</td>
+<td style="text-align: right;">48.18</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">50.67349</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2000</td>
+<td style="text-align: right;">47.84</td>
+<td style="text-align: left;">M</td>
+<td style="text-align: right;">50.67349</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1908</td>
+<td style="text-align: right;">95.00</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">82.16082</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1910</td>
+<td style="text-align: right;">86.60</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">81.03116</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1911</td>
+<td style="text-align: right;">84.60</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">80.47451</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1912</td>
+<td style="text-align: right;">78.80</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">79.92332</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1915</td>
+<td style="text-align: right;">76.20</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">78.30250</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1920</td>
+<td style="text-align: right;">73.60</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">75.71028</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1923</td>
+<td style="text-align: right;">72.80</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">74.22044</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1924</td>
+<td style="text-align: right;">72.20</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">73.73474</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1926</td>
+<td style="text-align: right;">70.00</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">72.77971</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1929</td>
+<td style="text-align: right;">69.40</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">71.38810</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1930</td>
+<td style="text-align: right;">68.00</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">70.93515</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1931</td>
+<td style="text-align: right;">66.60</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">70.48765</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1933</td>
+<td style="text-align: right;">66.00</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">69.60903</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1934</td>
+<td style="text-align: right;">65.40</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">69.17790</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1936</td>
+<td style="text-align: right;">64.60</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">68.33203</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1956</td>
+<td style="text-align: right;">62.00</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">61.07389</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1958</td>
+<td style="text-align: right;">61.20</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">60.46814</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1960</td>
+<td style="text-align: right;">60.20</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">59.88422</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1962</td>
+<td style="text-align: right;">59.50</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">59.32213</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1964</td>
+<td style="text-align: right;">58.90</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">58.78187</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1972</td>
+<td style="text-align: right;">58.50</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">56.83913</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1973</td>
+<td style="text-align: right;">57.54</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">56.62085</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1974</td>
+<td style="text-align: right;">56.96</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">56.40802</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1976</td>
+<td style="text-align: right;">55.65</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">55.99874</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1978</td>
+<td style="text-align: right;">55.41</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">55.61129</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1980</td>
+<td style="text-align: right;">54.79</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">55.24567</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1986</td>
+<td style="text-align: right;">54.73</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">54.27978</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1992</td>
+<td style="text-align: right;">54.48</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">53.51036</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1994</td>
+<td style="text-align: right;">54.01</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">53.29755</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2000</td>
+<td style="text-align: right;">53.77</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">52.79009</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2004</td>
+<td style="text-align: right;">53.52</td>
+<td style="text-align: left;">F</td>
+<td style="text-align: right;">52.56093</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-7-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-3-tab">
+<div class="sourceCode" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">lm</span>(time <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> year <span class="sc">*</span> sex <span class="sc">+</span> <span class="fu">I</span>(year<span class="sc">^</span><span class="dv">2</span>), <span class="at">data =</span> SwimRecords)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>SwimRecords_predict <span class="ot">&lt;-</span> SwimRecords <span class="sc">%&gt;%</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">with_predict=</span> <span class="fu">predict</span>(model, SwimRecords))</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>SwimRecords_predict <span class="sc">%&gt;%</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> time, <span class="at">shape =</span> sex)) <span class="sc">+</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> with_predict), <span class="at">color =</span> <span class="st">"blue"</span>) <span class="sc">+</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">14</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="linearizing-nonlinear-models" class="level2" data-number="3">
+<h2 data-number="3" class="anchored" data-anchor-id="linearizing-nonlinear-models"><span class="header-section-number">3</span> Linearizing nonlinear models</h2>
+<p>When you want to linearlize a nonlinear model, you’re trying to fit a linear model to data that doesn’t naturally follow a straight line. There are two common ways to approach this:</p>
+<ol type="1">
+<li><strong>Expanding the input space</strong> with polynomials. Polynomials can capture “bumps” or curves in the data. In this approach, we <strong>add terms</strong> to the model, like squares or cubes of the original variable.
+<ul>
+<li><span class="math inline">\(y = w_1 + w_2x + w_3x^2\)</span></li>
+</ul></li>
+<li><strong>Transforming the data</strong> involves applying mathematical functions to existing inputs to alter their scale or distributions. Common transformations include taking the logarithm or square root. Taking the logarithm of a variable compresses its range and reduces skewness in the data (as in the brain size and body weight data).
+<ul>
+<li>both output and input: <span class="math inline">\(log(y) = w_1 + w_2 log(x)\)</span></li>
+<li>just input: <span class="math inline">\(y = w_1 + w_2 log(x)\)</span></li>
+</ul></li>
+</ol>
+</section>
+<section id="plant-heights-polynomials" class="level2" data-number="4">
+<h2 data-number="4" class="anchored" data-anchor-id="plant-heights-polynomials"><span class="header-section-number">4</span> Plant heights (polynomials)</h2>
+<p>Polynomials capture “bumps” or curves in the data, and the number of these bumps depends on the <strong>degree</strong> of the polynomial. The higher the degree, the more complex the shape the polynomial can represent.</p>
+<p><img src="../assests/images/polynomials.png" class="img-fluid"></p>
+<ul>
+<li><strong>Degree 1 (Linear)</strong>: A straight line. There are no bumps or curves. The relationship between the predictor and the response is either increasing or decreasing at a constant rate.</li>
+<li><strong>Degree 2 (Quadratic)</strong>: A single bump or curve. The graph is either a U-shape (bowl) or an upside-down U-shape (hill), meaning it can capture one turning point.</li>
+<li><strong>Degree 3 (Cubic)</strong>: Can capture two bumps (or one “S” shaped curve). The graph can have two turning points, meaning it can start by increasing, then decrease, and increase again (or the opposite).</li>
+<li><strong>Degree 4 (Quartic)</strong>: Can capture three bumps or changes in direction. The graph can have up to three turning points, allowing for more complex shapes and curves in the data.</li>
+</ul>
+<section id="degree-1-linear" class="level3" data-number="4.1">
+<h3 data-number="4.1" class="anchored" data-anchor-id="degree-1-linear"><span class="header-section-number">4.1</span> Degree 1 (Linear)</h3>
+<p>Remember, a <strong>Degree 1 (Linear)</strong> is a straight line. There are no bumps or curves. The relationship between the predictor and the response is either increasing or decreasing at a constant rate. This doesn’t seem to capture the relationship between light_exposure and plant_height in our data.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-8-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-1" role="tab" aria-controls="tabset-8-1" aria-selected="true">Plot</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-2" role="tab" aria-controls="tabset-8-2" aria-selected="false">Data</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-3" role="tab" aria-controls="tabset-8-3" aria-selected="false">Code</a></li></ul>
+<div class="tab-content">
+<div id="tabset-8-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-8-1-tab">
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="model-specification-applied_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid figure-img" width="288"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<p>Model specification: <br> <span class="math inline">\(y = w_1\cdot\mathbf{1} + w_2 \cdot \mathbf{x}\)</span></p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = plant_height ~ 1 + light_exposure, data = poly_plants)
+
+Coefficients:
+   (Intercept)  light_exposure  
+        31.346           3.619  </code></pre>
+</div>
+</div>
+<p>Fitted model: <br> <span class="math inline">\(y = 31.346 \cdot 1 + 3.619 \cdot x\)</span></p>
+</div>
+</div>
+</div>
+<div id="tabset-8-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-2-tab">
+<div>
+
+</div>
+<div class="cell quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">plant</th>
+<th style="text-align: right;">light_exposure</th>
+<th style="text-align: right;">plant_height</th>
+<th style="text-align: right;">with_formula</th>
+<th style="text-align: right;">with_predict</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Sunflower</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">31.346</td>
+<td style="text-align: right;">31.34615</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sunflower</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">34.965</td>
+<td style="text-align: right;">34.96504</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sunflower</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">38.584</td>
+<td style="text-align: right;">38.58392</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Rose</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">42.203</td>
+<td style="text-align: right;">42.20280</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Rose</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">55</td>
+<td style="text-align: right;">45.822</td>
+<td style="text-align: right;">45.82168</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Rose</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">70</td>
+<td style="text-align: right;">49.441</td>
+<td style="text-align: right;">49.44056</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Cactus</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">85</td>
+<td style="text-align: right;">53.060</td>
+<td style="text-align: right;">53.05944</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Cactus</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">95</td>
+<td style="text-align: right;">56.679</td>
+<td style="text-align: right;">56.67832</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Cactus</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">90</td>
+<td style="text-align: right;">60.298</td>
+<td style="text-align: right;">60.29720</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Orchid</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">70</td>
+<td style="text-align: right;">63.917</td>
+<td style="text-align: right;">63.91608</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Orchid</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">67.536</td>
+<td style="text-align: right;">67.53496</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Orchid</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">71.155</td>
+<td style="text-align: right;">71.15385</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-8-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-3-tab">
+<div class="sourceCode" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>poly_plants <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">'https://kathrynschuler.com/datasci/assests/csv/polynomial_plants.csv'</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">lm</span>(plant_height <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> light_exposure, <span class="at">data =</span> poly_plants)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>poly_plants <span class="ot">&lt;-</span> poly_plants <span class="sc">%&gt;%</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">with_formula =</span> <span class="fl">31.346</span><span class="sc">*</span><span class="dv">1</span> <span class="sc">+</span> <span class="fl">3.619</span><span class="sc">*</span>light_exposure) <span class="sc">%&gt;%</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">with_predict=</span> <span class="fu">predict</span>(model, poly_plants))</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>poly_plants <span class="sc">%&gt;%</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> light_exposure, <span class="at">y =</span> plant_height)) <span class="sc">+</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> with_predict), <span class="at">color =</span> <span class="st">"blue"</span>) <span class="sc">+</span></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">14</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="degree-2-quadratic" class="level3" data-number="4.2">
+<h3 data-number="4.2" class="anchored" data-anchor-id="degree-2-quadratic"><span class="header-section-number">4.2</span> Degree 2 (Quadratic)</h3>
+<p>In a <strong>Degree 2 (Quadratic)</strong> polynomial, we can express a single bump or curve. The graph is either a U-shape (bowl) or an upside-down U-shape (hill), meaning it can capture one turning point. This provides a better fit for our data, allow us to express the light exposure goes up and then back down again. But it looks like there is another “bump” in the data, going back upward around light exposure of 1 or 2.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-9-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-1" role="tab" aria-controls="tabset-9-1" aria-selected="true">Plot</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-2" role="tab" aria-controls="tabset-9-2" aria-selected="false">Data</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-3" role="tab" aria-controls="tabset-9-3" aria-selected="false">Code</a></li></ul>
+<div class="tab-content">
+<div id="tabset-9-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-9-1-tab">
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="model-specification-applied_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid figure-img" width="288"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<p>Model specification: <br> <span class="math inline">\(y = w_1\cdot\mathbf{1} + w_2 \cdot \mathbf{x} + w_3 \cdot \mathbf{x}^2\)</span></p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = plant_height ~ 1 + light_exposure + I(light_exposure^2), 
+    data = poly_plants)
+
+Coefficients:
+        (Intercept)       light_exposure  I(light_exposure^2)  
+             -9.245               27.973               -2.214  </code></pre>
+</div>
+</div>
+<p>Fitted model: <br> <span class="math inline">\(y = -9.245 \cdot\mathbf{1} + 27.973 \cdot \mathbf{x} + -2.214  \cdot \mathbf{x}^2\)</span></p>
+</div>
+</div>
+</div>
+<div id="tabset-9-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-2-tab">
+<div>
+
+</div>
+<div class="cell quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">plant</th>
+<th style="text-align: right;">light_exposure</th>
+<th style="text-align: right;">plant_height</th>
+<th style="text-align: right;">with_predict</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Sunflower</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">-9.244506</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sunflower</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">16.514735</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sunflower</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">37.845904</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Rose</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">54.749001</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Rose</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">55</td>
+<td style="text-align: right;">67.224026</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Rose</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">70</td>
+<td style="text-align: right;">75.270979</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Cactus</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">85</td>
+<td style="text-align: right;">78.889860</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Cactus</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">95</td>
+<td style="text-align: right;">78.080669</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Cactus</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">90</td>
+<td style="text-align: right;">72.843407</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Orchid</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">70</td>
+<td style="text-align: right;">63.178072</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Orchid</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">49.084665</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Orchid</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">30.563187</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-9-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-3-tab">
+<div class="sourceCode" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">lm</span>(plant_height <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> light_exposure <span class="sc">+</span> <span class="fu">I</span>(light_exposure<span class="sc">^</span><span class="dv">2</span>), <span class="at">data =</span> poly_plants)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>poly_plants <span class="ot">&lt;-</span> poly_plants <span class="sc">%&gt;%</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">with_predict=</span> <span class="fu">predict</span>(model, poly_plants))</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>poly_plants <span class="sc">%&gt;%</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> light_exposure, <span class="at">y =</span> plant_height)) <span class="sc">+</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> with_predict), <span class="at">color =</span> <span class="st">"blue"</span>) <span class="sc">+</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">14</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="degree-3-cubic" class="level3" data-number="4.3">
+<h3 data-number="4.3" class="anchored" data-anchor-id="degree-3-cubic"><span class="header-section-number">4.3</span> Degree 3 (Cubic)</h3>
+<p>In a <strong>Degree 3 (Cubic)</strong> polynomial, we can capture two bumps (or one “S” shaped curve). The graph can have two turning points, meaning it can start by increasing, then decrease, and increase again (or the opposite). This captures the data quite nicely.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-10-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-1" role="tab" aria-controls="tabset-10-1" aria-selected="true">Plot</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-2" role="tab" aria-controls="tabset-10-2" aria-selected="false">Data</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-3" role="tab" aria-controls="tabset-10-3" aria-selected="false">Code</a></li></ul>
+<div class="tab-content">
+<div id="tabset-10-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-10-1-tab">
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="model-specification-applied_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid figure-img" width="288"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<p>Model specification: <br> <span class="math inline">\(y = w_1\cdot\mathbf{1} + w_2 \cdot \mathbf{x} + w_3 \cdot \mathbf{x}^2 + w_4 \cdot \mathbf{x}^3\)</span></p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = plant_height ~ 1 + light_exposure + I(light_exposure^2) + 
+    I(light_exposure^3), data = poly_plants)
+
+Coefficients:
+        (Intercept)       light_exposure  I(light_exposure^2)  
+             8.7363               2.7276               3.7796  
+I(light_exposure^3)  
+            -0.3632  </code></pre>
+</div>
+</div>
+<p>Fitted model: <br> <span class="math inline">\(y = 8.7363 \cdot \mathbf{1} + 2.7276  \cdot \mathbf{x} + 3.7796 \cdot \mathbf{x}^2 + -0.3632  \cdot \mathbf{x}^3\)</span></p>
+</div>
+</div>
+</div>
+<div id="tabset-10-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-10-2-tab">
+<div>
+
+</div>
+<div class="cell quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">plant</th>
+<th style="text-align: right;">light_exposure</th>
+<th style="text-align: right;">plant_height</th>
+<th style="text-align: right;">with_predict</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Sunflower</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">8.736264</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sunflower</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">15</td>
+<td style="text-align: right;">14.880120</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sunflower</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">25</td>
+<td style="text-align: right;">26.403596</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Rose</td>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">41.127206</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Rose</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">55</td>
+<td style="text-align: right;">56.871462</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Rose</td>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">70</td>
+<td style="text-align: right;">71.456877</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Cactus</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">85</td>
+<td style="text-align: right;">82.703963</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Cactus</td>
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">95</td>
+<td style="text-align: right;">88.433233</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Cactus</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">90</td>
+<td style="text-align: right;">86.465202</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Orchid</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">70</td>
+<td style="text-align: right;">74.620380</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Orchid</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">40</td>
+<td style="text-align: right;">50.719281</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Orchid</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">20</td>
+<td style="text-align: right;">12.582418</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-10-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-10-3-tab">
+<div class="sourceCode" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">lm</span>(plant_height <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> light_exposure <span class="sc">+</span> <span class="fu">I</span>(light_exposure<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">I</span>(light_exposure<span class="sc">^</span><span class="dv">3</span>), <span class="at">data =</span> poly_plants)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>poly_plants <span class="ot">&lt;-</span> poly_plants <span class="sc">%&gt;%</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">with_predict=</span> <span class="fu">predict</span>(model, poly_plants))</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>poly_plants <span class="sc">%&gt;%</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> light_exposure, <span class="at">y =</span> plant_height)) <span class="sc">+</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> with_predict), <span class="at">color =</span> <span class="st">"blue"</span>) <span class="sc">+</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">14</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="brain-size-log" class="level2" data-number="5">
+<h2 data-number="5" class="anchored" data-anchor-id="brain-size-log"><span class="header-section-number">5</span> Brain size (log)</h2>
+<section id="untransformed" class="level3" data-number="5.1">
+<h3 data-number="5.1" class="anchored" data-anchor-id="untransformed"><span class="header-section-number">5.1</span> Untransformed</h3>
+<p>When we have a nonlinear relationship, as here, we could just try to fit a linear model to the untransformed data. It <em>techincally</em> works — there is no math reason that prevents us from fitting this model — but we can see that it is a very bad description of the data.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-11-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-11-1" role="tab" aria-controls="tabset-11-1" aria-selected="true">Plot</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-11-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-11-2" role="tab" aria-controls="tabset-11-2" aria-selected="false">Data</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-11-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-11-3" role="tab" aria-controls="tabset-11-3" aria-selected="false">Code</a></li></ul>
+<div class="tab-content">
+<div id="tabset-11-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-11-1-tab">
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="model-specification-applied_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid figure-img" width="288"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<p>Model specification: <br> <span class="math inline">\(y = w_1\cdot\mathbf{1} + w_2\cdot\mathbf{body\_size\_kg}\)</span></p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = brain_size_cc ~ 1 + body_size_kg, data = brain_data)
+
+Coefficients:
+ (Intercept)  body_size_kg  
+   816.59014       0.05021  </code></pre>
+</div>
+</div>
+<p>Fitted model: <br> <span class="math inline">\(y = 816.59014 \cdot\mathbf{1} + 0.05021 \cdot\mathbf{body\_size\_kg}\)</span></p>
+</div>
+</div>
+</div>
+<div id="tabset-11-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-11-2-tab">
+<div>
+
+</div>
+<div class="cell quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Species</th>
+<th style="text-align: right;">brain_size_cc</th>
+<th style="text-align: right;">body_size_kg</th>
+<th style="text-align: right;">with_predict</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Mouse</td>
+<td style="text-align: right;">0.4</td>
+<td style="text-align: right;">2.0e-02</td>
+<td style="text-align: right;">816.5911</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Rat</td>
+<td style="text-align: right;">2.0</td>
+<td style="text-align: right;">2.5e-01</td>
+<td style="text-align: right;">816.6027</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Rabbit</td>
+<td style="text-align: right;">12.0</td>
+<td style="text-align: right;">1.5e+00</td>
+<td style="text-align: right;">816.6655</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Cat</td>
+<td style="text-align: right;">25.0</td>
+<td style="text-align: right;">4.5e+00</td>
+<td style="text-align: right;">816.8161</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Dog</td>
+<td style="text-align: right;">50.0</td>
+<td style="text-align: right;">1.0e+01</td>
+<td style="text-align: right;">817.0923</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sheep</td>
+<td style="text-align: right;">150.0</td>
+<td style="text-align: right;">7.0e+01</td>
+<td style="text-align: right;">820.1049</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Pig</td>
+<td style="text-align: right;">300.0</td>
+<td style="text-align: right;">1.0e+02</td>
+<td style="text-align: right;">821.6113</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Goat</td>
+<td style="text-align: right;">450.0</td>
+<td style="text-align: right;">5.0e+01</td>
+<td style="text-align: right;">819.1007</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Gorilla</td>
+<td style="text-align: right;">500.0</td>
+<td style="text-align: right;">1.8e+02</td>
+<td style="text-align: right;">825.6282</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Horse</td>
+<td style="text-align: right;">600.0</td>
+<td style="text-align: right;">4.0e+02</td>
+<td style="text-align: right;">836.6747</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Human</td>
+<td style="text-align: right;">1300.0</td>
+<td style="text-align: right;">7.0e+01</td>
+<td style="text-align: right;">820.1049</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Chimpanzee</td>
+<td style="text-align: right;">400.0</td>
+<td style="text-align: right;">6.0e+01</td>
+<td style="text-align: right;">819.6028</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Dolphin</td>
+<td style="text-align: right;">1500.0</td>
+<td style="text-align: right;">2.0e+02</td>
+<td style="text-align: right;">826.6324</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Whale (Orca)</td>
+<td style="text-align: right;">6000.0</td>
+<td style="text-align: right;">5.0e+03</td>
+<td style="text-align: right;">1067.6469</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Elephant</td>
+<td style="text-align: right;">6000.0</td>
+<td style="text-align: right;">6.0e+03</td>
+<td style="text-align: right;">1117.8583</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Blue Whale</td>
+<td style="text-align: right;">8000.0</td>
+<td style="text-align: right;">1.5e+05</td>
+<td style="text-align: right;">8348.2943</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Giraffe</td>
+<td style="text-align: right;">600.0</td>
+<td style="text-align: right;">8.0e+02</td>
+<td style="text-align: right;">856.7592</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Rhinoceros</td>
+<td style="text-align: right;">450.0</td>
+<td style="text-align: right;">1.2e+03</td>
+<td style="text-align: right;">876.8438</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Walrus</td>
+<td style="text-align: right;">400.0</td>
+<td style="text-align: right;">8.0e+02</td>
+<td style="text-align: right;">856.7592</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Tiger</td>
+<td style="text-align: right;">90.0</td>
+<td style="text-align: right;">2.2e+02</td>
+<td style="text-align: right;">827.6366</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Kangaroo</td>
+<td style="text-align: right;">50.0</td>
+<td style="text-align: right;">6.0e+01</td>
+<td style="text-align: right;">819.6028</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Crocodile</td>
+<td style="text-align: right;">200.0</td>
+<td style="text-align: right;">4.0e+02</td>
+<td style="text-align: right;">836.6747</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Penguin</td>
+<td style="text-align: right;">20.0</td>
+<td style="text-align: right;">3.0e+01</td>
+<td style="text-align: right;">818.0965</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-11-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-11-3-tab">
+<div class="sourceCode" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>brain_data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">'https://kathrynschuler.com/datasci/assests/csv/animal_brain_body_size.csv'</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">brain_size_cc =</span> <span class="st">`</span><span class="at">Brain Size (cc)</span><span class="st">`</span>, <span class="at">body_size_kg =</span> <span class="st">`</span><span class="at">Body Size (kg)</span><span class="st">`</span>)</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">lm</span>(brain_size_cc <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> body_size_kg, <span class="at">data =</span> brain_data)</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>brain_data <span class="ot">&lt;-</span> brain_data <span class="sc">%&gt;%</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">with_predict=</span> <span class="fu">predict</span>(model, brain_data))</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>brain_data <span class="sc">%&gt;%</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> body_size_kg, <span class="at">y =</span> brain_size_cc)) <span class="sc">+</span></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> with_predict), <span class="at">color =</span> <span class="st">"blue"</span>) <span class="sc">+</span></span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">14</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="log-transformed" class="level3" data-number="5.2">
+<h3 data-number="5.2" class="anchored" data-anchor-id="log-transformed"><span class="header-section-number">5.2</span> Log transformed</h3>
+<p>We can apply a log transform directly in the model specification provided to R. This works great, but if we try to plot the fitted model on untransformed data (e.g.&nbsp;if we use brain_size_cc and body_size_kg as our y and x aesthetics) something doesn’t seem quite right. Instead, we should plot the data transformed to log as well, so the model predictions match the data.</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-12-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-12-1" role="tab" aria-controls="tabset-12-1" aria-selected="true">Plot</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-12-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-12-2" role="tab" aria-controls="tabset-12-2" aria-selected="false">Data</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-12-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-12-3" role="tab" aria-controls="tabset-12-3" aria-selected="false">Code</a></li></ul>
+<div class="tab-content">
+<div id="tabset-12-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-12-1-tab">
+<div class="columns">
+<div class="column" style="width:50%;">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="model-specification-applied_files/figure-html/unnamed-chunk-34-1.png" class="img-fluid figure-img" width="288"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:50%;">
+<p>Model specification: <br> <span class="math inline">\(log(y) = w_1\cdot\mathbf{1} + w_2 \cdot log(\mathbf{body\_size\_kg})\)</span></p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = log(brain_size_cc) ~ 1 + log(body_size_kg), data = brain_data)
+
+Coefficients:
+      (Intercept)  log(body_size_kg)  
+           2.2042             0.6687  </code></pre>
+</div>
+</div>
+<p>Fitted model: <br> <span class="math inline">\(log(y) = 2.2042\cdot\mathbf{1} + 0.6687 \cdot log(\mathbf{body\_size\_kg})\)</span></p>
+</div>
+</div>
+</div>
+<div id="tabset-12-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-12-2-tab">
+<div>
+
+</div>
+<div class="cell quarto-layout-panel" data-layout-ncol="2">
+<div class="quarto-layout-row">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 15%">
+<col style="width: 14%">
+<col style="width: 20%">
+<col style="width: 19%">
+<col style="width: 14%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Species</th>
+<th style="text-align: right;">brain_size_cc</th>
+<th style="text-align: right;">body_size_kg</th>
+<th style="text-align: right;">log_brain_size_cc</th>
+<th style="text-align: right;">log_body_size_kg</th>
+<th style="text-align: right;">with_predict</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Mouse</td>
+<td style="text-align: right;">0.4</td>
+<td style="text-align: right;">2.0e-02</td>
+<td style="text-align: right;">-0.9162907</td>
+<td style="text-align: right;">-3.9120230</td>
+<td style="text-align: right;">-0.4116321</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Rat</td>
+<td style="text-align: right;">2.0</td>
+<td style="text-align: right;">2.5e-01</td>
+<td style="text-align: right;">0.6931472</td>
+<td style="text-align: right;">-1.3862944</td>
+<td style="text-align: right;">1.2772249</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Rabbit</td>
+<td style="text-align: right;">12.0</td>
+<td style="text-align: right;">1.5e+00</td>
+<td style="text-align: right;">2.4849066</td>
+<td style="text-align: right;">0.4054651</td>
+<td style="text-align: right;">2.4753051</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Cat</td>
+<td style="text-align: right;">25.0</td>
+<td style="text-align: right;">4.5e+00</td>
+<td style="text-align: right;">3.2188758</td>
+<td style="text-align: right;">1.5040774</td>
+<td style="text-align: right;">3.2099046</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Dog</td>
+<td style="text-align: right;">50.0</td>
+<td style="text-align: right;">1.0e+01</td>
+<td style="text-align: right;">3.9120230</td>
+<td style="text-align: right;">2.3025851</td>
+<td style="text-align: right;">3.7438358</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sheep</td>
+<td style="text-align: right;">150.0</td>
+<td style="text-align: right;">7.0e+01</td>
+<td style="text-align: right;">5.0106353</td>
+<td style="text-align: right;">4.2484952</td>
+<td style="text-align: right;">5.0449906</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Pig</td>
+<td style="text-align: right;">300.0</td>
+<td style="text-align: right;">1.0e+02</td>
+<td style="text-align: right;">5.7037825</td>
+<td style="text-align: right;">4.6051702</td>
+<td style="text-align: right;">5.2834853</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Goat</td>
+<td style="text-align: right;">450.0</td>
+<td style="text-align: right;">5.0e+01</td>
+<td style="text-align: right;">6.1092476</td>
+<td style="text-align: right;">3.9120230</td>
+<td style="text-align: right;">4.8200046</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Gorilla</td>
+<td style="text-align: right;">500.0</td>
+<td style="text-align: right;">1.8e+02</td>
+<td style="text-align: right;">6.2146081</td>
+<td style="text-align: right;">5.1929569</td>
+<td style="text-align: right;">5.6765155</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Horse</td>
+<td style="text-align: right;">600.0</td>
+<td style="text-align: right;">4.0e+02</td>
+<td style="text-align: right;">6.3969297</td>
+<td style="text-align: right;">5.9914645</td>
+<td style="text-align: right;">6.2104467</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Human</td>
+<td style="text-align: right;">1300.0</td>
+<td style="text-align: right;">7.0e+01</td>
+<td style="text-align: right;">7.1701195</td>
+<td style="text-align: right;">4.2484952</td>
+<td style="text-align: right;">5.0449906</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Chimpanzee</td>
+<td style="text-align: right;">400.0</td>
+<td style="text-align: right;">6.0e+01</td>
+<td style="text-align: right;">5.9914645</td>
+<td style="text-align: right;">4.0943446</td>
+<td style="text-align: right;">4.9419160</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Dolphin</td>
+<td style="text-align: right;">1500.0</td>
+<td style="text-align: right;">2.0e+02</td>
+<td style="text-align: right;">7.3132204</td>
+<td style="text-align: right;">5.2983174</td>
+<td style="text-align: right;">5.7469660</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Whale (Orca)</td>
+<td style="text-align: right;">6000.0</td>
+<td style="text-align: right;">5.0e+03</td>
+<td style="text-align: right;">8.6995147</td>
+<td style="text-align: right;">8.5171932</td>
+<td style="text-align: right;">7.8993037</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Elephant</td>
+<td style="text-align: right;">6000.0</td>
+<td style="text-align: right;">6.0e+03</td>
+<td style="text-align: right;">8.6995147</td>
+<td style="text-align: right;">8.6995147</td>
+<td style="text-align: right;">8.0212150</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Blue Whale</td>
+<td style="text-align: right;">8000.0</td>
+<td style="text-align: right;">1.5e+05</td>
+<td style="text-align: right;">8.9871968</td>
+<td style="text-align: right;">11.9183906</td>
+<td style="text-align: right;">10.1735527</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Giraffe</td>
+<td style="text-align: right;">600.0</td>
+<td style="text-align: right;">8.0e+02</td>
+<td style="text-align: right;">6.3969297</td>
+<td style="text-align: right;">6.6846117</td>
+<td style="text-align: right;">6.6739274</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Rhinoceros</td>
+<td style="text-align: right;">450.0</td>
+<td style="text-align: right;">1.2e+03</td>
+<td style="text-align: right;">6.1092476</td>
+<td style="text-align: right;">7.0900768</td>
+<td style="text-align: right;">6.9450462</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Walrus</td>
+<td style="text-align: right;">400.0</td>
+<td style="text-align: right;">8.0e+02</td>
+<td style="text-align: right;">5.9914645</td>
+<td style="text-align: right;">6.6846117</td>
+<td style="text-align: right;">6.6739274</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Tiger</td>
+<td style="text-align: right;">90.0</td>
+<td style="text-align: right;">2.2e+02</td>
+<td style="text-align: right;">4.4998097</td>
+<td style="text-align: right;">5.3936275</td>
+<td style="text-align: right;">5.8106962</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Kangaroo</td>
+<td style="text-align: right;">50.0</td>
+<td style="text-align: right;">6.0e+01</td>
+<td style="text-align: right;">3.9120230</td>
+<td style="text-align: right;">4.0943446</td>
+<td style="text-align: right;">4.9419160</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Crocodile</td>
+<td style="text-align: right;">200.0</td>
+<td style="text-align: right;">4.0e+02</td>
+<td style="text-align: right;">5.2983174</td>
+<td style="text-align: right;">5.9914645</td>
+<td style="text-align: right;">6.2104467</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Penguin</td>
+<td style="text-align: right;">20.0</td>
+<td style="text-align: right;">3.0e+01</td>
+<td style="text-align: right;">2.9957323</td>
+<td style="text-align: right;">3.4011974</td>
+<td style="text-align: right;">4.4784353</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-12-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-12-3-tab">
+<div class="sourceCode" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(brain_size_cc) <span class="sc">~</span> <span class="dv">1</span> <span class="sc">+</span> <span class="fu">log</span>(body_size_kg), <span class="at">data =</span> brain_data)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>brain_data <span class="ot">&lt;-</span> brain_data <span class="sc">%&gt;%</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">log_brain_size_cc =</span> <span class="fu">log</span>(brain_size_cc), </span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">log_body_size_kg =</span> <span class="fu">log</span>(body_size_kg)</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">with_predict=</span> <span class="fu">predict</span>(model, brain_data))</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>brain_data <span class="sc">%&gt;%</span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> log_body_size_kg, <span class="at">y =</span> log_brain_size_cc)) <span class="sc">+</span></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">y =</span> with_predict), <span class="at">color =</span> <span class="st">"blue"</span>) <span class="sc">+</span></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>(<span class="at">base_size =</span> <span class="dv">14</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="further-reading" class="level2" data-number="6">
+<h2 data-number="6" class="anchored" data-anchor-id="further-reading"><span class="header-section-number">6</span> Further reading</h2>
+<ul>
+<li><a href="https://dtkaplan.github.io/SM2-bookdown/language-of-models.html">Ch 6: Language of models</a> in Statistical Modeling</li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script>
+
+/* update total correct if #webex-total_correct exists */
+update_total_correct = function() {
+  console.log("webex: update total_correct");
+
+  var t = document.getElementsByClassName("webex-total_correct");
+  for (var i = 0; i < t.length; i++) {
+    p = t[i].parentElement;
+    var correct = p.getElementsByClassName("webex-correct").length;
+    var solvemes = p.getElementsByClassName("webex-solveme").length;
+    var radiogroups = p.getElementsByClassName("webex-radiogroup").length;
+    var selects = p.getElementsByClassName("webex-select").length;
+
+    t[i].innerHTML = correct + " of " + (solvemes + radiogroups + selects) + " correct";
+  }
+}
+
+/* webex-solution button toggling function */
+b_func = function() {
+  console.log("webex: toggle hide");
+
+  var cl = this.parentElement.classList;
+  if (cl.contains('open')) {
+    cl.remove("open");
+  } else {
+    cl.add("open");
+  }
+}
+
+/* check answers */
+check_func = function() {
+  console.log("webex: check answers");
+
+  var cl = this.parentElement.classList;
+  if (cl.contains('unchecked')) {
+    cl.remove("unchecked");
+    this.innerHTML = "Hide Answers";
+  } else {
+    cl.add("unchecked");
+    this.innerHTML = "Show Answers";
+  }
+}
+
+/* function for checking solveme answers */
+solveme_func = function(e) {
+  console.log("webex: check solveme");
+
+  var real_answers = JSON.parse(this.dataset.answer);
+  var my_answer = this.value;
+  var cl = this.classList;
+  if (cl.contains("ignorecase")) {
+    my_answer = my_answer.toLowerCase();
+  }
+  if (cl.contains("nospaces")) {
+    my_answer = my_answer.replace(/ /g, "")
+  }
+
+  if (my_answer == "") {
+    cl.remove("webex-correct");
+    cl.remove("webex-incorrect");
+  } else if (real_answers.includes(my_answer)) {
+    cl.add("webex-correct");
+    cl.remove("webex-incorrect");
+  } else {
+    cl.add("webex-incorrect");
+    cl.remove("webex-correct");
+  }
+
+  // match numeric answers within a specified tolerance
+  if(this.dataset.tol > 0){
+    var tol = JSON.parse(this.dataset.tol);
+    var matches = real_answers.map(x => Math.abs(x - my_answer) < tol)
+    if (matches.reduce((a, b) => a + b, 0) > 0) {
+      cl.add("webex-correct");
+    } else {
+      cl.remove("webex-correct");
+    }
+  }
+
+  // added regex bit
+  if (cl.contains("regex")){
+    answer_regex = RegExp(real_answers.join("|"))
+    if (answer_regex.test(my_answer)) {
+      cl.add("webex-correct");
+    }
+  }
+
+  update_total_correct();
+}
+
+/* function for checking select answers */
+select_func = function(e) {
+  console.log("webex: check select");
+
+  var cl = this.classList
+
+  /* add style */
+  cl.remove("webex-incorrect");
+  cl.remove("webex-correct");
+  if (this.value == "answer") {
+    cl.add("webex-correct");
+  } else if (this.value != "blank") {
+    cl.add("webex-incorrect");
+  }
+
+  update_total_correct();
+}
+
+/* function for checking radiogroups answers */
+radiogroups_func = function(e) {
+  console.log("webex: check radiogroups");
+
+  var checked_button = document.querySelector('input[name=' + this.id + ']:checked');
+  var cl = checked_button.parentElement.classList;
+  var labels = checked_button.parentElement.parentElement.children;
+
+  /* get rid of styles */
+  for (i = 0; i < labels.length; i++) {
+    labels[i].classList.remove("webex-incorrect");
+    labels[i].classList.remove("webex-correct");
+  }
+
+  /* add style */
+  if (checked_button.value == "answer") {
+    cl.add("webex-correct");
+  } else {
+    cl.add("webex-incorrect");
+  }
+
+  update_total_correct();
+}
+
+window.onload = function() {
+  console.log("webex onload");
+  /* set up solution buttons */
+  var buttons = document.getElementsByTagName("button");
+
+  for (var i = 0; i < buttons.length; i++) {
+    if (buttons[i].parentElement.classList.contains('webex-solution')) {
+      buttons[i].onclick = b_func;
+    }
+  }
+
+  var check_sections = document.getElementsByClassName("webex-check");
+  console.log("check:", check_sections.length);
+  for (var i = 0; i < check_sections.length; i++) {
+    check_sections[i].classList.add("unchecked");
+
+    let btn = document.createElement("button");
+    btn.innerHTML = "Show Answers";
+    btn.classList.add("webex-check-button");
+    btn.onclick = check_func;
+    check_sections[i].appendChild(btn);
+
+    let spn = document.createElement("span");
+    spn.classList.add("webex-total_correct");
+    check_sections[i].appendChild(spn);
+  }
+
+  /* set up webex-solveme inputs */
+  var solveme = document.getElementsByClassName("webex-solveme");
+
+  for (var i = 0; i < solveme.length; i++) {
+    /* make sure input boxes don't auto-anything */
+    solveme[i].setAttribute("autocomplete","off");
+    solveme[i].setAttribute("autocorrect", "off");
+    solveme[i].setAttribute("autocapitalize", "off");
+    solveme[i].setAttribute("spellcheck", "false");
+    solveme[i].value = "";
+
+    /* adjust answer for ignorecase or nospaces */
+    var cl = solveme[i].classList;
+    var real_answer = solveme[i].dataset.answer;
+    if (cl.contains("ignorecase")) {
+      real_answer = real_answer.toLowerCase();
+    }
+    if (cl.contains("nospaces")) {
+      real_answer = real_answer.replace(/ /g, "");
+    }
+    solveme[i].dataset.answer = real_answer;
+
+    /* attach checking function */
+    solveme[i].onkeyup = solveme_func;
+    solveme[i].onchange = solveme_func;
+
+    solveme[i].insertAdjacentHTML("afterend", " <span class='webex-icon'></span>")
+  }
+
+  /* set up radiogroups */
+  var radiogroups = document.getElementsByClassName("webex-radiogroup");
+  for (var i = 0; i < radiogroups.length; i++) {
+    radiogroups[i].onchange = radiogroups_func;
+  }
+
+  /* set up selects */
+  var selects = document.getElementsByClassName("webex-select");
+  for (var i = 0; i < selects.length; i++) {
+    selects[i].onchange = select_func;
+    selects[i].insertAdjacentHTML("afterend", " <span class='webex-icon'></span>")
+  }
+
+  update_total_correct();
+}
+
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

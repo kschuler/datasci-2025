@@ -1,0 +1,658 @@
+---
+title: "Model Accuracy"
+subtitle: "Data Science for Studying Language and the Mind"
+author: Katie Schuler
+date: 10-29-2024
+echo: true
+format: 
+    revealjs:
+        slide-number: true
+        incremental: true 
+        footer: "[https://kathrynschuler.com/datasci](https://kathrynschuler.com/datasci/)"
+---
+
+```{r}
+#| echo: false
+#| message: false
+library(tidyverse)
+library(modelr)
+library(infer)
+library(knitr)
+theme_set(theme_classic(base_size = 20))
+set.seed(60)
+
+# setup data 
+data <- tibble(
+    x = c(1, 2, 3, 4, 5),
+    y = c(1.2, 2.5, 2.3, 3.1, 4.4)
+)
+
+data2 <- tibble(
+    x = c(1, 2, 3, 4, 5),
+    y = c(2, 2.5, 3.3, 4.1, 6.4)
+
+
+)
+
+```
+
+
+## You are not alone
+
+![by Allison Horst](/assests/images/Rlearning.png)
+
+## You are `here` {.smaller} 
+
+:::: {.columns}
+
+::: {.column width="33%"}
+
+##### Data science with R 
+::: {.nonincremental}
+- Hello, world!
+- R basics
+- Data visualization
+- Data wrangling 
+:::
+:::
+
+::: {.column width="33%"}
+
+##### Stats & Model buidling
+::: {.nonincremental}
+- Sampling distribution
+- Hypothesis testing
+- Model specification
+- Model fitting
+- `Model accuracy`
+- Model reliability
+:::
+:::
+
+::: {.column width="33%"}
+
+##### More advanced 
+::: {.nonincremental}
+
+- Classification
+- Inference for regression
+- Mixed-effect models
+::: 
+:::
+
+::::
+
+## Model building overview {.smaller}
+
+- **Model specification**: what is the form?
+- **Model fitting**: you have the form, how do you guess the free parameters? 
+- **Model accuracy**: you've estimated the parameters, how well does that model describe your data? 
+- **Model reliability**: when you estimate the parameters, there is some uncertainty on them
+
+## Dataset {.smaller}
+
+```{r}
+library(languageR)
+glimpse(english)
+```
+
+## Quantifying model accuracy {.smaller}
+
+:::: {.columns}
+::: {.column width="60%"}
+
+```{r}
+#| echo: false
+young_nouns <- filter(english, WordCategory == 'N', AgeSubject == "young")
+
+young_nouns_sample <- young_nouns %>% slice_sample(n = 20)
+
+ggplot(young_nouns_sample, aes(y = RTlexdec, x = WrittenFrequency)) +
+    geom_point() +
+    geom_smooth(method = "lm", formula = "y ~ x", se = FALSE) 
+```
+
+::: 
+::: {.column width="40%"}
+
+- We can visualize to get a sense of accuracy
+- But want to `quantify` accuracy (determine whether model is useful or how it compares to other models)
+
+:::
+::::
+
+
+
+## Quantifying model accuracy {.smaller}
+
+:::: {.columns}
+::: {.column width="60%"}
+
+```{r}
+#| echo: false
+
+ggplot(young_nouns_sample, aes(y = RTlexdec, x = WrittenFrequency)) +
+    geom_point() +
+    geom_smooth(method = "lm", formula = "y ~ x", se = FALSE)
+```
+
+::: 
+::: {.column width="40%"}
+
+- **sum of squared error** (depends on units, difficult to interpret)
+- $R^2$ (independent of units, easy to interpret)
+
+:::
+::::
+
+- $R^2$ quantifies the percentage of **variance** in the response variable that is explained by the model.
+
+## Coefficient of determination, $R^2$ {.smaller}
+
+
+```{r}
+#| echo: false
+
+ref_model = lm(RTlexdec ~ 1, data = young_nouns_sample)
+model = lm(RTlexdec ~ 1 + WrittenFrequency, data = young_nouns_sample)
+
+young_nouns_sample <- young_nouns_sample %>% spread_predictions(ref_model, model)
+
+SSE <- function(data, par) {
+  young_nouns_sample %>%
+    mutate(prediction = par[1] + par[2]* WrittenFrequency) %>%
+    mutate(error = prediction - RTlexdec) %>%
+    mutate(squared_error = error^2) %>%
+    with(sum(squared_error))
+}
+
+
+sse_ref <- SSE(data = young_nouns_sample, par = c(6.447, 0))
+sse_model <- SSE(data = young_nouns_sample, par = c(6.59064, -0.02874))
+ggplot(young_nouns_sample, aes(y = RTlexdec, x = WrittenFrequency)) +
+    geom_point() +
+    geom_smooth(method = "lm", formula = "y ~ x", se = FALSE) + 
+        geom_segment(aes(xend = WrittenFrequency, yend = model)) +
+    labs(title = "Unexplained variance (SSE model)", caption = sse_model)
+```
+
+- How much error (variation) is left over in the simplest possible model, `RTlexdec ~ 1`? This is our **reference model** and represents the **total variance**. 
+
+
+## Coefficient of determination, $R^2$ {.smaller}
+
+
+```{r}
+#| echo: false 
+
+
+
+ggplot(young_nouns_sample, aes(y = RTlexdec, x = WrittenFrequency)) +
+    geom_point() +
+    geom_smooth(method = "lm", formula = "y ~ 1", se = FALSE) +
+    geom_segment(aes(xend = WrittenFrequency, yend = ref_model)) +
+    labs(title = "Total variance (SSE reference)", caption = sse_ref)
+
+
+
+```
+
+- How much error (variation) is left over in our specified model, `RTlexdec ~ 1 + WrittenFrequency`? 
+
+## Coefficient of determination, $R^2$ {.smaller}
+
+
+```{r}
+#| echo: false
+#| layout-ncol: 2
+ggplot(young_nouns_sample, aes(y = RTlexdec, x = WrittenFrequency)) +
+    geom_point() +
+    geom_smooth(method = "lm", formula = "y ~ 1", se = FALSE) +
+    geom_segment(aes(xend = WrittenFrequency, yend = ref_model)) +
+    labs(title = "Total variance", subtitle = "SSE for the 'reference' model", caption = sse_ref)
+
+ggplot(young_nouns_sample, aes(y = RTlexdec, x = WrittenFrequency)) +
+    geom_point() +
+    geom_smooth(method = "lm", formula = "y ~ x", se = FALSE) + 
+        geom_segment(aes(xend = WrittenFrequency, yend = model)) +
+    labs(title = "Unexplained variance", subtitle = "SSE for our model", caption = sse_model)
+
+```
+
+
+. . . 
+
+$R^2=100\times(1-\frac{\sum_{i=1}^n (y_i - m_i)^2}{\sum_{i=1}^n (y_i - \overline{y})^2})$
+
+. . . 
+
+
+$R^2=100\times(1-\frac{SSE_{model}}{SSE_{reference}})$
+
+. . . 
+
+$R^2=100\times(1-\frac{unexplained \; variance}{total \; variance})$
+
+## Coefficient of determination, $R^2$ {.smaller}
+
+
+```{r}
+#| echo: false
+#| layout-ncol: 2
+ggplot(young_nouns_sample, aes(y = RTlexdec, x = WrittenFrequency)) +
+    geom_point() +
+    geom_smooth(method = "lm", formula = "y ~ 1", se = FALSE) +
+    geom_segment(aes(xend = WrittenFrequency, yend = ref_model)) +
+    labs(title = "Total variance", subtitle = "SSE for the 'reference' model", caption = sse_ref)
+
+ggplot(young_nouns_sample, aes(y = RTlexdec, x = WrittenFrequency)) +
+    geom_point() +
+    geom_smooth(method = "lm", formula = "y ~ x", se = FALSE) + 
+        geom_segment(aes(xend = WrittenFrequency, yend = model)) +
+    labs(title = "Unexplained variance", subtitle = "SSE for our model", caption = sse_model)
+
+```
+
+
+. . . 
+
+$R^2=100\times(1-\frac{\sum_{i=1}^n (y_i - m_i)^2}{\sum_{i=1}^n (y_i - \overline{y})^2}) = 100 \times{1 - \frac{0.11475}{0.19387}} = 0.4081037 $
+
+## Coefficient of determination, $R^2$ {.smaller}
+
+$R^2=100\times(1-\frac{SSE_{model}}{SSE_{reference}})$
+
+. . . 
+
+```{r}
+
+# compute R2 from SSEs
+1 - (sse_model/sse_ref)
+```
+
+. . .
+
+```{r}
+
+# compute R2 from lm
+summary(model)
+```
+
+# What is adjusted $R^2$? 
+
+## $R^2$ overestimates model accuracy
+
+One thing we can ask is how well the model describes our specific sample of data. But the question we actually want to answer is *how well does the model we fit describe the population we are interested in*. 
+
+- The problem is that we usually only have access to the sample we've collected and $R^2$ tends to **overestimate** the accuracy of the model on the population. In other words, the $R^2$ of the model we fit on our sample will be larger than the $R^2$ of the model fit to the population. 
+- Further, the population is (usually) unknown to us. To quantify the **true accuracy** of a fitted model -- that is, how well the model describes the population, not the sample we collected -- we can use a technique called **cross-validation**.  
+
+## $R^2$ overestimates model accuracy {.smaller}
+
+
+:::: {.columns}
+::: {.column width="67%"}
+
+
+```{r}
+#| echo: false
+
+
+# tmp <- lm(RTlexdec ~ WrittenFrequency + LengthInLetters, data = young_nouns)
+# tms <- lm(RTlexdec ~ WrittenFrequency + LengthInLetters, data = young_nouns_sample)
+# fmp <- lm(RTlexdec ~ WrittenFrequency, data = young_nouns)
+# fms <- lm(RTlexdec ~ WrittenFrequency, data = young_nouns_sample)
+
+# tmp 
+# tms
+# fmp
+# fms
+
+# young_nouns <- young_nouns %>% spread_predictions(tmp, tms, fmp, fms)
+ggplot(young_nouns_sample, aes(y = RTlexdec, x = WrittenFrequency)) +
+    #geom_point(color = "blue", size = 4) +
+    geom_point(data = young_nouns, alpha = 0.25) +
+    geom_smooth(data = young_nouns, method = "lm", 
+        formula = "y ~ x", se = FALSE, color = "black", linewidth = 2  )  +
+        labs(title = "True model")
+
+
+
+
+```
+
+::: 
+::: {.column width="33%"}
+
+| | Population | Sample |
+| --- | --- | --- | 
+| True  | high |  |
+| Fitted |  |  |  
+
+
+:::
+::::
+
+## $R^2$ overestimates model accuracy {.smaller}
+
+
+:::: {.columns}
+::: {.column width="67%"}
+
+
+```{r}
+#| echo: false
+
+
+# tmp <- lm(RTlexdec ~ WrittenFrequency + LengthInLetters, data = young_nouns)
+# tms <- lm(RTlexdec ~ WrittenFrequency + LengthInLetters, data = young_nouns_sample)
+# fmp <- lm(RTlexdec ~ WrittenFrequency, data = young_nouns)
+# fms <- lm(RTlexdec ~ WrittenFrequency, data = young_nouns_sample)
+
+# tmp 
+# tms
+# fmp
+# fms
+
+# young_nouns <- young_nouns %>% spread_predictions(tmp, tms, fmp, fms)
+ggplot(young_nouns_sample, aes(y = RTlexdec, x = WrittenFrequency)) +
+    geom_point(color = "blue", size = 4) +
+    geom_point(data = young_nouns, alpha = 0.25) +
+    geom_smooth(data = young_nouns, method = "lm", 
+        formula = "y ~ x", se = FALSE, color = "black", linewidth = 2  )  +
+        labs(title = "True model")
+
+
+```
+
+::: 
+::: {.column width="33%"}
+
+| | Population | Sample |
+| --- | --- | --- | 
+| True  | high | high |
+| Fitted |  |  |  
+
+
+
+
+:::
+::::
+
+## $R^2$ overestimates model accuracy {.smaller}
+
+
+:::: {.columns}
+::: {.column width="67%"}
+
+
+```{r}
+#| echo: false
+
+
+# tmp <- lm(RTlexdec ~ WrittenFrequency + LengthInLetters, data = young_nouns)
+# tms <- lm(RTlexdec ~ WrittenFrequency + LengthInLetters, data = young_nouns_sample)
+# fmp <- lm(RTlexdec ~ WrittenFrequency, data = young_nouns)
+# fms <- lm(RTlexdec ~ WrittenFrequency, data = young_nouns_sample)
+
+# tmp 
+# tms
+# fmp
+# fms
+
+# young_nouns <- young_nouns %>% spread_predictions(tmp, tms, fmp, fms)
+ggplot(young_nouns_sample, aes(y = RTlexdec, x = WrittenFrequency)) +
+    #geom_point(color = "blue", size = 4) +
+    geom_smooth(method = "lm", formula = "y ~ x", 
+        se = FALSE, linewidth = 2) +
+    geom_point(data = young_nouns, alpha = 0.25) +
+    geom_smooth(data = young_nouns, method = "lm", 
+        formula = "y ~ x", se = FALSE, color = "black", linewidth = 2  )  +
+        labs(title = "True model")
+
+
+
+
+```
+
+::: 
+::: {.column width="33%"}
+
+| | Population | Sample |
+| --- | --- | --- | 
+| True  | high | high |
+| Fitted | low |  |  
+
+ 
+
+
+
+
+:::
+::::
+
+## $R^2$ overestimates model accuracy {.smaller}
+
+
+:::: {.columns}
+::: {.column width="67%"}
+
+
+```{r}
+#| echo: false
+
+
+ggplot(young_nouns_sample, aes(y = RTlexdec, x = WrittenFrequency)) +
+    geom_point(color = "blue", size = 4) +
+    geom_smooth(method = "lm", formula = "y ~ x", 
+        se = FALSE, linewidth = 2) +
+    geom_point(data = young_nouns, alpha = 0.25) +
+    geom_smooth(data = young_nouns, method = "lm", 
+        formula = "y ~ x", se = FALSE, color = "black", linewidth = 2  )  +
+        labs(title = "True model")
+
+
+```
+
+::: 
+::: {.column width="33%"}
+
+| | Population | Sample |
+| --- | --- | --- | 
+| True  | high | high |
+| Fitted | low | `very high` |  
+
+
+
+
+
+:::
+::::
+
+ 
+
+
+
+- Accuracy of the fitted model on the sample `overestimates true accuracy` of fitted model.
+
+
+
+
+## Overfitting {.smaller}
+
+You have the freedom to fit your sample data better and better (you can add more and more terms, increasing the $R^2$ value). But be careful not to fit the sample data *too* well. 
+
+- any given set of data contains not only the `true model` (`signal`), but also random variation (`noise`). 
+- Fitting the sample data too well means we fit not only the signal but also the noise in the data. 
+- An overfit model will perform really well on the data it has been trained on (the sample), but would predict new, unseen values poorly. 
+- Our goal is to find the `optimal fitted model` -- the one that gets as close to the true model as possible without overfitting. 
+
+## Overfitting exercise 
+
+- Let's use the swim records data to demonstrate that $R^2$ increases as we add more parameters. 
+
+## Cross-validation justificaiton {.smaller}
+
+- We want to know: *how well does the model we fit describe the population we are interested in*. 
+- But we only have the sample, and $R^2$ on the sample will tend to overestimate the model's accuracy on the population.
+- To estimate the accuracy of the model on the population, we can use `cross-validation`
+
+## Cross-validation steps {.smaller}
+
+Given a sample of data, there are 3 simple steps to any cross-validation technique:
+
+1. Leave some data out
+2. Fit a model (to the data kept in)
+3. Evaluate the model on the left out data (e.g. $R^2$)
+
+. . . 
+
+There are many ways to do cross-validation — reflecting that there are many ways we can leave some data out — but they all follow this general 3-step process.
+
+## Two common cross-validation approaches {.smaller}
+
+- In `leave-one-out cross-validation`, we leave out a single data point and use the fitted model to predict that single point. We repeat this process for every data point, then evaluate each model's prediction on the left out points (we can use $R^2$!). 
+- In `k-fold cross-validation`, instead of leaving out a single data point, we randomly divide the dataset into $k$ parts and use the fitted model to predict that *part*. We repeat this process for every part, then evaluate each model's prediction on the left out parts (again, we can use $R^2$!). 
+
+## Leave-one-out cross-validation {.smaller}
+
+![Figure borrowed from Kendrick Kay](/assests/images/loo13.png)
+
+## Leave-one-out cross-validation {.smaller}
+
+![Figure borrowed from Kendrick Kay](/assests/images/loo12.png)
+
+## Leave-one-out cross-validation {.smaller}
+
+![Figure borrowed from Kendrick Kay](/assests/images/loo11.png)
+
+## Leave-one-out cross-validation {.smaller}
+
+![Figure borrowed from Kendrick Kay](/assests/images/loo10.png)
+
+## Leave-one-out cross-validation {.smaller}
+
+![Figure borrowed from Kendrick Kay](/assests/images/loo9.png)
+
+## Leave-one-out cross-validation {.smaller}
+
+![Figure borrowed from Kendrick Kay](/assests/images/loo8.png)
+
+## Leave-one-out cross-validation {.smaller}
+
+![Figure borrowed from Kendrick Kay](/assests/images/loo7.png)
+
+## Leave-one-out cross-validation {.smaller}
+
+![Figure borrowed from Kendrick Kay](/assests/images/loo5.png)
+
+## Leave-one-out cross-validation {.smaller}
+
+![Figure borrowed from Kendrick Kay](/assests/images/loo4.png)
+
+
+## Leave-one-out cross-validation {.smaller}
+
+![Figure borrowed from Kendrick Kay](/assests/images/loo3.png)
+
+
+
+## Leave-one-out cross-validation {.smaller}
+
+![Figure borrowed from Kendrick Kay](/assests/images/loo2.png)
+
+
+
+## Leave-one-out cross-validation {.smaller}
+
+![Figure borrowed from Kendrick Kay](/assests/images/loo1.png)
+
+
+# Thursday 
+
+## Other methods 
+
+There are other ways to evaluate models beyond cross-validaiton. We'll mention a few more: 
+
+1. *F-test*
+2. **AIC (Akaike Information Criterion)**
+3. **BIC (Bayesian Information Criterion)**
+
+## F-test  {.smaller}
+
+- One common way is using an **F-test** to determine whether a more complex model produces a significantly better fit than a simpler one. 
+- This approach only applies for *nested models*, which just means that one model is a simpler version of another more complex one. 
+- We will return to this in the demo. 
+
+## AIC and BIC {.smaller}
+
+- You may also encounter **AIC (Akaike Information Criterion)** and **BIC (Bayesian Information Criterion)**. 
+- These are parametric approaches that attempt to compare different models and find the optimal fit (helping you avoid overfitting and excessively complex models).  
+
+## AIC and BIC, what's the difference? {.smaller}
+
+- In general AIC considers how well the model fits the data, the number of parameters, and the sample size (there is a penalty for more complex models); BIC is similar but has a stronger penalty for complex models (so will inherently favor simpler models). 
+
+## What we'll demo: 
+
+- **We'll focus on cross-validation** in this class, because it makes fewer assumptions than metrics like AIC/BIC and is simpler to understand conceptually. But we'll also show you the **F-test** approach, since it's widely used in the sciences. 
+
+## F-test (via `anova()`)
+
+The F-test is closely related to $R^2$. When comparing a simpler model to a more complex one, the **change in $R^2$** (often expressed as $\Delta R^2$) can be evalutated using an F-test to see if adding predictors significantly improves model fit. 
+
+## F-test and R^2 {.smaller}
+
+- For $R^2$, when we compared $SSE_{model}$ (the sum of squared error of our model) to $SSE_{reference}$ (the sum of squared error of the intercept-only model), we noted that $SSE_{reference}$ is always going to be greater than $SSE_{model}$. 
+- But what we actually want to know is whether it is *significantly* greater. 
+
+## Equation for F (in terms of $R^2$) {.smaller}
+
+Let $R^2_{simple}$ be the $R^2$ of the simpler model and $R^2_{complex}$ be the $R^2$ of the more complex model. The change in $R^2$ (also called $\Delta R^2$) is: 
+
+- $\Delta R^2 = R^2_{complex} - R^2_{simple}$
+
+We can then compute the F-statistic to determine if $\Delta R^2$ is significant. 
+
+- $F = \frac{\Delta R^2 / p }{(1-R^2_{complex}/(n-k-1))}$
+
+Where: 
+
+- $p$ is the number of additional predictors in the complex model 
+- $n$ is the total sample size 
+- $k$ is the number of predictors in the complex model 
+
+## Understanding the F equation {.smaller}
+
+$F = \frac{\Delta R^2 / p }{(1-R^2_{complex}/(n-k-1))}$
+
+
+We can understand the numerator and denominator of this equation in the following way: 
+
+- The numerator represents the increase in *explained variance* per additional predictor. 
+- The denominator represents the remaining *unexplained variance*, adjusted for sample size and the complexity of the model. 
+
+## F-test demo {.smaller}
+
+In R, we can perform this model comparison via and F-test via a call to `anova()`:
+
+```{r}
+model_int <- lm(RTlexdec ~ 1, english)
+model_freq <- lm(RTlexdec ~ WrittenFrequency, english)
+model_freqage <- lm(RTlexdec ~ WrittenFrequency + AgeSubject, english)
+model_freqagelength <- lm(RTlexdec ~ WrittenFrequency + AgeSubject + LengthInLetters, english)
+
+anova(model_int, model_freq, model_freqage, model_freqagelength)
+```
+
+## F-test interpretation {.smaller}
+
+If the F-statistic is large, it suggests that the additional predictors in the complex model significantly improve model fit. 
+
+To help you decide, `anova()` returns a p-value. You can understand this p-value as asking: **how likely it is to observe this value of F if we randomly added this many predictors to our model?**
+
+## Back to model selection {.smaller}
+
+- Building models is itself an iterative process: we can use model accuracy obtained via cross-validation to determine which model to select (as a way to find the elusive optimal model fit).  
+
+- Beyond model accuracy, there are other practical things one might want to consider when selecting a model, such as ease of interpretation and availability of resources (the data you can collect, the computing power you have, etc.)

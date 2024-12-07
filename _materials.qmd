@@ -1,0 +1,80 @@
+# Materials
+
+## Study guides 
+
+Study guides include weekly study guides and additional resources from each week, including slides, demos, and further reading.
+
+- [Week 1: R Basics](notes/r-basics.qmd)
+- [Week 2: Data visualization](notes/data-visualization.qmd)
+- [Week 3: Data import, tidy, wrangle](notes/data-wrangling.qmd) 
+- [Week 4: Sampling distribution](notes/sampling-distribution.qmd) 
+- [Week 5: Hypothesis testing](notes/hypothesis-testing.qmd) 
+- [Week 6: Exam 1 review](notes/exam-1-review.qmd) ([practice exam](/exams/exam-01-practice.qmd), [solutions](/exams/exam-01-practice-solutions.pdf))
+- [Week 7: Model specification](notes/model-specification.qmd) ([slides](slides/model-specification.qmd), [demo](https://colab.research.google.com/drive/1Tf-0HLrVwvXzbUpBSNQyhjLSvBVzQYCk?usp=sharing))
+- [Week 8: Applied model specification](notes/model-specification-applied.qmd) ([slides](slides/model-specification-applied.qmd), [demo](https://colab.research.google.com/drive/1057npPxqL_uICzotn1nVABDcTwCU6pLG?usp=drive_link))
+- [Week 9: Model fitting](notes/model-fitting.qmd) ([slides](slides/model-fitting.qmd), [demo](https://colab.research.google.com/drive/10LCVBpec_f3MEbGpIF-Qz_JtGRBFwUaJ?usp=drive_link))
+- [Week 10: Model accuracy](notes/model-accuracy.qmd) ([slides](slides/model-accuracy.qmd), [demo](https://colab.research.google.com/drive/1z8sCbtfCmvlfKB8ICTXGBCUURNuf8muM?usp=drive_link))
+- [Week 11: Model reliability](notes/model-reliability.qmd) ([slides](slides/model-reliability.qmd), [demo](https://colab.research.google.com/drive/1pKCCQivt85v6GOiMO6_8BzpECZijNdBS?usp=drive_link))
+- [Week 12: Classification](https://docs.google.com/presentation/d/1y6AdgBK51n_8XAVVnaMXy10Qi-OVWeOlVy86fn_rT90/edit?usp=sharing) ([slides](https://docs.google.com/presentation/d/1y6AdgBK51n_8XAVVnaMXy10Qi-OVWeOlVy86fn_rT90/edit?usp=sharing), [demo](https://colab.research.google.com/drive/1qkcfUtXBjhZLP8QFK5ezRuf2jPygPxFm?usp=drive_link))
+- [Week 13: Exam 2 review](notes/exam-2-review.qmd) ([slido](https://app.sli.do/event/cxU1dzVyvnxR3gtzH3LT6g/live/questions), [practice exam](/exams/exam-02-practice.qmd), [solutions](/exams/exam-02-practice-solutions.qmd))
+- [WeeK 15: Multilevel Models](slides/multilevel-models.qmd) (slides, [demo](https://colab.research.google.com/drive/1qVMAPeGZ5q5IKboKIgHi4RG0H7KFo7VW?usp=drive_link))
+
+## Problem sets
+
+There are 6 problem sets, due to Gradescope by noon on the following Mondays. You may request an extension of up to 3 days for any reason. After solutions are posted, late problem sets can still be submitted for half credit (50%). If you submit all 6 problem sets, we will drop your lowest. 
+
+- [Problem set 1 due Sep 9](psets/pset-01.qmd), [solutions](https://colab.research.google.com/drive/1nj3NLzLEb7ugXH0gssJwkd36_YFeMoCC?usp=sharing)
+- [Problem set 2 due Sep 23](psets/pset-02.qmd), [solutions](https://colab.research.google.com/drive/19rSMc6UTUC8E_2-iWXQNEpOjIYQ4prui?usp=sharing)
+- [Problem set 3 due ~~Oct 14~~ Oct 21](psets/pset-03.qmd), [solutions](https://colab.research.google.com/drive/1XHjv1ReqSKH8BXzja-N8-XL8OXrFosn-?usp=sharing)
+- [Problem set 4 due ~~Oct 28~~ Nov 4](psets/pset-04.qmd)
+- ~~Problem set 5 due Nov 18~~ (cancelled due to missed week)
+- [Problem set 6 due Dec 9](psets/pset-06.qmd) 
+
+<!-- 
+    Hi [Professor's Name],
+
+    I’m having a [busy/difficult/etc.] week and was wondering if I could take an extra 3 days to complete the [name of the assignment]? I’d really appreciate it.
+
+    Thank you,
+    [Your Name] -->
+
+## Exams
+
+There are 2 midterm exams, taken in class on the following dates. Exams cannot be rescheduled, except in cases of genuine conflict or emergency (documentation and a [Course Action Notice](https://srfs.upenn.edu/student-records/course-action-notices) are required). However, you can submit any missed exam by the end of the semester for half credit (50%). You may also replace your lowest midterm exam score with the optional final exam. 
+
+- [Exam 1 in class Tuesday Oct 1](exams/exam-01.qmd), [solutions](exams/exam-01-solutions.pdf)
+- [Exam 2 in class Thursday Nov 21](exams/exam-02.qmd), [solutions](exams/exam-02-solutions.pdf)
+- Final exam (optional) Dec 19
+
+## Lab exercises
+
+Lab exercises are intended for practice and are not graded.
+
+- [Lab 1 on Aug 29 or 30](labs/lab-01.qmd)
+- [Lab 2 on Sep 5 or 6](labs/lab-02.qmd)
+- [Lab 3 on Sep 12 or 13](labs/lab-03.qmd)
+- [Lab 4 on Sep 19 or 20](labs/lab-04.qmd)
+- [Lab 5 on Sep 26 or 27](labs/lab-05.qmd)
+- [Lab 6 on Oct 10 or 11](labs/lab-06.qmd)
+- [Lab 7 on Oct 17 or 18](labs/lab-07.qmd)
+- [Lab 8 on Oct 24 or 25](labs/lab-08.qmd)
+- [Lab 9 on Nov 1 or 2](labs/lab-09.qmd)
+- [Lab 10 on Nov 14 or 15](labs/lab-10.qmd)
+
+<!-- ## Practice exercises 
+
+Practice exercies are a self-guided practice tool that takes you through the study guide can use for more practice (before or after the lecture). 
+
+- [Practice 1: R Basics](practice/practice-01.qmd)
+- Practice 2: Data visualization
+- Practice 3: Data wrangling 
+- Practice 4: Sampling distribution 
+- Practice 5: Hypothesis testing 
+- Practice 6: Model specification 
+- Practice 8: Model fitting
+- Practice 9: Model accuracy 
+- Practice 10: Model reliability 
+- Practice 11: Classification 
+- Practice 12: Inference
+- Practice 15: Multilevel Models 
+ -->
